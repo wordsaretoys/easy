@@ -1,13 +1,13 @@
 /**
 
-	Four: WebGL-based Game
+	Caves are Easy: WebGL-based Game
 	
-	@module four
+	@module easy
 	@author cpgauthier
 
 **/
 
-var FOUR = {
+var EASY = {
 	
 	/**
 		create GL context, set up game objects, load resources, run main loop
@@ -21,52 +21,52 @@ var FOUR = {
 
 		// create the GL display
 		try {
-			FOUR.display = SOAR.display.create("gl");
+			EASY.display = SOAR.display.create("gl");
 		} catch (e) {
 			jQuery("#glerror").show();
 			return;
 		}
 
 		// set initial display dimensions
-		FOUR.display.setSize(
+		EASY.display.setSize(
 			document.body.clientWidth, 
 			document.body.clientHeight
 		);
 
 		// set up any webgl stuff that's not likely to change
-		gl = FOUR.display.gl;
+		gl = EASY.display.gl;
 		gl.clearDepth(1.0);
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.DEPTH_TEST);
 		
 		// while waiting for resource load, initialize game objects
-		FOUR.forest.init();
-		FOUR.player.init();
+		EASY.cave.init();
+		EASY.player.init();
 
 		// begin async loading of resources from the server
-		SOAR.loadResources(FOUR.world.resources, function() {
+		SOAR.loadResources(EASY.world.resources, function() {
 		
 			// allow game objects to process loaded resources
-			FOUR.forest.process();
+			EASY.cave.process();
 		
-			SOAR.schedule(FOUR.update, 0, true);
-			SOAR.schedule(FOUR.draw, 0, true);
+			SOAR.schedule(EASY.update, 0, true);
+			SOAR.schedule(EASY.draw, 0, true);
 
 			window.addEventListener("resize", function() {
-				FOUR.display.setSize(
+				EASY.display.setSize(
 					document.body.clientWidth, 
 					document.body.clientHeight
 				);
 				// always draw if the canvas dimensions are changed
-				FOUR.draw();
+				EASY.draw();
 			}, false);
 			
 			SOAR.run();
 		});
 		
 		// while waiting for resource load, initialize game objects
-//		FOUR.forest.init();
-//		FOUR.player.init();
+//		EASY.cave.init();
+//		EASY.player.init();
 	},
 	
 	/**
@@ -76,7 +76,7 @@ var FOUR = {
 	**/
 	
 	update: function() {
-		FOUR.player.update();
+		EASY.player.update();
 	},
 	
 	/**
@@ -91,12 +91,12 @@ var FOUR = {
 	**/
 	
 	draw: function() {
-		var gl = FOUR.display.gl;
+		var gl = EASY.display.gl;
 	
-		gl.clearColor(0.5, 0.5, 0.6, 1.0);
+		gl.clearColor(0.5, 0.5, 0.5, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		FOUR.forest.draw();
+		EASY.cave.draw();
 	}
 };
 

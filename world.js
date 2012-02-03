@@ -1,11 +1,11 @@
 /**
 	maintain initial game world data
 	
-	@namespace FOUR
+	@namespace EASY
 	@class world
 **/
 
-FOUR.world = {
+EASY.world = {
 
 	resources: {
 		panel: {
@@ -15,10 +15,6 @@ FOUR.world = {
 		ground: {
 			type: "image",
 			path: "res/ground.jpg"
-		},
-		branches: {
-			type: "image",
-			path: "res/branches.jpg"
 		}
 	},
 	

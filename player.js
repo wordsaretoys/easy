@@ -2,11 +2,11 @@
 	maintain player state and camera, handle control 
 	events related to player motion and interactions
 	
-	@namespace FOUR
+	@namespace EASY
 	@class player
 **/
 
-FOUR.player = {
+EASY.player = {
 
 	SPIN_RATE: -0.007,
 	NORMAL_SPEED: 4,
@@ -55,8 +55,8 @@ FOUR.player = {
 		};
 		
 		dom.mouseTracker.resize = function() {
-			dom.mouseTracker.width(FOUR.display.width);
-			dom.mouseTracker.height(FOUR.display.height);
+			dom.mouseTracker.width(EASY.display.width);
+			dom.mouseTracker.height(EASY.display.height);
 		}
 		dom.window.bind("resize", dom.mouseTracker.resize);
 		dom.mouseTracker.resize();
@@ -80,13 +80,13 @@ FOUR.player = {
 
 		// create a yaw/pitch constrained camera
 		this.camera = SOAR.camera.create(
-			FOUR.display, 
+			EASY.display, 
 			SOAR.camera.BOUND_ROTATION);
 		this.camera.nearLimit = 0.01;
 		this.camera.farLimit = 1024;
 		
 		// move player to starting point
-		this.footPosition.copy(FOUR.world.player.position);
+		this.footPosition.copy(EASY.world.player.position);
 	},
 	
 	/**
@@ -126,10 +126,10 @@ FOUR.player = {
 		this.velocity.y = this.debug ? scratch.direction.y * speed : this.velocity.y - 9.81 * dt;
 		this.velocity.z = scratch.direction.z * speed;
 
-		FOUR.forest.constrain(this.footPosition, this.velocity);
+		EASY.cave.constrain(this.footPosition, this.velocity);
 		scratch.velocity.copy(this.velocity).mul(dt);
 		this.footPosition.add(scratch.velocity);
-		FOUR.forest.constrain(this.footPosition, this.velocity);
+		EASY.cave.constrain(this.footPosition, this.velocity);
 		this.headPosition.copy(this.footPosition);
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
