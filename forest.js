@@ -8,6 +8,7 @@
 FOUR.forest = {
 
 	SUN_HEIGHT: 1000,
+	CEILING_HEIGHT: 5,
 
 	scratch: {
 		down: SOAR.vector.create()
@@ -45,10 +46,11 @@ FOUR.forest = {
 		var ground1 = SOAR.noise2D.create(2388343, 0.5, 32, 0.1);
 		var ground2 = SOAR.noise2D.create(1947832, 2, 32, 0.1);
 		var ground3 = SOAR.noise2D.create(8472837, 50, 32, 0.1);
+		var ch = this.CEILING_HEIGHT;
 		
 		this.getGroundHeight = function(x, z) {
 			var g = ground1.get(x, z) * ground2.get(x, z) * ground3.get(x, z);
-			var c = ceiling.get(x, z) + 5;
+			var c = ceiling.get(x, z) + ch;
 			if (g > c) {
 				g = c;
 			}
@@ -85,6 +87,51 @@ FOUR.forest = {
 		this.sunMesh.set(bound.x1, this.SUN_HEIGHT, bound.z0, 0.5, -0.5);
 		this.sunMesh.set(bound.x1, this.SUN_HEIGHT, bound.z1, 0.5, 0.5);
 		this.sunMesh.build();
+		
+		//
+		// create treeline
+		//
+	
+		this.treeShader = SOAR.shader.create(
+			display,
+			SOAR.textOf("vs-trees"), SOAR.textOf("fs-trees"),
+			["position", "texturec", "a_light"], 
+			["projector", "modelview"],
+			["tex0"]
+		);
+		this.treeMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
+		this.treeMesh.add(this.treeShader.position, 3);
+		this.treeMesh.add(this.treeShader.texturec, 2);
+		this.treeMesh.add(this.treeShader.a_light, 1);
+		this.createSheet(
+			this.treeMesh,
+			function(x, z) {
+				return ch + ceiling.get(x, z) + 10;
+			},
+			function(x, z) {
+				return lights.get(x, z);
+			}
+		);
+		this.createSheet(
+			this.treeMesh,
+			function(x, z) {
+				return ch + ceiling.get(1273 + x, 4321 + z) + 5;
+			},
+			function(x, z) {
+				return lights.get(x, z);
+			}
+		);		
+		this.createSheet(
+			this.treeMesh,
+			function(x, z) {
+				return ch + ceiling.get(x + 2372, z + 2372);
+			},
+			function(x, z) {
+				return lights.get(x, z);
+			}
+		);
+		this.treeMesh.build();
+		
 	},
 	
 	/**
@@ -105,7 +152,6 @@ FOUR.forest = {
 		var dz = z1 - z0;
 		var oddrow = false;
 		var xa, xb, ya, yb;
-		var rxa, rxb, rz;
 		var x, y, z;
 
 		// building a triangle strip-based grid takes some fiddling
@@ -114,15 +160,10 @@ FOUR.forest = {
 			for (z = oddrow ? z0 : z1; oddrow ? z <= z1 : z >= z0; z += oddrow ? 1 : -1) {
 				xa = oddrow ? x + 1 : x;
 				xb = oddrow ? x : x + 1;
-				rz = z / dz;
-				rxa = xa / dx;
-				rxb = xb / dx;
-
 				ya = f(xa, z);
 				yb = f(xb, z);
-
-				m.set(xa, ya, z, rxa, rz, l(xa, z));
-				m.set(xb, yb, z, rxb, rz, l(xb, z));
+				m.set(xa, ya, z, xa, z, l(xa, z));
+				m.set(xb, yb, z, xb, z, l(xb, z));
 			}
 			oddrow = !oddrow;
 		}
@@ -141,6 +182,8 @@ FOUR.forest = {
 		
 		this.groundTexture = 
 			SOAR.texture.create(display, resources["ground"].data);
+		this.treeTexture = 
+			SOAR.texture.create(display, resources["branches"].data);
 	},
 	
 	/**
@@ -208,6 +251,12 @@ FOUR.forest = {
 		gl.uniformMatrix4fv(this.sunShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.sunShader.modelview, false, camera.modelview());
 		this.sunMesh.draw();
+
+		this.treeShader.activate();
+		gl.uniformMatrix4fv(this.treeShader.projector, false, camera.projector());
+		gl.uniformMatrix4fv(this.treeShader.modelview, false, camera.modelview());
+		this.treeTexture.bind(0, this.treeShader.tex0);
+		this.treeMesh.draw();
 
 		gl.disable(gl.BLEND);		
 	}

@@ -15,6 +15,10 @@ FOUR.world = {
 		ground: {
 			type: "image",
 			path: "res/ground.jpg"
+		},
+		branches: {
+			type: "image",
+			path: "res/branches.jpg"
 		}
 	},
 	
