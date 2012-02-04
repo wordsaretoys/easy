@@ -7,12 +7,11 @@
 
 EASY.cave = {
 
-	CEILING_HEIGHT: 5,
+	BOUND_LIMIT: 5,
 
 	scratch: {
 		down: SOAR.vector.create()
 	},
-		
 
 	/**
 		create data objects, meshes, and shader programs
@@ -26,7 +25,7 @@ EASY.cave = {
 		var bound = EASY.world.boundary;
 
 		//
-		// create ground mesh
+		// create cave meshes
 		//
 	
 		this.shader = SOAR.shader.create(
@@ -36,36 +35,49 @@ EASY.cave = {
 			["projector", "modelview"],
 			["tex0"]
 		);
+
+		var lights = SOAR.noise2D.create(1294934, 0.5, 64, 0.1);
+		var common = SOAR.noise2D.create(5234512, 2, 64, 0.2);
+
 		this.lowerMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
 		this.lowerMesh.add(this.shader.position, 3);
 		this.lowerMesh.add(this.shader.texturec, 2);
 		this.lowerMesh.add(this.shader.a_light, 1);
 
-		var ceiling = SOAR.noise2D.create(3184967, 10, 32, 0.05);
-		var ground1 = SOAR.noise2D.create(2388343, 0.5, 32, 0.1);
-		var ground2 = SOAR.noise2D.create(1947832, 2, 32, 0.1);
-		var ground3 = SOAR.noise2D.create(8472837, 50, 32, 0.1);
-		var ch = this.CEILING_HEIGHT;
-		
 		this.getLowerHeight = function(x, z) {
-			var g = ground1.get(x, z) * ground2.get(x, z) * ground3.get(x, z);
-			var c = ceiling.get(x, z) + ch;
-			if (g > c) {
-				g = c;
-			}
-			return g;
+			var h = Math.pow(common.get(x, z), 6);
+			return (h > 6) ? 6 : h;
 		};
 
-		var lights = SOAR.noise2D.create(1294934, 1, 32, 0.1);
 		this.createSheet(
 			this.lowerMesh, 
 			this.getLowerHeight, 
 			function(x, z) {
 				return lights.get(x, z);
 			}
-		);		
-		this.lowerMesh.build();
+		);
 		
+		this.lowerMesh.build();
+
+		this.upperMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
+		this.upperMesh.add(this.shader.position, 3);
+		this.upperMesh.add(this.shader.texturec, 2);
+		this.upperMesh.add(this.shader.a_light, 1);
+
+		this.getUpperHeight = function(x, z) {
+			var h = 10 - Math.pow(common.get(x, z), 6); 
+			return (h < 4) ? 4 : h;
+		};
+
+		this.createSheet(
+			this.upperMesh, 
+			this.getUpperHeight, 
+			function(x, z) {
+				return lights.get(x, z);
+			}
+		);
+		
+		this.upperMesh.build();
 	},
 	
 	/**
@@ -80,24 +92,26 @@ EASY.cave = {
 	createSheet: function(m, f, l) {
 	
 		var bound = EASY.world.boundary;
-		var x0 = bound.x0, x1 = bound.x1;
-		var z0 = bound.z0, z1 = bound.z1;
-		var dx = x1 - x0;
-		var dz = z1 - z0;
+		var x0 = 0, x1 = bound.x;
+		var z0 = 0, z1 = bound.z;
 		var oddrow = false;
 		var xa, xb, ya, yb;
+		var txa, txb, tz;
 		var x, y, z;
 
 		// building a triangle strip-based grid takes some fiddling
+		// we have to construct the grid in different directions on alternating rows
 		for (x = x0; x <= x1; x++) {
-			// we have to construct the grid in different directions on alternating rows
+			xa = oddrow ? x + 1 : x;
+			xb = oddrow ? x : x + 1;
+			txa = xa / x1;
+			txb = xb / x1;
 			for (z = oddrow ? z0 : z1; oddrow ? z <= z1 : z >= z0; z += oddrow ? 1 : -1) {
-				xa = oddrow ? x + 1 : x;
-				xb = oddrow ? x : x + 1;
 				ya = f(xa, z);
 				yb = f(xb, z);
-				m.set(xa, ya, z, xa, z, l(xa, z));
-				m.set(xb, yb, z, xb, z, l(xb, z));
+				tz = z / z1;
+				m.set(xa, ya, z, txa, tz, l(xa, z));
+				m.set(xb, yb, z, txb, tz, l(xb, z));
 			}
 			oddrow = !oddrow;
 		}
@@ -114,8 +128,8 @@ EASY.cave = {
 		var resources = EASY.world.resources;
 		var bound = EASY.world.boundary;
 		
-		this.groundTexture = 
-			SOAR.texture.create(display, resources["ground"].data);
+		this.caveTexture = 
+			SOAR.texture.create(display, resources["cave"].data);
 	},
 	
 	/**
@@ -127,7 +141,7 @@ EASY.cave = {
 	**/
 	
 	constrain: function(p, v) {
-
+		var bound = EASY.world.boundary;
 		var h = this.getLowerHeight(p.x, p.z);
 		var down = this.scratch.down;
 	
@@ -141,6 +155,25 @@ EASY.cave = {
 			v.y = v.y > 0 ? v.y : 0;
 		}
 
+		// don't permit player to walk into boundary
+		if (p.x < this.BOUND_LIMIT) {
+			p.x = this.BOUND_LIMIT;
+			v.x = v.x > 0 ? v.x : 0;
+		}
+		if (p.x > bound.x - this.BOUND_LIMIT) {
+			p.x = bound.x - this.BOUND_LIMIT;
+			v.x = v.x < 0 ? v.x : 0;
+		}
+		if (p.z < this.BOUND_LIMIT) {
+			p.z = this.BOUND_LIMIT;
+			v.z = v.z > 0 ? v.z : 0;
+		}
+		if (p.z > bound.z - this.BOUND_LIMIT) {
+			p.z = bound.z - this.BOUND_LIMIT;
+			v.z = v.z < 0 ? v.z : 0;
+		}
+		
+		
 		// generate a vector that points to "down" and whose 
 		// magnitude increases geometrically with the slope
 		down.set(
@@ -168,17 +201,15 @@ EASY.cave = {
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
 
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-	
 		this.shader.activate();
 		gl.uniformMatrix4fv(this.shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.shader.modelview, false, camera.modelview());
-		this.groundTexture.bind(0, this.shader.tex0);
+		this.caveTexture.bind(0, this.shader.tex0);
 		this.lowerMesh.draw();
+		gl.cullFace(gl.FRONT);
+		this.upperMesh.draw();
 		
 		gl.disable(gl.CULL_FACE);
-		gl.disable(gl.BLEND);		
 	}
 
 };

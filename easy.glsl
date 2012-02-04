@@ -15,6 +15,7 @@
 	(passed to fragment shader for each vertex)
 	@param uv		texture coordinates
 	@param light	light intensity
+	@param object	position in modelview coordinates
 	
 **/
 
@@ -27,11 +28,14 @@ uniform mat4 modelview;
 
 varying vec2 uv;
 varying float light;
+varying vec4 object;
 
 void main(void) {
-	gl_Position = projector * modelview * vec4(position, 1.0);
+	object = modelview * vec4(position, 1.0);
+	gl_Position = projector * object;
 	uv = texturec;
 	light = a_light;
+	
 }
 </script>
 
@@ -44,6 +48,7 @@ void main(void) {
 
 	@param light	light intensity
 	@param uv		texture coordinates of fragment
+	@param object	position in modelview coordinates
 	
 **/
 
@@ -53,11 +58,12 @@ uniform sampler2D tex0;
 
 varying float light;
 varying vec2 uv;
+varying vec4 object;
 
 void main(void) {
-	vec3 tex = 	0.75 * texture2D(tex0, uv).rgb + 
-				0.25 * texture2D(tex0, uv / 8.0).rgb + 
-				0.5 * texture2D(tex0, uv / 64.0).rgb;
+	vec3 tex = 	texture2D(tex0, uv * 1.0).r * vec3(0.8, 0.4, 0.2) +
+				texture2D(tex0, uv * 5.0).g * vec3(0.3, 0.6, 0.3) +
+				texture2D(tex0, uv * 125.0).b  * vec3(0.5, 0.6, 0.9);
 	gl_FragColor = vec4(light * tex, 1.0);
 }
 

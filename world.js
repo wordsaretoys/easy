@@ -12,26 +12,22 @@ EASY.world = {
 			type: "image",
 			path: "res/panel.png"
 		},
-		ground: {
+		cave: {
 			type: "image",
-			path: "res/ground.jpg"
+			path: "res/cave.jpg"
 		}
 	},
 	
 	boundary: {
-		x0: 0,
-		y0: 0,
-		z0: 0,
-		x1: 300,
-		y1: 0,
-		z1: 300
+		x: 300,
+		z: 300
 	},
 	
 	player: {
 		position: {
 			x: 150,
 			y: 0,
-			z: 150
+			z: 290
 		}
 	}
 
