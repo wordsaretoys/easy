@@ -7,7 +7,7 @@
 
 EASY.cave = {
 
-	BOUND_LIMIT: 5,
+	BOUND_LIMIT: 1,
 
 	scratch: {
 		down: SOAR.vector.create()
@@ -25,24 +25,24 @@ EASY.cave = {
 		var bound = EASY.world.boundary;
 
 		//
-		// create cave meshes
+		// create cave floor mesh
 		//
 	
-		this.shader = SOAR.shader.create(
+		this.lowerShader = SOAR.shader.create(
 			display,
-			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave"),
+			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave-lower"),
 			["position", "texturec", "a_light"], 
 			["projector", "modelview"],
-			["tex0"]
+			["noise", "leaf", "dirt"]
 		);
 
-		var lights = SOAR.noise2D.create(1294934, 0.5, 64, 0.1);
+		var lights = SOAR.noise2D.create(1294934, 1, 64, 0.2);
 		var common = SOAR.noise2D.create(5234512, 2, 64, 0.2);
 
 		this.lowerMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
-		this.lowerMesh.add(this.shader.position, 3);
-		this.lowerMesh.add(this.shader.texturec, 2);
-		this.lowerMesh.add(this.shader.a_light, 1);
+		this.lowerMesh.add(this.lowerShader.position, 3);
+		this.lowerMesh.add(this.lowerShader.texturec, 2);
+		this.lowerMesh.add(this.lowerShader.a_light, 1);
 
 		this.getLowerHeight = function(x, z) {
 			var h = Math.pow(common.get(x, z), 6);
@@ -59,10 +59,22 @@ EASY.cave = {
 		
 		this.lowerMesh.build();
 
+		//
+		// create cave ceiling mesh
+		//
+
+		this.upperShader = SOAR.shader.create(
+			display,
+			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave-upper"),
+			["position", "texturec", "a_light"], 
+			["projector", "modelview"],
+			["noise"]
+		);
+
 		this.upperMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
-		this.upperMesh.add(this.shader.position, 3);
-		this.upperMesh.add(this.shader.texturec, 2);
-		this.upperMesh.add(this.shader.a_light, 1);
+		this.upperMesh.add(this.upperShader.position, 3);
+		this.upperMesh.add(this.upperShader.texturec, 2);
+		this.upperMesh.add(this.upperShader.a_light, 1);
 
 		this.getUpperHeight = function(x, z) {
 			var h = 10 - Math.pow(common.get(x, z), 6); 
@@ -110,8 +122,8 @@ EASY.cave = {
 				ya = f(xa, z);
 				yb = f(xb, z);
 				tz = z / z1;
-				m.set(xa, ya, z, txa, tz, l(xa, z));
-				m.set(xb, yb, z, txb, tz, l(xb, z));
+				m.set(xa, ya, z, xa, z, l(xa, z));
+				m.set(xb, yb, z, xb, z, l(xb, z));
 			}
 			oddrow = !oddrow;
 		}
@@ -128,8 +140,14 @@ EASY.cave = {
 		var resources = EASY.world.resources;
 		var bound = EASY.world.boundary;
 		
-		this.caveTexture = 
-			SOAR.texture.create(display, resources["cave"].data);
+		this.noise1Texture = 
+			SOAR.texture.create(display, resources["noise1"].data);
+		this.noise2Texture = 
+			SOAR.texture.create(display, resources["noise2"].data);
+		this.dirtTexture = 
+			SOAR.texture.create(display, resources["dirt"].data);
+		this.leafTexture = 
+			SOAR.texture.create(display, resources["leaf"].data);
 	},
 	
 	/**
@@ -201,12 +219,21 @@ EASY.cave = {
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
 
-		this.shader.activate();
-		gl.uniformMatrix4fv(this.shader.projector, false, camera.projector());
-		gl.uniformMatrix4fv(this.shader.modelview, false, camera.modelview());
-		this.caveTexture.bind(0, this.shader.tex0);
+		this.lowerShader.activate();
+		gl.uniformMatrix4fv(this.lowerShader.projector, false, camera.projector());
+		gl.uniformMatrix4fv(this.lowerShader.modelview, false, camera.modelview());
+		this.noise1Texture.bind(0, this.lowerShader.noise);
+		this.leafTexture.bind(1, this.lowerShader.leaf);
+		this.dirtTexture.bind(2, this.lowerShader.dirt);
 		this.lowerMesh.draw();
+		
 		gl.cullFace(gl.FRONT);
+
+		this.upperShader.activate();
+		gl.uniformMatrix4fv(this.upperShader.projector, false, camera.projector());
+		gl.uniformMatrix4fv(this.upperShader.modelview, false, camera.modelview());
+		this.noise1Texture.bind(0, this.upperShader.noise);
+		this.lowerMesh.draw();
 		this.upperMesh.draw();
 		
 		gl.disable(gl.CULL_FACE);

@@ -12,9 +12,21 @@ EASY.world = {
 			type: "image",
 			path: "res/panel.png"
 		},
-		cave: {
+		dirt: {
 			type: "image",
-			path: "res/cave.jpg"
+			path: "res/dirt.jpg"
+		},
+		noise1: {
+			type: "image",
+			path: "res/noise1.jpg"
+		},
+		noise2: {
+			type: "image",
+			path: "res/noise2.jpg"
+		},
+		leaf: {
+			type: "image",
+			path: "res/leaf.jpg"
 		}
 	},
 	
@@ -25,9 +37,9 @@ EASY.world = {
 	
 	player: {
 		position: {
-			x: 150,
+			x: 111,
 			y: 0,
-			z: 290
+			z: 295
 		}
 	}
 

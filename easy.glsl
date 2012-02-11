@@ -15,7 +15,7 @@
 	(passed to fragment shader for each vertex)
 	@param uv		texture coordinates
 	@param light	light intensity
-	@param object	position in modelview coordinates
+	@param object	position in object coordinates
 	
 **/
 
@@ -31,40 +31,148 @@ varying float light;
 varying vec4 object;
 
 void main(void) {
-	object = modelview * vec4(position, 1.0);
-	gl_Position = projector * object;
+	object = vec4(position, 1.0);
+	gl_Position = projector * modelview * object;
 	uv = texturec;
 	light = a_light;
 	
 }
 </script>
 
-<script id="fs-cave" type="x-shader/x-fragment">
+<script id="fs-cave-lower" type="x-shader/x-fragment">
 
 /**
-	cave fragment shader
+	cave floor fragment shader
 	
-	@param tex0	ground noise texture
+	@param noise the rock noise texture
+	@param leaf	 the leaf texture
 
 	@param light	light intensity
 	@param uv		texture coordinates of fragment
-	@param object	position in modelview coordinates
+	@param object	position in object coordinates
 	
 **/
 
 precision mediump float;
  
-uniform sampler2D tex0;
+uniform sampler2D noise;
+uniform sampler2D leaf;
+uniform sampler2D dirt;
 
 varying float light;
 varying vec2 uv;
 varying vec4 object;
 
 void main(void) {
-	vec3 tex = 	texture2D(tex0, uv * 1.0).r * vec3(0.8, 0.4, 0.2) +
-				texture2D(tex0, uv * 5.0).g * vec3(0.3, 0.6, 0.3) +
-				texture2D(tex0, uv * 125.0).b  * vec3(0.5, 0.6, 0.9);
-	gl_FragColor = vec4(light * tex, 1.0);
+	vec3 rocktex = 	texture2D(noise, uv * 0.005).r * vec3(0.8, 0.4, 0.2) +
+					texture2D(noise, uv * 0.05).g * vec3(0.3, 0.6, 0.3) +
+					texture2D(noise, uv * 0.5).b  * vec3(0.5, 0.6, 0.9);
+	vec3 leaftex = 	texture2D(leaf, uv * 0.5).rgb;
+	vec3 dirttex = 	texture2D(dirt, uv).rgb;
+	if (object.y > 0.1) {
+		gl_FragColor = vec4(light * light * rocktex, 1.0);
+	} else {
+		float a1 = (0.1 - object.y) / 0.1;
+		float a2 = 4.0 * a1 * (texture2D(noise, uv * 0.1).r - texture2D(noise, uv * 0.01).g);
+		float a3 = clamp(a2 * a2, 0.0, 1.0);
+		vec3 tex = mix(rocktex, leaftex, a3);
+		gl_FragColor = vec4(light * light * tex, 1.0);
+	}
+
+}
+
+</script>
+
+<script id="fs-cave-upper" type="x-shader/x-fragment">
+
+/**
+	cave ceiling fragment shader
+	
+	@param noise	the rock noise texture
+
+	@param light	light intensity
+	@param uv		texture coordinates of fragment
+	@param object	position in object coordinates
+	
+**/
+
+precision mediump float;
+ 
+uniform sampler2D noise;
+
+varying float light;
+varying vec2 uv;
+varying vec4 object;
+
+void main(void) {
+	vec3 rocktex = 	texture2D(noise, uv * 0.005).r * vec3(0.8, 0.4, 0.2) +
+					texture2D(noise, uv * 0.05).g * vec3(0.3, 0.6, 0.3) +
+					texture2D(noise, uv * 0.5).b  * vec3(0.5, 0.6, 0.9);
+	gl_FragColor = vec4(light * light * rocktex, 1.0);
+}
+
+</script>
+
+<script id="vs-creature" type="x-shader/x-vertex">
+
+/**
+	creature vertex shader
+	O' = P * V * (s * M * O + c) transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param rotations rotations matrix
+	@param center model center vector
+	@param scale model scale vector
+	
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+attribute float a_light;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+//uniform mat4 rotations;
+uniform vec3 center;
+uniform float scale;
+
+varying vec2 uv;
+
+void main(void) {
+	mat4 rotations = mat4(1.0);
+	vec4 rotpos = rotations * vec4(scale * position, 1.0) + vec4(center, 0.0);
+	gl_Position = projector * modelview * rotpos;
+	uv = texturec;
+}
+</script>
+
+<script id="fs-creature" type="x-shader/x-fragment">
+
+/**
+	creature fragment shader
+	
+	@param skin		the model skin texture
+
+	@param uv		texture coordinates of fragment
+	
+**/
+
+precision mediump float;
+ 
+uniform sampler2D skin;
+
+varying vec2 uv;
+
+void main(void) {
+//	gl_FragColor = texture2D(skin, uv);
+	gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);
 }
 
 </script>

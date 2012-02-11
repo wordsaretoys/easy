@@ -238,7 +238,7 @@ EASY.player = {
 		if (this.mouse.down) {
 			dx = this.SPIN_RATE * (event.pageX - this.mouse.x);
 			dy = this.SPIN_RATE * (event.pageY - this.mouse.y);
-			this.camera.spin(dx, dy);
+			this.camera.turn(dx, dy);
 		}
 		this.mouse.x = event.pageX;
 		this.mouse.y = event.pageY;
