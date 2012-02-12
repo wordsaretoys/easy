@@ -30,7 +30,7 @@ EASY.creatures = {
 			SOAR.textOf("vs-creature"), SOAR.textOf("fs-creature"),
 			["position", "texturec"], 
 //			["projector", "modelview", "rotations", "center", "scale"],
-			["projector", "modelview", "center", "scale"],
+			["projector", "modelview", "center", "time"],
 			["skin"]
 		);
 		
@@ -159,7 +159,7 @@ EASY.creatures = {
 	draw: function() {
 		var gl = EASY.display.gl;
 		var camera = EASY.player.camera;
-		var i, il, creature;
+		var i, il, creature, time;
 	
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
@@ -170,9 +170,10 @@ EASY.creatures = {
 		for (i = 0, il = this.list.length; i < il; i++) {
 			creature = this.list[i];
 			c = creature.center;
-			c.y = 1.5 + 0.5 * Math.sin(SOAR.elapsedTime * 0.001);
+			time = SOAR.elapsedTime * 0.01;
+//			c.y = 1.5 + 0.5 * Math.sin(time);
 			gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
-			gl.uniform1f(this.skinShader.scale, 1);
+			gl.uniform1f(this.skinShader.time, time);
 			creature.skin.bind(0, this.skinShader.skin);
 			creature.mesh.draw();
 		}

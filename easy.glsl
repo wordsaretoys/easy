@@ -126,7 +126,7 @@ void main(void) {
 	@param modelview modelview matrix
 	@param rotations rotations matrix
 	@param center model center vector
-	@param scale model scale vector
+	@param time time base for vertex animations
 	
 	(passed to fragment shader for each vertex)
 	@param uv		texture coordinates
@@ -141,13 +141,19 @@ uniform mat4 projector;
 uniform mat4 modelview;
 //uniform mat4 rotations;
 uniform vec3 center;
-uniform float scale;
+uniform float time;
 
 varying vec2 uv;
 
 void main(void) {
 	mat4 rotations = mat4(1.0);
-	vec4 rotpos = rotations * vec4(scale * position, 1.0) + vec4(center, 0.0);
+
+	// create wing-flapping motions
+	vec3 pos = position;
+	pos.y += 25.0 * pow(0.05 * abs(texturec.y), 4.0) * sin(time);
+	pos.z += 25.0 * pow(0.05 * abs(texturec.y), 4.0) * cos(time);
+	
+	vec4 rotpos = rotations * vec4(pos + center, 1.0);
 	gl_Position = projector * modelview * rotpos;
 	uv = texturec;
 }
