@@ -171,8 +171,8 @@ uniform sampler2D skin;
 varying vec2 uv;
 
 void main(void) {
-//	gl_FragColor = texture2D(skin, uv);
-	gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);
+	gl_FragColor = texture2D(skin, uv);
+//	gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);
 }
 
 </script>
