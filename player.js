@@ -126,11 +126,12 @@ EASY.player = {
 		this.velocity.x = scratch.direction.x * speed;
 		this.velocity.y = this.debug ? scratch.direction.y * speed : this.velocity.y - 9.81 * dt;
 		this.velocity.z = scratch.direction.z * speed;
-
 		this.constrainVelocity(this.footPosition, this.velocity);
+
 		scratch.velocity.copy(this.velocity).mul(dt);
 		this.footPosition.add(scratch.velocity);
 		this.constrainPosition(this.footPosition);
+
 		this.headPosition.copy(this.footPosition);
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
@@ -139,18 +140,19 @@ EASY.player = {
 	/**
 		adjust velocity to conform to environment
 		
-		@constrainVelocity
-		@param p position of object or actor
-		@param v velocity of object or actor
+		@method constrainVelocity
+		@param p player position
+		@param v player velocity (to be adjusted)
 	**/
 	
 	constrainVelocity: function(p, v) {
 		var bound = EASY.world.boundary;
-		var h = EASY.cave.getLowerHeight(p.x, p.z);
+		var lh = EASY.cave.getLowerHeight(p.x, p.z);
+		var uh = EASY.cave.getUpperHeight(p.x, p.z);
 		var down = this.scratch.direction;
 	
 		// on the ground, v can't be negative
-		if (p.y === h) {
+		if (p.y === lh) {
 			v.y = v.y > 0 ? v.y : 0;
 		}
 		
@@ -180,24 +182,35 @@ EASY.player = {
 			Math.pow(down.z, 2) * SOAR.sign(down.z)
 		);
 		v.add(down);
+
+		// don't let player's head go into the upper wall
+		if (p.y + this.PLAYER_HEIGHT >= uh) {
+			v.copy(down);
+		}
+		
 	},
 	
 	/**
 		adjust position to conform to environment
 		
-		@constrainPosition
-		@param p position of object or actor
-		@param v velocity of object or actor
+		@method constrainPosition
+		@param p player position (to be adjusted)
 	**/
 	
 	constrainPosition: function(p) {
 		var bound = EASY.world.boundary;
-		var h = EASY.cave.getLowerHeight(p.x, p.z);
+		var lh = EASY.cave.getLowerHeight(p.x, p.z);
+		var uh = EASY.cave.getUpperHeight(p.x, p.z);
 	
 		// p isn't allowed to be below ground
-		if (p.y < h) {
-			p.y = h;
+		if (p.y < lh) {
+			p.y = lh;
 		}
+
+		// don't let player's head go into the upper wall
+//		if (p.y + this.PLAYER_HEIGHT + 0.1 >= uh) {
+//			p.y = uh - (this.PLAYER_HEIGHT + 0.1);
+//		}
 
 		// don't permit player to walk into boundary
 		if (p.x < bound.cx0) {
