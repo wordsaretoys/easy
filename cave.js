@@ -8,9 +8,11 @@
 EASY.cave = {
 
 	BOUND_LIMIT: 1,
+	SEARCH_LIMIT: 64,
 
 	scratch: {
-		down: SOAR.vector.create()
+		down: SOAR.vector.create(),
+		pos: SOAR.vector.create()
 	},
 
 	/**
@@ -158,6 +160,31 @@ EASY.cave = {
 			SOAR.texture.create(display, resources["dirt"].data);
 		this.leafTexture = 
 			SOAR.texture.create(display, resources["leaf"].data);
+	},
+	
+	/**
+		do a look-ahead for obstacles in a given direction
+		
+		used by npcs for collision avoidance
+		
+		@method look
+		@param position position to look from
+		@param direction unit vector to look through
+		@return normalized distance to obstacle (1 === clear)
+	**/
+	
+	look: function(position, direction) {
+		var p = this.scratch.pos;
+		var s;
+		
+		for (s = 1; s < this.SEARCH_LIMIT; s = s * 2) {
+			p.copy(direction).mul(s).neg().add(position);
+			if (this.getLowerHeight(p.x, p.z) >= p.y || 
+			this.getUpperHeight(p.x, p.z) <= p.y) {
+				break;
+			}
+		}
+		return s / this.SEARCH_LIMIT;
 	},
 	
 	/**

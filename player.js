@@ -135,6 +135,9 @@ EASY.player = {
 		this.headPosition.copy(this.footPosition);
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
+		
+		var s = EASY.cave.look(this.headPosition, this.camera.orientation.front);
+		EASY.debug(s + "");
 	},
 	
 	/**

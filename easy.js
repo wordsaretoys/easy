@@ -100,6 +100,14 @@ var EASY = {
 		
 		EASY.cave.draw();
 		EASY.paddlers.draw();
+	},
+
+	/**
+		set debug display (temporary, please delete in production code)
+	**/
+	
+	debug: function(s) {
+		document.getElementById("debug").innerHTML = s;
 	}
 };
 

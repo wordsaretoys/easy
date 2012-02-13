@@ -32,6 +32,20 @@ div {
 	clear: both;
 }
 
+/* debug information */
+
+#debug {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	
+	background: rgba(0, 0, 0, 0.1);
+	color: rgb(0, 255, 0);
+	z-index: 5;
+	
+	cursor: default;
+}
+
 /* mouse tracking surface */
 
 #mouse-tracker {

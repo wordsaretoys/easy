@@ -1,6 +1,12 @@
 /**
 	generate, animate, and display cave paddlers
 	
+	paddlers are procedurally-generated creatures with
+	bilateral symmetry. flaps of tissue that look like
+	tentacles or wings extend from cylindrical bodies.
+	continuous paddling motions of these flaps permits
+	them to fly.
+	
 	@namespace EASY
 	@class paddlers
 **/
@@ -177,7 +183,7 @@ EASY.paddlers = {
 
 	update: function() {
 		var i, paddler;
-			
+		
 		for (i = 0, il = this.list.length; i < il; i++) {
 			paddler = this.list[i];
 		}
