@@ -113,10 +113,10 @@ void main(void) {
 
 </script>
 
-<script id="vs-creature" type="x-shader/x-vertex">
+<script id="vs-glider" type="x-shader/x-vertex">
 
 /**
-	creature vertex shader
+	glider vertex shader
 	O' = P * V * (s * M * O + c) transformation, plus texture coordinates
 	
 	@param position vertex array of positions
@@ -159,10 +159,10 @@ void main(void) {
 }
 </script>
 
-<script id="fs-creature" type="x-shader/x-fragment">
+<script id="fs-glider" type="x-shader/x-fragment">
 
 /**
-	creature fragment shader
+	glider fragment shader
 	
 	@param skin		the model skin texture
 
@@ -179,7 +179,7 @@ varying vec3 object;
 
 void main(void) {
 	vec3 color = texture2D(skin, uv).rgb;
-	// lower half of creature should be slightly lighter
+	// lower half of glider should be slightly lighter
 	if (object.y >= 0.0) {
 		color = color * 0.75;
 	}

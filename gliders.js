@@ -1,11 +1,11 @@
 /**
-	generate, animate, and display cave creatures
+	generate, animate, and display cave gliders
 	
 	@namespace EASY
-	@class creatures
+	@class gliders
 **/
 
-EASY.creatures = {
+EASY.gliders = {
 
 	EXTRUDE_STEPS: 24,
 	PALETTE_SIZE: 10,
@@ -30,7 +30,7 @@ EASY.creatures = {
 		
 		this.skinShader = SOAR.shader.create(
 			display,
-			SOAR.textOf("vs-creature"), SOAR.textOf("fs-creature"),
+			SOAR.textOf("vs-glider"), SOAR.textOf("fs-glider"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations", "center", "time"],
 			["skin"]
@@ -41,10 +41,10 @@ EASY.creatures = {
 	},
 	
 	/**
-		add a new creature to the collection
+		add a new glider to the collection
 		
 		@method add
-		@param center the creature's new center of mass
+		@param center starting position for glider
 	**/
 	
 	add: function(center) {
@@ -116,7 +116,7 @@ EASY.creatures = {
 				// absolute value of cosine provides {1..0..1} coverage
 				// across x, and we multiply by the radius to avoid the
 				// effect of "squeezing" many vertexes into small areas
-				// multiply by 8 to account for dimensions of texture
+				// multiply by 8 to account for dimensions of our canvas
 				tya = Math.abs(8 * ra * c);
 				tyb = Math.abs(8 * rb * c);
 				m.set(xa, ya, za, txa, tya);
@@ -165,7 +165,7 @@ EASY.creatures = {
 	draw: function() {
 		var gl = EASY.display.gl;
 		var camera = EASY.player.camera;
-		var i, il, creature, time;
+		var i, il, glider, time;
 	
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
@@ -174,15 +174,15 @@ EASY.creatures = {
 		gl.uniformMatrix4fv(this.skinShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.skinShader.modelview, false, camera.modelview());
 		for (i = 0, il = this.list.length; i < il; i++) {
-			creature = this.list[i];
-			c = creature.center;
+			glider = this.list[i];
+			c = glider.center;
 			time = SOAR.elapsedTime * 0.01;
 			gl.uniformMatrix4fv(this.skinShader.rotations, false, 
-				creature.rotor.matrix.rotations);
+				glider.rotor.matrix.rotations);
 			gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
 			gl.uniform1f(this.skinShader.time, time);
-			creature.skin.bind(0, this.skinShader.skin);
-			creature.mesh.draw();
+			glider.skin.bind(0, this.skinShader.skin);
+			glider.mesh.draw();
 		}
 		gl.disable(gl.CULL_FACE);
 	}
