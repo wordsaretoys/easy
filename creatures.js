@@ -9,6 +9,8 @@ EASY.creatures = {
 
 	EXTRUDE_STEPS: 24,
 	PALETTE_SIZE: 10,
+	TEXTURE_WIDTH: 256,
+	TEXTURE_HEIGHT: 32,
 
 	list: [],
 	
@@ -22,8 +24,8 @@ EASY.creatures = {
 		var display = EASY.display;
 	
 		this.canvas = document.createElement("canvas");
-		this.canvas.width = 256;
-		this.canvas.height = 32;
+		this.canvas.width = this.TEXTURE_WIDTH;
+		this.canvas.height = this.TEXTURE_HEIGHT;
 		this.context = this.canvas.getContext("2d");
 		
 		this.skinShader = SOAR.shader.create(

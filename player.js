@@ -85,12 +85,13 @@ EASY.player = {
 		this.camera.nearLimit = 0.01;
 		this.camera.farLimit = 1024;
 		
-		// move player to starting point
+		// move player to starting point and orientation
 		this.footPosition.copy(EASY.world.player.position);
+		this.camera.turn(EASY.world.player.rotation, 0);
 	},
 	
 	/**
-		react to player controls by updating velocity and position &
+		react to player controls by updating velocity and position
 		handle collision detection
 		
 		called on every animation frame
@@ -126,13 +127,91 @@ EASY.player = {
 		this.velocity.y = this.debug ? scratch.direction.y * speed : this.velocity.y - 9.81 * dt;
 		this.velocity.z = scratch.direction.z * speed;
 
-		EASY.cave.constrain(this.footPosition, this.velocity);
+		this.constrainVelocity(this.footPosition, this.velocity);
 		scratch.velocity.copy(this.velocity).mul(dt);
 		this.footPosition.add(scratch.velocity);
-		EASY.cave.constrain(this.footPosition, this.velocity);
+		this.constrainPosition(this.footPosition);
 		this.headPosition.copy(this.footPosition);
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
+	},
+	
+	/**
+		adjust velocity to conform to environment
+		
+		@constrainVelocity
+		@param p position of object or actor
+		@param v velocity of object or actor
+	**/
+	
+	constrainVelocity: function(p, v) {
+		var bound = EASY.world.boundary;
+		var h = EASY.cave.getLowerHeight(p.x, p.z);
+		var down = this.scratch.direction;
+	
+		// on the ground, v can't be negative
+		if (p.y === h) {
+			v.y = v.y > 0 ? v.y : 0;
+		}
+		
+		// don't permit player to walk into boundary
+		if (p.x < bound.cx0) {
+			v.x = v.x > 0 ? v.x : 0;
+		}
+		if (p.x > bound.cx1) {
+			v.x = v.x < 0 ? v.x : 0;
+		}
+		if (p.z < bound.cz0) {
+			v.z = v.z > 0 ? v.z : 0;
+		}
+		if (p.z > bound.cz1) {
+			v.z = v.z < 0 ? v.z : 0;
+		}
+		
+		// generate a vector that points to "down" and whose 
+		// magnitude increases geometrically with the slope
+		down.set(
+			EASY.cave.getLowerHeight(p.x - 1, p.z) - EASY.cave.getLowerHeight(p.x + 1, p.z),
+			0, 
+			EASY.cave.getLowerHeight(p.x, p.z - 1) - EASY.cave.getLowerHeight(p.x, p.z + 1)
+		).set(
+			Math.pow(down.x, 2) * SOAR.sign(down.x),
+			0,
+			Math.pow(down.z, 2) * SOAR.sign(down.z)
+		);
+		v.add(down);
+	},
+	
+	/**
+		adjust position to conform to environment
+		
+		@constrainPosition
+		@param p position of object or actor
+		@param v velocity of object or actor
+	**/
+	
+	constrainPosition: function(p) {
+		var bound = EASY.world.boundary;
+		var h = EASY.cave.getLowerHeight(p.x, p.z);
+	
+		// p isn't allowed to be below ground
+		if (p.y < h) {
+			p.y = h;
+		}
+
+		// don't permit player to walk into boundary
+		if (p.x < bound.cx0) {
+			p.x = bound.cx0;
+		}
+		if (p.x > bound.cx1) {
+			p.x = bound.cx1;
+		}
+		if (p.z < bound.cz0) {
+			p.z = bound.cz0;
+		}
+		if (p.z > bound.cz1) {
+			p.z = bound.cz1;
+		}
 	},
 	
 	/**

@@ -90,6 +90,16 @@ EASY.cave = {
 		);
 		
 		this.upperMesh.build();
+		
+		//
+		// set up some constraint limits
+		//
+		
+		bound.cx0 = this.BOUND_LIMIT;
+		bound.cx1 = bound.x - this.BOUND_LIMIT;
+		bound.cz0 = this.BOUND_LIMIT;
+		bound.cz1 = bound.z - this.BOUND_LIMIT;
+		
 	},
 	
 	/**
@@ -148,62 +158,6 @@ EASY.cave = {
 			SOAR.texture.create(display, resources["dirt"].data);
 		this.leafTexture = 
 			SOAR.texture.create(display, resources["leaf"].data);
-	},
-	
-	/**
-		adjust position and velocity to conform to environment
-		
-		@constrain
-		@param p position of object or actor
-		@param v velocity of object or actor
-	**/
-	
-	constrain: function(p, v) {
-		var bound = EASY.world.boundary;
-		var h = this.getLowerHeight(p.x, p.z);
-		var down = this.scratch.down;
-	
-		// p isn't allowed to be below ground
-		if (p.y < h) {
-			p.y = h;
-		}
-
-		// on the ground, v can't be negative
-		if (p.y === h) {
-			v.y = v.y > 0 ? v.y : 0;
-		}
-
-		// don't permit player to walk into boundary
-		if (p.x < this.BOUND_LIMIT) {
-			p.x = this.BOUND_LIMIT;
-			v.x = v.x > 0 ? v.x : 0;
-		}
-		if (p.x > bound.x - this.BOUND_LIMIT) {
-			p.x = bound.x - this.BOUND_LIMIT;
-			v.x = v.x < 0 ? v.x : 0;
-		}
-		if (p.z < this.BOUND_LIMIT) {
-			p.z = this.BOUND_LIMIT;
-			v.z = v.z > 0 ? v.z : 0;
-		}
-		if (p.z > bound.z - this.BOUND_LIMIT) {
-			p.z = bound.z - this.BOUND_LIMIT;
-			v.z = v.z < 0 ? v.z : 0;
-		}
-		
-		
-		// generate a vector that points to "down" and whose 
-		// magnitude increases geometrically with the slope
-		down.set(
-			this.getLowerHeight(p.x - 1, p.z) - this.getLowerHeight(p.x + 1, p.z),
-			0, 
-			this.getLowerHeight(p.x, p.z - 1) - this.getLowerHeight(p.x, p.z + 1)
-		).set(
-			Math.pow(down.x, 2) * SOAR.sign(down.x),
-			0,
-			Math.pow(down.z, 2) * SOAR.sign(down.z)
-		);
-		v.add(down);
 	},
 	
 	/**
