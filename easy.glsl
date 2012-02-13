@@ -139,23 +139,23 @@ attribute float a_light;
 
 uniform mat4 projector;
 uniform mat4 modelview;
-//uniform mat4 rotations;
+uniform mat4 rotations;
 uniform vec3 center;
 uniform float time;
 
 varying vec2 uv;
+varying vec3 object;
 
 void main(void) {
-	mat4 rotations = mat4(1.0);
-
 	// create wing-flapping motions
 	vec3 pos = position;
-	pos.y += 25.0 * pow(0.05 * abs(texturec.y), 4.0) * sin(time);
-	pos.z += 25.0 * pow(0.05 * abs(texturec.y), 4.0) * cos(time);
+	pos.y += 25.0 * pow(0.05 * texturec.y, 4.0) * sin(time);
+	pos.z += 25.0 * pow(0.05 * texturec.y, 4.0) * cos(time);
 	
-	vec4 rotpos = rotations * vec4(pos + center, 1.0);
+	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
 	gl_Position = projector * modelview * rotpos;
 	uv = texturec;
+	object = position;
 }
 </script>
 
@@ -175,10 +175,15 @@ precision mediump float;
 uniform sampler2D skin;
 
 varying vec2 uv;
+varying vec3 object;
 
 void main(void) {
-	gl_FragColor = texture2D(skin, uv);
-//	gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);
+	vec3 color = texture2D(skin, uv).rgb;
+	// lower half of creature should be slightly lighter
+	if (object.y >= 0.0) {
+		color = color * 0.75;
+	}
+	gl_FragColor = vec4(color, 1.0);
 }
 
 </script>

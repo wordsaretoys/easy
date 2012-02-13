@@ -8,9 +8,10 @@
 EASY.creatures = {
 
 	EXTRUDE_STEPS: 24,
+	PALETTE_SIZE: 10,
 
 	list: [],
-
+	
 	/**
 		initialize texture canvas and shader
 		
@@ -29,8 +30,7 @@ EASY.creatures = {
 			display,
 			SOAR.textOf("vs-creature"), SOAR.textOf("fs-creature"),
 			["position", "texturec"], 
-//			["projector", "modelview", "rotations", "center", "scale"],
-			["projector", "modelview", "center", "time"],
+			["projector", "modelview", "rotations", "center", "time"],
 			["skin"]
 		);
 		
@@ -58,7 +58,7 @@ EASY.creatures = {
 		shaper = SOAR.noise1D.create(0, 0.5, 8, 8);
 		shaper.interpolate = SOAR.interpolator.linear;
 		shaper.map[0] = 0;
-		shaper.map[1] = 0.5;
+		shaper.map[1] = 0.25;
 		
 		// generate the mesh data
 		this.extrude(mesh, shaper);
@@ -69,8 +69,9 @@ EASY.creatures = {
 		// add to collection
 		this.list.push({
 			mesh: mesh,
+			skin: skin,
 			center: center,
-			skin: skin
+			rotor: SOAR.freeRotor.create()
 		});
 	},
 
@@ -100,7 +101,7 @@ EASY.creatures = {
 			// without sanding off all of the straight edges
 			ra = Math.sqrt(f.get(txa));
 			rb = Math.sqrt(f.get(txb));
-			for (angle = 0; angle <= twopi; angle += stepAngle) {
+			for (angle = twopi; angle >= 0; angle -= stepAngle) {
 				s = Math.sin(angle);
 				c = Math.cos(angle);
 				// e modulates the cylinder to flatten it in the y direction
@@ -110,13 +111,14 @@ EASY.creatures = {
 				ya = e * ra * s;
 				xb = rb * c;
 				yb = e * rb * s;
-				// cosine provides texture coordinates {1..-1} across x
-				// modulates by radius to avoid "squeezing" the texture
-				// where the radius is small
-				tya = 8 * ra * c;
-				tyb = 8 * rb * c;
-				m.set(xb, yb, zb, txb, tyb);
+				// absolute value of cosine provides {1..0..1} coverage
+				// across x, and we multiply by the radius to avoid the
+				// effect of "squeezing" many vertexes into small areas
+				// multiply by 8 to account for dimensions of texture
+				tya = Math.abs(8 * ra * c);
+				tyb = Math.abs(8 * rb * c);
 				m.set(xa, ya, za, txa, tya);
+				m.set(xb, yb, zb, txb, tyb);
 			}
 		}
 		m.build();
@@ -126,32 +128,34 @@ EASY.creatures = {
 		var ctx = this.context;
 		var w = this.canvas.width;
 		var h = this.canvas.height;
+		var hh = h / 2;
 		var palette = [];
 		var rng = SOAR.random.create();
-		var i, il, x, y, s;
+		var i, il, j, x, y, s;
 
 		// generate a palette
-		for (i = 0, il = 5 + Math.floor(rng.getn(5)); i < il; i++) {
-			palette.push("rgb(" + 
+		for (i = 0, il = this.PALETTE_SIZE; i < il; i++) {
+			palette.push("rgba(" + 
 				Math.floor(rng.getn(256)) + ", " +
 				Math.floor(rng.getn(256)) + ", " +
-				Math.floor(rng.getn(256)) + ")"
+				Math.floor(rng.getn(256)) + ", 0.01)"
 			);
 		}
 
 		ctx.fillStyle = palette[0];
 		ctx.fillRect(0, 0, w, h);
 		
-		for (i = 0; i < 1000; i++) {
-			ctx.fillStyle = palette[1 + Math.floor(rng.getn(palette.length - 1))];
-			x = Math.floor(rng.getn(w));
-			y = Math.floor(rng.getn(h));
-			s = 2 + Math.floor(rng.getn(2));
-			ctx.fillRect(x, y, s, s);
+		for (i = 1, il = palette.length; i < il; i++) {
+			ctx.fillStyle = palette[i];
+			for (j = 0; j < 200; j++) {
+				x = rng.getn(w);
+				y = rng.getm(h) + hh;
+				ctx.fillRect(x, y, 16, 16);
+			}
 		}
 		
 		ctx.fillStyle = "rgb(0, 0, 0)";
-		ctx.fillRect(0, 0, 4, h);
+		ctx.fillRect(0, 0, 5, h);
 		
 		return ctx.getImageData(0, 0, w, h);
 	},
@@ -171,7 +175,8 @@ EASY.creatures = {
 			creature = this.list[i];
 			c = creature.center;
 			time = SOAR.elapsedTime * 0.01;
-//			c.y = 1.5 + 0.5 * Math.sin(time);
+			gl.uniformMatrix4fv(this.skinShader.rotations, false, 
+				creature.rotor.matrix.rotations);
 			gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
 			gl.uniform1f(this.skinShader.time, time);
 			creature.skin.bind(0, this.skinShader.skin);
