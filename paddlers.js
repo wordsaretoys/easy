@@ -1,14 +1,14 @@
 /**
-	generate, animate, and display cave gliders
+	generate, animate, and display cave paddlers
 	
 	@namespace EASY
-	@class gliders
+	@class paddlers
 **/
 
-EASY.gliders = {
+EASY.paddlers = {
 
 	EXTRUDE_STEPS: 24,
-	PALETTE_SIZE: 10,
+	PALETTE_SIZE: 4,
 	TEXTURE_WIDTH: 256,
 	TEXTURE_HEIGHT: 32,
 
@@ -30,24 +30,26 @@ EASY.gliders = {
 		
 		this.skinShader = SOAR.shader.create(
 			display,
-			SOAR.textOf("vs-glider"), SOAR.textOf("fs-glider"),
+			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations", "center", "time"],
 			["skin"]
 		);
+
+		this.masterSeed = SOAR.random.create();
 		
 		// TEST TEST TEST
-		this.add({x: 111, y: 1, z: 294});
+		this.add({x: 78, y: 1, z: 243});
 	},
 	
 	/**
-		add a new glider to the collection
+		add a new paddler to the collection
 		
 		@method add
-		@param center starting position for glider
+		@param start starting position for paddler
 	**/
 	
-	add: function(center) {
+	add: function(start) {
 		var display = EASY.display;
 		var mesh, shaper, skin;
 		
@@ -57,7 +59,7 @@ EASY.gliders = {
 		mesh.add(this.skinShader.texturec, 2);
 
 		// create a noise function to shape the mesh
-		shaper = SOAR.noise1D.create(0, 0.5, 8, 8);
+		shaper = SOAR.noise1D.create(this.masterSeed.getl(), 0.5, 8, 8);
 		shaper.interpolate = SOAR.interpolator.linear;
 		shaper.map[0] = 0;
 		shaper.map[1] = 0.25;
@@ -72,8 +74,9 @@ EASY.gliders = {
 		this.list.push({
 			mesh: mesh,
 			skin: skin,
-			center: center,
-			rotor: SOAR.freeRotor.create()
+			center: start,
+			rotor: SOAR.boundRotor.create(),
+			speed: 1
 		});
 	},
 
@@ -86,9 +89,8 @@ EASY.gliders = {
 	**/
 	
 	extrude: function(m, f) {
-		var twopi = SOAR.PIMUL2;
 		var stepZ = 1 / this.EXTRUDE_STEPS;
-		var stepAngle = twopi / this.EXTRUDE_STEPS;
+		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
 		var xa, xb, ya, yb, za, zb;
 		var txa, txb, tya, tyb;
 		var angle, s, c;
@@ -103,7 +105,7 @@ EASY.gliders = {
 			// without sanding off all of the straight edges
 			ra = Math.sqrt(f.get(txa));
 			rb = Math.sqrt(f.get(txb));
-			for (angle = twopi; angle >= 0; angle -= stepAngle) {
+			for (angle = SOAR.PIMUL2; angle >= 0; angle -= stepAngle) {
 				s = Math.sin(angle);
 				c = Math.cos(angle);
 				// e modulates the cylinder to flatten it in the y direction
@@ -132,7 +134,7 @@ EASY.gliders = {
 		var h = this.canvas.height;
 		var hh = h / 2;
 		var palette = [];
-		var rng = SOAR.random.create();
+		var rng = SOAR.random.create(this.masterSeed.getl());
 		var i, il, j, x, y, s;
 
 		// generate a palette
@@ -152,20 +154,45 @@ EASY.gliders = {
 			for (j = 0; j < 200; j++) {
 				x = rng.getn(w);
 				y = rng.getm(h) + hh;
-				ctx.fillRect(x, y, 16, 16);
+				s = rng.getm(8) + 8;
+				ctx.fillRect(x, y, s, s);
 			}
 		}
 		
+		// create a mouth and eye spots
 		ctx.fillStyle = "rgb(0, 0, 0)";
 		ctx.fillRect(0, 0, 5, h);
+		ctx.beginPath();
+		ctx.arc(12, hh - 8, 4, 0, SOAR.PIMUL2, false);
+		ctx.fill();
 		
 		return ctx.getImageData(0, 0, w, h);
 	},
 	
+	/**
+		update all paddlers with new positions
+		
+		@method update
+	**/
+
+	update: function() {
+		var i, paddler;
+			
+		for (i = 0, il = this.list.length; i < il; i++) {
+			paddler = this.list[i];
+		}
+	},
+	
+	/**
+		draw all paddlers visible to player
+		
+		@method draw
+	**/
+	
 	draw: function() {
 		var gl = EASY.display.gl;
 		var camera = EASY.player.camera;
-		var i, il, glider, time;
+		var i, il, paddler, time;
 	
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
@@ -174,15 +201,15 @@ EASY.gliders = {
 		gl.uniformMatrix4fv(this.skinShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.skinShader.modelview, false, camera.modelview());
 		for (i = 0, il = this.list.length; i < il; i++) {
-			glider = this.list[i];
-			c = glider.center;
+			paddler = this.list[i];
+			c = paddler.center;
 			time = SOAR.elapsedTime * 0.01;
 			gl.uniformMatrix4fv(this.skinShader.rotations, false, 
-				glider.rotor.matrix.rotations);
+				paddler.rotor.matrix.rotations);
 			gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
 			gl.uniform1f(this.skinShader.time, time);
-			glider.skin.bind(0, this.skinShader.skin);
-			glider.mesh.draw();
+			paddler.skin.bind(0, this.skinShader.skin);
+			paddler.mesh.draw();
 		}
 		gl.disable(gl.CULL_FACE);
 	}
