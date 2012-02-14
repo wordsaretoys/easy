@@ -108,10 +108,10 @@ EASY.player = {
 		
 		scratch.direction.set();
 		if (motion.movefore) {
-			scratch.direction.sub(camera.orientation.front);
+			scratch.direction.add(camera.orientation.front);
 		}
 		if (motion.moveback) {
-			scratch.direction.add(camera.orientation.front);
+			scratch.direction.sub(camera.orientation.front);
 		}
 		if (motion.moveleft) {
 			scratch.direction.sub(camera.orientation.right);
@@ -333,7 +333,7 @@ EASY.player = {
 		if (this.mouse.down) {
 			dx = this.SPIN_RATE * (event.pageX - this.mouse.x);
 			dy = this.SPIN_RATE * (event.pageY - this.mouse.y);
-			this.camera.turn(dx, dy);
+			this.camera.turn(-dx, -dy);
 		}
 		this.mouse.x = event.pageX;
 		this.mouse.y = event.pageY;

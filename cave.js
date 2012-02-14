@@ -178,7 +178,7 @@ EASY.cave = {
 		var s;
 		
 		for (s = 1; s < this.SEARCH_LIMIT; s = s * 2) {
-			p.copy(direction).mul(s).neg().add(position);
+			p.copy(direction).mul(s).add(position);
 			if (this.getLowerHeight(p.x, p.z) >= p.y || 
 			this.getUpperHeight(p.x, p.z) <= p.y) {
 				break;
