@@ -41,7 +41,7 @@ EASY.world = {
 			y: 0,
 			z: 242
 		},
-		rotation: -Math.PI / 2
+		rotation: Math.PI / 2
 	}
 
 };

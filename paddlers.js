@@ -13,8 +13,9 @@
 
 EASY.paddlers = {
 
+	CANVAS_SIZE: 256,
 	EXTRUDE_STEPS: 24,
-	PALETTE_SIZE: 4,
+	PALETTE_SIZE: 3,
 	TEXTURE_WIDTH: 256,
 	TEXTURE_HEIGHT: 32,
 
@@ -30,8 +31,8 @@ EASY.paddlers = {
 		var display = EASY.display;
 	
 		this.canvas = document.createElement("canvas");
-		this.canvas.width = this.TEXTURE_WIDTH;
-		this.canvas.height = this.TEXTURE_HEIGHT;
+		this.canvas.width = this.CANVAS_SIZE;
+		this.canvas.height = this.CANVAS_SIZE;
 		this.context = this.canvas.getContext("2d");
 		
 		this.skinShader = SOAR.shader.create(
@@ -39,13 +40,47 @@ EASY.paddlers = {
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations", "center", "time"],
-			["skin"]
+			["face", "skin"]
 		);
 
 		this.masterSeed = SOAR.random.create();
 		
+		this.faceTexture = SOAR.texture.create(display, this.makeFace());
+		
 		// TEST TEST TEST
 		this.add({x: 78, y: 1, z: 243});
+	},
+	
+	/**
+		generate a face texture for all models
+		
+		@method makeFace
+		@return pixel array representing texture
+	**/
+	
+	makeFace: function() {
+		var ctx = this.context;
+		var w = this.CANVAS_SIZE;
+		var h = this.CANVAS_SIZE;
+		
+		ctx.clearRect(0, 0, w, h);
+
+		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		ctx.fillRect(0, 0, w, h);
+		
+		// create a mouth and eye spots
+		ctx.fillStyle = "rgba(0, 0, 0, 1)";
+		ctx.fillRect(0, 0, 5, h);
+		ctx.fillStyle = "rgba(255, 255, 255, 1)";
+		ctx.beginPath();
+		ctx.arc(12, h - 24, 5, 0, SOAR.PIMUL2, false);
+		ctx.fill();
+		ctx.fillStyle = "rgba(0, 0, 0, 1)";
+		ctx.beginPath();
+		ctx.arc(12, h - 24, 4, 0, SOAR.PIMUL2, false);
+		ctx.fill();
+	
+		return ctx.getImageData(0, 0, w, h);
 	},
 	
 	/**
@@ -74,7 +109,7 @@ EASY.paddlers = {
 		this.extrude(mesh, shaper);
 		
 		// generate a skin
-		skin = SOAR.texture.create(display, this.coat());
+		skin = SOAR.texture.create(display, this.makeSkin());
 		
 		// add to collection
 		this.list.push({
@@ -97,6 +132,7 @@ EASY.paddlers = {
 	extrude: function(m, f) {
 		var stepZ = 1 / this.EXTRUDE_STEPS;
 		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
+		var offset = 1 / this.TEXTURE_HEIGHT;
 		var xa, xb, ya, yb, za, zb;
 		var txa, txb, tya, tyb;
 		var angle, s, c;
@@ -123,10 +159,12 @@ EASY.paddlers = {
 				yb = e * rb * s;
 				// absolute value of cosine provides {1..0..1} coverage
 				// across x, and we multiply by the radius to avoid the
-				// effect of "squeezing" many vertexes into small areas
+				// effect of "squeezing" many vertexes into small areas;
 				// multiply by 8 to account for dimensions of our canvas
-				tya = Math.abs(8 * ra * c);
-				tyb = Math.abs(8 * rb * c);
+				// apply 1-pixel offset to prevent an artifact when the
+				// texture is mirrored across the model
+				tya = Math.abs(8 * ra * c) + offset;
+				tyb = Math.abs(8 * rb * c) + offset;
 				m.set(xa, ya, za, txa, tya);
 				m.set(xb, yb, zb, txb, tyb);
 			}
@@ -134,14 +172,23 @@ EASY.paddlers = {
 		m.build();
 	},
 	
-	coat: function() {
+	/**
+		generate random skin texture
+		
+		@method makeSkin
+		@return pixel array representing texture
+	**/
+	
+	makeSkin: function() {
 		var ctx = this.context;
-		var w = this.canvas.width;
-		var h = this.canvas.height;
+		var w = this.TEXTURE_WIDTH;
+		var h = this.TEXTURE_HEIGHT;
 		var hh = h / 2;
 		var palette = [];
 		var rng = SOAR.random.create(this.masterSeed.getl());
 		var i, il, j, x, y, s;
+
+		ctx.clearRect(0, 0, this.CANVAS_SIZE, this.CANVAS_SIZE);
 
 		// generate a palette
 		for (i = 0, il = this.PALETTE_SIZE; i < il; i++) {
@@ -157,21 +204,14 @@ EASY.paddlers = {
 		
 		for (i = 1, il = palette.length; i < il; i++) {
 			ctx.fillStyle = palette[i];
-			for (j = 0; j < 200; j++) {
+			for (j = 0; j < 250; j++) {
 				x = rng.getn(w);
 				y = rng.getm(h) + hh;
 				s = rng.getm(8) + 8;
 				ctx.fillRect(x, y, s, s);
 			}
 		}
-		
-		// create a mouth and eye spots
-		ctx.fillStyle = "rgb(0, 0, 0)";
-		ctx.fillRect(0, 0, 5, h);
-		ctx.beginPath();
-		ctx.arc(12, hh - 8, 4, 0, SOAR.PIMUL2, false);
-		ctx.fill();
-		
+
 		return ctx.getImageData(0, 0, w, h);
 	},
 	
@@ -206,6 +246,7 @@ EASY.paddlers = {
 		this.skinShader.activate();
 		gl.uniformMatrix4fv(this.skinShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.skinShader.modelview, false, camera.modelview());
+		this.faceTexture.bind(0, this.skinShader.skin);
 		for (i = 0, il = this.list.length; i < il; i++) {
 			paddler = this.list[i];
 			c = paddler.center;
@@ -214,7 +255,7 @@ EASY.paddlers = {
 				paddler.rotor.matrix.rotations);
 			gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
 			gl.uniform1f(this.skinShader.time, time);
-			paddler.skin.bind(0, this.skinShader.skin);
+			paddler.skin.bind(1, this.skinShader.skin);
 			paddler.mesh.draw();
 		}
 		gl.disable(gl.CULL_FACE);

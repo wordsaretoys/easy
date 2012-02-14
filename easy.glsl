@@ -164,26 +164,29 @@ void main(void) {
 /**
 	paddler fragment shader
 	
-	@param skin		the model skin texture
+	@param face		standard face texture
+	@param skin		specific skin texture
 
 	@param uv		texture coordinates of fragment
 	
 **/
 
 precision mediump float;
- 
+
+uniform sampler2D face;
 uniform sampler2D skin;
 
 varying vec2 uv;
 varying vec3 object;
 
 void main(void) {
-	vec3 color = texture2D(skin, uv).rgb;
-	// lower half of paddler should be slightly lighter
+	vec4 skinColor = texture2D(skin, uv);
+	vec4 faceColor = texture2D(face, vec2(uv.x, uv.y / 8.0));
+	// apply face to top half only
 	if (object.y >= 0.0) {
-		color = color * 0.75;
+		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
 	}
-	gl_FragColor = vec4(color, 1.0);
+	gl_FragColor = skinColor;
 }
 
 </script>
