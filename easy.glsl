@@ -57,7 +57,6 @@ precision mediump float;
  
 uniform sampler2D noise;
 uniform sampler2D leaf;
-uniform sampler2D dirt;
 
 varying float light;
 varying vec2 uv;
@@ -68,7 +67,6 @@ void main(void) {
 					texture2D(noise, uv * 0.05).g * vec3(0.3, 0.6, 0.3) +
 					texture2D(noise, uv * 0.5).b  * vec3(0.5, 0.6, 0.9);
 	vec3 leaftex = 	texture2D(leaf, uv * 0.5).rgb;
-	vec3 dirttex = 	texture2D(dirt, uv).rgb;
 	if (object.y > 0.1) {
 		gl_FragColor = vec4(light * light * rocktex, 1.0);
 	} else {

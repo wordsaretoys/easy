@@ -202,10 +202,10 @@ EASY.paddlers = {
 		ctx.fillRect(0, 0, w, h);
 		
 		ctx.fillStyle = coat;
-		for (i = 0; i < 500; i++) {
+		for (i = 0; i < 100; i++) {
 			x = rng.getn(w);
-			y = rng.getm(h) + hh;
-			s = rng.getm(4) + 4;
+			y = rng.getm(hh) + hh;
+			s = rng.getn(8) + 4;
 			ctx.fillRect(x, y, s, s);
 			ctx.strokeRect(x, y, s, s);
 		}

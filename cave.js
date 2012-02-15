@@ -35,7 +35,7 @@ EASY.cave = {
 			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave-lower"),
 			["position", "texturec", "a_light"], 
 			["projector", "modelview"],
-			["noise", "leaf", "dirt"]
+			["noise", "leaf"]
 		);
 
 		var lights = SOAR.noise2D.create(1294934, 1, 64, 0.2);
@@ -156,36 +156,8 @@ EASY.cave = {
 			SOAR.texture.create(display, resources["noise1"].data);
 		this.noise2Texture = 
 			SOAR.texture.create(display, resources["noise2"].data);
-		this.dirtTexture = 
-			SOAR.texture.create(display, resources["dirt"].data);
 		this.leafTexture = 
 			SOAR.texture.create(display, resources["leaf"].data);
-	},
-	
-	/**
-		do a look-ahead for obstacles in a given direction
-		
-		used by npcs for collision avoidance
-		
-		@method look
-		@param position position to look from
-		@param direction unit vector to look through
-		@return normalized distance to obstacle (1 === clear)
-	**/
-	
-	look: function(position, direction) {
-		var p = this.scratch.pos;
-		var s;
-		
-		for (s = 1; s < this.SEARCH_LIMIT; s = s * 1.5) {
-			p.copy(direction).mul(s).add(position);
-			if (this.getLowerHeight(p.x, p.z) >= p.y || 
-			this.getUpperHeight(p.x, p.z) <= p.y) {
-				break;
-			}
-		}
-		s = Math.min(s, this.SEARCH_LIMIT);
-		return s / this.SEARCH_LIMIT;
 	},
 	
 	/**
@@ -206,7 +178,6 @@ EASY.cave = {
 		gl.uniformMatrix4fv(this.lowerShader.modelview, false, camera.modelview());
 		this.noise1Texture.bind(0, this.lowerShader.noise);
 		this.leafTexture.bind(1, this.lowerShader.leaf);
-		this.dirtTexture.bind(2, this.lowerShader.dirt);
 		this.lowerMesh.draw();
 		
 		gl.cullFace(gl.FRONT);
