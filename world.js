@@ -12,10 +12,6 @@ EASY.world = {
 			type: "image",
 			path: "res/panel.png"
 		},
-		dirt: {
-			type: "image",
-			path: "res/dirt.jpg"
-		},
 		noise1: {
 			type: "image",
 			path: "res/noise1.jpg"
