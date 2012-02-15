@@ -8,7 +8,7 @@
 EASY.cave = {
 
 	BOUND_LIMIT: 1,
-	SEARCH_LIMIT: 64,
+	SEARCH_LIMIT: 32,
 
 	scratch: {
 		down: SOAR.vector.create(),
@@ -177,13 +177,14 @@ EASY.cave = {
 		var p = this.scratch.pos;
 		var s;
 		
-		for (s = 1; s < this.SEARCH_LIMIT; s = s * 2) {
+		for (s = 1; s < this.SEARCH_LIMIT; s = s * 1.5) {
 			p.copy(direction).mul(s).add(position);
 			if (this.getLowerHeight(p.x, p.z) >= p.y || 
 			this.getUpperHeight(p.x, p.z) <= p.y) {
 				break;
 			}
 		}
+		s = Math.min(s, this.SEARCH_LIMIT);
 		return s / this.SEARCH_LIMIT;
 	},
 	

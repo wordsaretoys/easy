@@ -15,11 +15,14 @@ EASY.paddlers = {
 
 	CANVAS_SIZE: 256,
 	EXTRUDE_STEPS: 24,
-	PALETTE_SIZE: 3,
 	TEXTURE_WIDTH: 256,
 	TEXTURE_HEIGHT: 32,
 
 	list: [],
+	
+	scratch: {
+		vel: SOAR.vector.create()
+	},
 	
 	/**
 		initialize texture canvas and shader
@@ -115,7 +118,7 @@ EASY.paddlers = {
 		this.list.push({
 			mesh: mesh,
 			skin: skin,
-			center: start,
+			center: SOAR.vector.create().copy(start),
 			rotor: SOAR.boundRotor.create(),
 			speed: 1
 		});
@@ -184,32 +187,27 @@ EASY.paddlers = {
 		var w = this.TEXTURE_WIDTH;
 		var h = this.TEXTURE_HEIGHT;
 		var hh = h / 2;
-		var palette = [];
 		var rng = SOAR.random.create(this.masterSeed.getl());
-		var i, il, j, x, y, s;
+		var r, g, b, base, coat;
+		var i, x, y, s;
 
 		ctx.clearRect(0, 0, this.CANVAS_SIZE, this.CANVAS_SIZE);
+		r = Math.floor(rng.getn(256));
+		g = Math.floor(rng.getn(256));
+		b = Math.floor(rng.getn(256));
+		base = "rgba(" + r + ", " + g + ", " + b + ", 0.01)";
+		coat = "rgba(" + (256 - r) + ", " + (256 - g) + ", " + (256 - b) + ", 0.01)";
 
-		// generate a palette
-		for (i = 0, il = this.PALETTE_SIZE; i < il; i++) {
-			palette.push("rgba(" + 
-				Math.floor(rng.getn(256)) + ", " +
-				Math.floor(rng.getn(256)) + ", " +
-				Math.floor(rng.getn(256)) + ", 0.01)"
-			);
-		}
-
-		ctx.fillStyle = palette[0];
+		ctx.fillStyle = base;
 		ctx.fillRect(0, 0, w, h);
 		
-		for (i = 1, il = palette.length; i < il; i++) {
-			ctx.fillStyle = palette[i];
-			for (j = 0; j < 250; j++) {
-				x = rng.getn(w);
-				y = rng.getm(h) + hh;
-				s = rng.getm(8) + 8;
-				ctx.fillRect(x, y, s, s);
-			}
+		ctx.fillStyle = coat;
+		for (i = 0; i < 500; i++) {
+			x = rng.getn(w);
+			y = rng.getm(h) + hh;
+			s = rng.getm(4) + 4;
+			ctx.fillRect(x, y, s, s);
+			ctx.strokeRect(x, y, s, s);
 		}
 
 		return ctx.getImageData(0, 0, w, h);
@@ -222,10 +220,27 @@ EASY.paddlers = {
 	**/
 
 	update: function() {
-		var i, paddler;
+		var scr = this.scratch;
+		var dt = SOAR.interval * 0.001;
+		var i, o, c, paddler;
+		var d;
+		var hf, hr, hl;
 		
 		for (i = 0, il = this.list.length; i < il; i++) {
 			paddler = this.list[i];
+			o = paddler.rotor.orientation;
+			c = paddler.center;
+			hf = EASY.cave.getLowerHeight(c.x + o.front.x, c.z + o.front.z);
+			hr = EASY.cave.getLowerHeight(c.x + o.right.x, c.z + o.right.z);
+			hl = EASY.cave.getLowerHeight(c.x - o.right.x, c.z - o.right.z);
+			if (hr < hf) {
+				paddler.rotor.turn(hf - hr, 0);
+			}
+			if (hl < hf) {
+				paddler.rotor.turn(hl - hf, 0);
+			}
+			scr.vel.copy(o.front).mul(paddler.speed * dt);
+			c.add(scr.vel);
 		}
 	},
 	
@@ -252,7 +267,7 @@ EASY.paddlers = {
 			c = paddler.center;
 			time = SOAR.elapsedTime * 0.01;
 			gl.uniformMatrix4fv(this.skinShader.rotations, false, 
-				paddler.rotor.matrix.rotations);
+				paddler.rotor.matrix.transpose);
 			gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
 			gl.uniform1f(this.skinShader.time, time);
 			paddler.skin.bind(1, this.skinShader.skin);
