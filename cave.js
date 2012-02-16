@@ -102,6 +102,8 @@ EASY.cave = {
 		bound.cz0 = this.BOUND_LIMIT;
 		bound.cz1 = bound.z - this.BOUND_LIMIT;
 		
+		this.lights = lights;
+		
 	},
 	
 	/**

@@ -174,6 +174,9 @@ precision mediump float;
 uniform sampler2D face;
 uniform sampler2D skin;
 
+uniform float alpha;
+uniform float light;
+
 varying vec2 uv;
 varying vec3 object;
 
@@ -184,7 +187,7 @@ void main(void) {
 	if (object.y >= 0.0) {
 		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
 	}
-	gl_FragColor = skinColor;
+	gl_FragColor = vec4(light * skinColor.rgb, alpha);
 }
 
 </script>

@@ -19,8 +19,10 @@ EASY.paddlers = {
 	TEXTURE_HEIGHT: 32,
 	
 	CREATE_RADIUS: 30,
-	FADEIN_RADIUS: 25,
 	DELETE_RADIUS: 35,
+
+	VIEW_RADIUS: 25,
+	FADE_RADIUS: 5,
 
 	list: [],
 	
@@ -46,7 +48,8 @@ EASY.paddlers = {
 			display,
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
 			["position", "texturec"], 
-			["projector", "modelview", "rotations", "center", "time"],
+			["projector", "modelview", "rotations", 
+				"center", "time", "light", "alpha"],
 			["face", "skin"]
 		);
 
@@ -64,6 +67,7 @@ EASY.paddlers = {
 				pos.x = rng.getn(bound.x);
 				pos.z = rng.getn(bound.z);
 			} while(EASY.cave.getLowerHeight(pos.x, pos.z) > 1)
+//			pos.y = rng.getn(10) + 1;
 			pos.y = 1;
 			this.add(pos);
 		}
@@ -143,7 +147,7 @@ EASY.paddlers = {
 		record.mesh.add(this.skinShader.texturec, 2);
 
 		// generate the mesh data
-		this.extrude(record.mesh, record.shaper);
+		this.makeModel(record.mesh, record.shaper);
 		
 		// generate a skin
 		record.skin = SOAR.texture.create(display, 
@@ -169,12 +173,12 @@ EASY.paddlers = {
 	/**
 		create a model mesh using a cylindrical base
 		
-		@method extrude
+		@method makeModel
 		@param m the mesh to append vertexes to
 		@param f the noise function to use as a silhouete model
 	**/
 	
-	extrude: function(m, f) {
+	makeModel: function(m, f) {
 		var stepZ = 1 / this.EXTRUDE_STEPS;
 		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
 		var offset = 1 / this.TEXTURE_HEIGHT;
@@ -273,7 +277,7 @@ EASY.paddlers = {
 			paddler = this.list[i];
 			c = paddler.center;
 			d = c.distance(camera.position);
-			if (d <= this.FADEIN_RADIUS) {
+			if (d <= this.VIEW_RADIUS) {
 				o = paddler.rotor.orientation;
 				hf = EASY.cave.getLowerHeight(c.x + o.front.x, c.z + o.front.z);
 				hr = EASY.cave.getLowerHeight(c.x + o.right.x, c.z + o.right.z);
@@ -299,15 +303,21 @@ EASY.paddlers = {
 	draw: function() {
 		var gl = EASY.display.gl;
 		var camera = EASY.player.camera;
-		var i, il, paddler, time, c, d;
+		var i, il, paddler, c, d;
+		var alpha, light, time;
+		var active;
 	
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
+
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 		this.skinShader.activate();
 		gl.uniformMatrix4fv(this.skinShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.skinShader.modelview, false, camera.modelview());
 		this.faceTexture.bind(0, this.skinShader.skin);
+		active = 0;
 		for (i = 0, il = this.list.length; i < il; i++) {
 			paddler = this.list[i];
 			c = paddler.center;
@@ -318,16 +328,23 @@ EASY.paddlers = {
 			if (d > this.DELETE_RADIUS && paddler.mesh) {
 				this.release(paddler);
 			}
-			if (d < this.FADEIN_RADIUS) {
+			if (d < this.VIEW_RADIUS) {
+				active++;
 				time = SOAR.elapsedTime * 0.01;
+				alpha = SOAR.clamp((this.VIEW_RADIUS - d) / this.FADE_RADIUS, 0, 1);
+				light = EASY.cave.lights.get(c.x, c.z);
 				gl.uniformMatrix4fv(this.skinShader.rotations, false, 
 					paddler.rotor.matrix.transpose);
 				gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
 				gl.uniform1f(this.skinShader.time, time);
+				gl.uniform1f(this.skinShader.alpha, alpha);
+				gl.uniform1f(this.skinShader.light, light);
 				paddler.skin.bind(1, this.skinShader.skin);
 				paddler.mesh.draw();
 			}
 		}
+		EASY.debug("active: " + active + "/" + il);
+		gl.disable(gl.BLEND);
 		gl.disable(gl.CULL_FACE);
 	}
 
