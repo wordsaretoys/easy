@@ -36,12 +36,13 @@ EASY.npcs = {
 		var rng = SOAR.random.create();
 		var pos = SOAR.vector.create();
 		var bound = EASY.world.boundary;
-		for (i = 0; i < 10000; i++) {
+		for (i = 0; i < 1000; i++) {
 			do {
 				pos.x = rng.getn(bound.x);
 				pos.z = rng.getn(bound.z);
 			} while(EASY.cave.getLowerHeight(pos.x, pos.z) > 1)
-			pos.y = rng.getn(5) + 1;
+//			pos.y = rng.getn(5) + 1;
+			pos.y = 1;
 			this.masterList.push(
 				EASY.paddler.create(masterSeed.getl(), pos)
 			);
@@ -106,21 +107,19 @@ EASY.npcs = {
 	**/
 	
 	draw: function() {
-		var last;
-		var i, il, npc;
+		var i, npc, last;
+		var il = this.activeList.length;
 
-//		EASY.paddler.predraw();
-	
-		for (i = 0, il = this.activeList.length; i < il; i++) {
+		if (il > 0) {
+			last = this.activeList[0];
+			last.predraw();
+		}
+
+		for (i = 0; i < il; i++) {
 			npc = this.activeList[i];
 
-			if (last) {
-				if (last.type !== npc.type) {
-					last.postdraw();
-					last = npc;
-					last.predraw();
-				}
-			} else {
+			if (last.type !== npc.type) {
+				last.postdraw();
 				last = npc;
 				last.predraw();
 			}
@@ -132,8 +131,6 @@ EASY.npcs = {
 		if (last) {
 			last.postdraw();
 		}
-
-//		EASY.paddler.postdraw();
 	}
 
 };

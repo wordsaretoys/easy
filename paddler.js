@@ -15,12 +15,6 @@ EASY.paddler = {
 
 	EXTRUDE_STEPS: 24,
 
-	FACE_WIDTH: 256,
-	FACE_HEIGHT: 256,
-	
-	SKIN_WIDTH: 256,
-	SKIN_HEIGHT: 32,
-	
 	scratch: {
 		vel: SOAR.vector.create()
 	},
@@ -56,8 +50,8 @@ EASY.paddler = {
 	
 	makeFace: function() {
 		var ctx = EASY.npcs.context;
-		var w = this.FACE_WIDTH;
-		var h = this.FACE_HEIGHT;
+		var w = EASY.npcs.canvas.width;
+		var h = EASY.npcs.canvas.height;
 		
 		ctx.clearRect(0, 0, w, h);
 
@@ -156,7 +150,7 @@ EASY.paddler = {
 	makeModel: function(m, f) {
 		var stepZ = 1 / this.EXTRUDE_STEPS;
 		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
-		var offset = 1 / this.SKIN_HEIGHT;
+		var offset = 1 / EASY.npcs.canvas.height;
 		var xa, xb, ya, yb, za, zb;
 		var txa, txb, tya, tyb;
 		var angle, s, c;
@@ -184,11 +178,10 @@ EASY.paddler = {
 				// absolute value of cosine provides {1..0..1} coverage
 				// across x, and we multiply by the radius to avoid the
 				// effect of "squeezing" many vertexes into small areas;
-				// multiply by 8 to account for dimensions of our canvas
 				// apply 1-pixel offset to prevent an artifact when the
 				// texture is mirrored across the model
-				tya = Math.abs(8 * ra * c) + offset;
-				tyb = Math.abs(8 * rb * c) + offset;
+				tya = Math.abs(ra * c) + offset;
+				tyb = Math.abs(rb * c) + offset;
 				m.set(xa, ya, za, txa, tya);
 				m.set(xb, yb, zb, txb, tyb);
 			}
@@ -205,14 +198,14 @@ EASY.paddler = {
 	
 	makeSkin: function(seed) {
 		var ctx = EASY.npcs.context;
-		var w = this.SKIN_WIDTH;
-		var h = this.SKIN_HEIGHT;
+		var w = EASY.npcs.canvas.width;
+		var h = EASY.npcs.canvas.height;
 		var hh = h / 2;
 		var rng = SOAR.random.create(seed);
 		var r, g, b, base, coat;
 		var i, x, y, s;
 
-		ctx.clearRect(0, 0, this.SKIN_WIDTH, this.SKIN_HEIGHT);
+		ctx.clearRect(0, 0, w, h);
 		r = Math.floor(rng.getn(256));
 		g = Math.floor(rng.getn(256));
 		b = Math.floor(rng.getn(256));
@@ -223,10 +216,10 @@ EASY.paddler = {
 		ctx.fillRect(0, 0, w, h);
 		
 		ctx.fillStyle = coat;
-		for (i = 0; i < 100; i++) {
+		for (i = 0; i < 250; i++) {
 			x = rng.getn(w);
 			y = rng.getm(hh) + hh;
-			s = rng.getn(8) + 4;
+			s = rng.getn(8) + 8;
 			ctx.fillRect(x, y, s, s);
 			ctx.strokeRect(x, y, s, s);
 		}

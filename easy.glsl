@@ -148,8 +148,8 @@ varying vec3 object;
 void main(void) {
 	// create wing-flapping motions
 	vec3 pos = position;
-	pos.y += 25.0 * pow(0.05 * texturec.y, 4.0) * sin(time);
-	pos.z += 25.0 * pow(0.05 * texturec.y, 4.0) * cos(time);
+	pos.y += 25.0 * pow(0.4 * texturec.y, 4.0) * sin(time);
+	pos.z += 25.0 * pow(0.4 * texturec.y, 4.0) * cos(time);
 	
 	// transform the vertex
 	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
@@ -189,7 +189,7 @@ varying vec3 object;
 
 void main(void) {
 	vec4 skinColor = texture2D(skin, uv);
-	vec4 faceColor = texture2D(face, vec2(uv.x, uv.y / 8.0));
+	vec4 faceColor = texture2D(face, uv);
 	// apply face to top half only
 	if (object.y >= 0.0) {
 		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
