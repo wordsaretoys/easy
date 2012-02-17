@@ -115,7 +115,7 @@ void main(void) {
 
 /**
 	paddler vertex shader
-	O' = P * V * (s * M * O + c) transformation, plus texture coordinates
+	O' = P * V * (M * O + c) transformation, plus texture coordinates
 	
 	@param position vertex array of positions
 	@param texturec vertex array of texture coordinates
@@ -127,7 +127,9 @@ void main(void) {
 	@param time time base for vertex animations
 	
 	(passed to fragment shader for each vertex)
-	@param uv		texture coordinates
+	@param alpha	fade-in alpha value
+	@param uv		texture coordinates of fragment
+	@param object	fragment position in object space
 	
 **/
 
@@ -172,7 +174,96 @@ void main(void) {
 	@param face		standard face texture
 	@param skin		specific skin texture
 
+	@param alpha	fade-in alpha value
 	@param uv		texture coordinates of fragment
+	@param object	fragment position in object space
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D face;
+uniform sampler2D skin;
+
+uniform float light;
+
+varying float alpha;
+varying vec2 uv;
+varying vec3 object;
+
+void main(void) {
+	vec4 skinColor = texture2D(skin, uv);
+	vec4 faceColor = texture2D(face, uv);
+	// apply face to top half only
+	if (object.y >= 0.0) {
+		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
+	}
+	gl_FragColor = vec4(light * skinColor.rgb, alpha);
+}
+
+</script>
+
+<script id="vs-bouncer" type="x-shader/x-vertex">
+
+/**
+	bouncer vertex shader
+	O' = P * V * (M * O + c) transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param rotations rotations matrix
+	@param center model center vector
+	@param time time base for vertex animations
+	
+	(passed to fragment shader for each vertex)
+	@param alpha	fade-in alpha value
+	@param uv		texture coordinates of fragment
+	@param object	fragment position in object space
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+attribute float a_light;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform mat4 rotations;
+uniform vec3 center;
+uniform float time;
+
+varying float alpha;
+varying vec2 uv;
+varying vec3 object;
+
+void main(void) {
+	// transform the vertex
+	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
+	vec4 mvpos = modelview * rotpos;
+	gl_Position = projector * mvpos;
+	uv = texturec;
+	object = position;
+
+	// calculate fade-in alpha value
+	alpha = clamp((25.0 - length(mvpos)) / 5.0, 0.0, 1.0);
+
+}
+</script>
+
+<script id="fs-bouncer" type="x-shader/x-fragment">
+
+/**
+	bouncer fragment shader
+	
+	@param face		standard face texture
+	@param skin		specific skin texture
+
+	@param alpha	fade-in alpha value
+	@param uv		texture coordinates of fragment
+	@param object	fragment position in object space
 	
 **/
 

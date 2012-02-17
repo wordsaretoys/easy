@@ -41,8 +41,8 @@ EASY.npcs = {
 				pos.x = rng.getn(bound.x);
 				pos.z = rng.getn(bound.z);
 			} while(EASY.cave.getLowerHeight(pos.x, pos.z) > 1)
-//			pos.y = rng.getn(5) + 1;
-			pos.y = 1;
+			pos.y = rng.getn(5) + 1;
+//			pos.y = 1;
 			this.masterList.push(
 				EASY.paddler.create(masterSeed.getl(), pos)
 			);

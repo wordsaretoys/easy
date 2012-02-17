@@ -1,17 +1,15 @@
 /**
-	generate, animate, and display a paddler
+	generate, animate, and display a bouncer
 	
 	paddlers are procedurally-generated creatures with
-	bilateral symmetry. flaps of tissue that look like
-	tentacles or wings extend from cylindrical bodies.
-	continuous paddling motions of these flaps permits
-	them to swim.
+	spherical bodies. tissue rolls around their center
+	allow them to bounce across the ground.
 	
 	@namespace EASY
-	@class paddler
+	@class bouncer
 **/
 
-EASY.paddler = {
+EASY.bouncer = {
 
 	EXTRUDE_STEPS: 24,
 
@@ -43,11 +41,6 @@ EASY.paddler = {
 	
 	/**
 		generate a face texture
-		
-		the face texture allows us to have one single resource
-		rather than creating an additional texture for each of
-		the paddlers. it's blended into the skin texture right
-		inside the fragment shader.
 		
 		@method makeFace
 		@return pixel array representing texture
@@ -181,7 +174,7 @@ EASY.paddler = {
 				xb = rb * c;
 				yb = e * rb * s;
 				// absolute value of cosine provides {1..0..1} coverage
-				// across y, and we multiply by the radius to avoid the
+				// across x, and we multiply by the radius to avoid the
 				// effect of "squeezing" many vertexes into small areas;
 				// apply 1-pixel offset to prevent an artifact when the
 				// texture is mirrored across the model
@@ -205,7 +198,6 @@ EASY.paddler = {
 		var ctx = EASY.npcs.context;
 		var w = EASY.npcs.canvas.width;
 		var h = EASY.npcs.canvas.height;
-		var ww = w / 2;
 		var hh = h / 2;
 		var rng = SOAR.random.create(seed);
 		var r, g, b, base, coat;
@@ -222,16 +214,12 @@ EASY.paddler = {
 		ctx.fillRect(0, 0, w, h);
 		
 		ctx.fillStyle = coat;
-		for (i = 0; i < 100; i++) {
-			x = rng.getn(ww);
-			y = rng.getn(h);
+		for (i = 0; i < 250; i++) {
+			x = rng.getn(w);
+			y = rng.getm(hh) + hh;
 			s = rng.getn(8) + 8;
-			ctx.beginPath();
 			ctx.fillRect(x, y, s, s);
 			ctx.strokeRect(x, y, s, s);
-			x = w - x;
-			ctx.fillRect(x - s, y, s, s);
-			ctx.strokeRect(x - s, y, s, s);
 		}
 
 		return ctx.getImageData(0, 0, w, h);
