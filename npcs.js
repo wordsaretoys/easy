@@ -91,8 +91,11 @@ EASY.npcs = {
 		EASY.debug(this.activeList.length + " / " + this.masterList.length);
 
 		// allow all active npcs to update themselves
-		for (i = 0, il = this.activeList.length; i < il; i++) {
-			this.activeList[i].update();
+		if (!EASY.world.stopNpcs) {
+
+			for (i = 0, il = this.activeList.length; i < il; i++) {
+				this.activeList[i].update();
+			}
 		}
 	},
 	

@@ -258,6 +258,15 @@ EASY.player = {
 			case SOAR.KEY.SHIFT:
 				this.sprint = true;
 				break;
+				
+// debugging keys -- remove in production release
+
+			case SOAR.KEY.H:
+				EASY.world.hideCave = !EASY.world.hideCave;
+				break;
+			case SOAR.KEY.N:
+				EASY.world.stopNpcs = !EASY.world.stopNpcs;
+				break;
 		}
 	},
 

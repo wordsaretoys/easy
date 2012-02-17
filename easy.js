@@ -99,7 +99,8 @@ var EASY = {
 		gl.clearColor(0.5, 0.5, 0.5, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		EASY.cave.draw();
+		if (!EASY.world.hideCave)
+			EASY.cave.draw();
 		EASY.npcs.draw();
 	},
 
