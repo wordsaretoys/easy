@@ -42,7 +42,8 @@ var EASY = {
 		// while waiting for resource load, initialize game objects
 		EASY.cave.init();
 		EASY.player.init();
-		EASY.paddlers.init();
+		EASY.npcs.init();
+		EASY.paddler.init();
 
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.world.resources, function() {
@@ -78,7 +79,7 @@ var EASY = {
 	
 	update: function() {
 		EASY.player.update();
-		EASY.paddlers.update();
+		EASY.npcs.update();
 	},
 	
 	/**
@@ -99,7 +100,7 @@ var EASY = {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
 		EASY.cave.draw();
-		EASY.paddlers.draw();
+		EASY.npcs.draw();
 	},
 
 	/**

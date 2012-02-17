@@ -1,5 +1,5 @@
 /**
-	generate, animate, and display cave paddlers
+	generate, animate, and display a paddler
 	
 	paddlers are procedurally-generated creatures with
 	bilateral symmetry. flaps of tissue that look like
@@ -8,41 +8,32 @@
 	them to fly.
 	
 	@namespace EASY
-	@class paddlers
+	@class paddler
 **/
 
-EASY.paddlers = {
+EASY.paddler = {
 
-	CANVAS_SIZE: 256,
 	EXTRUDE_STEPS: 24,
-	TEXTURE_WIDTH: 256,
-	TEXTURE_HEIGHT: 32,
+
+	FACE_WIDTH: 256,
+	FACE_HEIGHT: 256,
 	
-	CREATE_RADIUS: 30,
-	DELETE_RADIUS: 35,
-
-	VIEW_RADIUS: 25,
-	FADE_RADIUS: 5,
-
-	list: [],
+	SKIN_WIDTH: 256,
+	SKIN_HEIGHT: 32,
 	
 	scratch: {
 		vel: SOAR.vector.create()
 	},
 	
 	/**
-		initialize texture canvas and shader
+		init objects and resources required by all paddlers
+		and add them to the base object
 		
 		@method init
 	**/
 
 	init: function() {
 		var display = EASY.display;
-	
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = this.CANVAS_SIZE;
-		this.canvas.height = this.CANVAS_SIZE;
-		this.context = this.canvas.getContext("2d");
 		
 		this.skinShader = SOAR.shader.create(
 			display,
@@ -52,38 +43,21 @@ EASY.paddlers = {
 				"center", "time", "light", "alpha"],
 			["face", "skin"]
 		);
-
-		this.masterSeed = SOAR.random.create();
 		
 		this.faceTexture = SOAR.texture.create(display, this.makeFace());
-		
-		// TEST TEST TEST
-		var i;
-		var rng = SOAR.random.create();
-		var pos = SOAR.vector.create();
-		var bound = EASY.world.boundary;
-		for (i = 0; i < 250; i++) {
-			do {
-				pos.x = rng.getn(bound.x);
-				pos.z = rng.getn(bound.z);
-			} while(EASY.cave.getLowerHeight(pos.x, pos.z) > 1)
-//			pos.y = rng.getn(10) + 1;
-			pos.y = 1;
-			this.add(pos);
-		}
 	},
 	
 	/**
-		generate a face texture for all models
+		generate a face texture
 		
 		@method makeFace
 		@return pixel array representing texture
 	**/
 	
 	makeFace: function() {
-		var ctx = this.context;
-		var w = this.CANVAS_SIZE;
-		var h = this.CANVAS_SIZE;
+		var ctx = EASY.npcs.context;
+		var w = this.FACE_WIDTH;
+		var h = this.FACE_HEIGHT;
 		
 		ctx.clearRect(0, 0, w, h);
 
@@ -106,27 +80,31 @@ EASY.paddlers = {
 	},
 	
 	/**
-		add a new paddler record to the main list
+		create a paddler
 		
-		generate random seeds for model and skin.
-		
-		@method add
+		@method create
+		@param seed number to seed generation algorithms
 		@param start starting position for paddler
+		@return new paddler object
 	**/
 	
-	add: function(start) {
-		shaper = SOAR.noise1D.create(this.masterSeed.getl(), 0.5, 8, 8);
-		shaper.interpolate = SOAR.interpolator.linear;
-		shaper.map[0] = 0;
-		shaper.map[1] = 0.25;
+	create: function(seed, start) {
+		var o = Object.create(EASY.paddler);
+
+		o.type = "paddler";	
+		o.seed = seed;
+		o.center = SOAR.vector.create().copy(start);
+	
+		o.shaper = SOAR.noise1D.create(seed, 0.5, 8, 8);
+		o.shaper.interpolate = SOAR.interpolator.linear;
+		o.shaper.map[0] = 0;
+		o.shaper.map[1] = 0.25;
+
+		o.rotor = SOAR.boundRotor.create();
 		
-		this.list.push({
-			shaper: shaper,
-			skinSeed: this.masterSeed.getl(),
-			center: SOAR.vector.create().copy(start),
-			rotor: SOAR.boundRotor.create(),
-			speed: 1
-		});
+		o.speed = 1;
+		
+		return o;		
 	},
 	
 	/**
@@ -135,39 +113,36 @@ EASY.paddlers = {
 		call when the paddler must be visible to the player
 		
 		@method generate
-		@param record the paddler record from the main list
 	**/
 	
-	generate: function(record) {
+	generate: function() {
 		var display = EASY.display;
 		
 		// create new mesh
-		record.mesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
-		record.mesh.add(this.skinShader.position, 3);
-		record.mesh.add(this.skinShader.texturec, 2);
+		this.mesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
+		this.mesh.add(this.skinShader.position, 3);
+		this.mesh.add(this.skinShader.texturec, 2);
 
 		// generate the mesh data
-		this.makeModel(record.mesh, record.shaper);
+		this.makeModel(this.mesh, this.shaper);
 		
 		// generate a skin
-		record.skin = SOAR.texture.create(display, 
-			this.makeSkin(record.skinSeed));
+		this.skin = SOAR.texture.create(display, this.makeSkin(this.seed));
 	},
 	
 	/**
-		release all GL resources for a paddler
+		release all GL resources for this paddler
 
 		call once the paddler is out of range of the player
 		
 		@method release
-		@param record the paddler record from the main list
 	**/
 	
-	release: function(record) {
-		record.mesh.release();
-		record.skin.release();
-		delete record.mesh;
-		delete record.skin;
+	release: function() {
+		this.mesh.release();
+		this.skin.release();
+		delete this.mesh;
+		delete this.skin;
 	},
 
 	/**
@@ -181,7 +156,7 @@ EASY.paddlers = {
 	makeModel: function(m, f) {
 		var stepZ = 1 / this.EXTRUDE_STEPS;
 		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
-		var offset = 1 / this.TEXTURE_HEIGHT;
+		var offset = 1 / this.SKIN_HEIGHT;
 		var xa, xb, ya, yb, za, zb;
 		var txa, txb, tya, tyb;
 		var angle, s, c;
@@ -229,15 +204,15 @@ EASY.paddlers = {
 	**/
 	
 	makeSkin: function(seed) {
-		var ctx = this.context;
-		var w = this.TEXTURE_WIDTH;
-		var h = this.TEXTURE_HEIGHT;
+		var ctx = EASY.npcs.context;
+		var w = this.SKIN_WIDTH;
+		var h = this.SKIN_HEIGHT;
 		var hh = h / 2;
 		var rng = SOAR.random.create(seed);
 		var r, g, b, base, coat;
 		var i, x, y, s;
 
-		ctx.clearRect(0, 0, this.CANVAS_SIZE, this.CANVAS_SIZE);
+		ctx.clearRect(0, 0, this.SKIN_WIDTH, this.SKIN_HEIGHT);
 		r = Math.floor(rng.getn(256));
 		g = Math.floor(rng.getn(256));
 		b = Math.floor(rng.getn(256));
@@ -260,53 +235,42 @@ EASY.paddlers = {
 	},
 	
 	/**
-		update all paddlers with new positions
+		update orientation and position
 		
 		@method update
 	**/
 
 	update: function() {
 		var scr = this.scratch;
-		var camera = EASY.player.camera;
 		var dt = SOAR.interval * 0.001;
-		var i, paddler, o, c, d;
-		var d;
-		var hf, hr, hl;
-		
-		for (i = 0, il = this.list.length; i < il; i++) {
-			paddler = this.list[i];
-			c = paddler.center;
-			d = c.distance(camera.position);
-			if (d <= this.VIEW_RADIUS) {
-				o = paddler.rotor.orientation;
-				hf = EASY.cave.getLowerHeight(c.x + o.front.x, c.z + o.front.z);
-				hr = EASY.cave.getLowerHeight(c.x + o.right.x, c.z + o.right.z);
-				hl = EASY.cave.getLowerHeight(c.x - o.right.x, c.z - o.right.z);
-				if (hr < hf) {
-					paddler.rotor.turn(hf - hr, 0);
-				}
-				if (hl < hf) {
-					paddler.rotor.turn(hl - hf, 0);
-				}
-				scr.vel.copy(o.front).mul(paddler.speed * dt);
-				c.add(scr.vel);
-			}
+		var c = this.center;
+		var o = this.rotor.orientation;
+		var hf = EASY.cave.getLowerHeight(c.x + o.front.x, c.z + o.front.z);
+		var hr = EASY.cave.getLowerHeight(c.x + o.right.x, c.z + o.right.z);
+		var hl = EASY.cave.getLowerHeight(c.x - o.right.x, c.z - o.right.z);
+
+		if (hr < hf) {
+			this.rotor.turn(hf - hr, 0);
 		}
+		if (hl < hf) {
+			this.rotor.turn(hl - hf, 0);
+		}
+		scr.vel.copy(o.front).mul(this.speed * dt);
+		c.add(scr.vel);
 	},
 	
 	/**
-		draw all paddlers visible to player
+		setup for drawing all paddlers
+
+		normally called from base object
 		
-		@method draw
+		@method predraw
 	**/
 	
-	draw: function() {
+	predraw: function() {
 		var gl = EASY.display.gl;
 		var camera = EASY.player.camera;
-		var i, il, paddler, c, d;
-		var alpha, light, time;
-		var active;
-	
+
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
 
@@ -316,36 +280,44 @@ EASY.paddlers = {
 		this.skinShader.activate();
 		gl.uniformMatrix4fv(this.skinShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.skinShader.modelview, false, camera.modelview());
-		this.faceTexture.bind(0, this.skinShader.skin);
-		active = 0;
-		for (i = 0, il = this.list.length; i < il; i++) {
-			paddler = this.list[i];
-			c = paddler.center;
-			d = c.distance(camera.position);
-			if (d <= this.CREATE_RADIUS && !paddler.mesh) {
-				this.generate(paddler);
-			}
-			if (d > this.DELETE_RADIUS && paddler.mesh) {
-				this.release(paddler);
-			}
-			if (d < this.VIEW_RADIUS) {
-				active++;
-				time = SOAR.elapsedTime * 0.01;
-				alpha = SOAR.clamp((this.VIEW_RADIUS - d) / this.FADE_RADIUS, 0, 1);
-				light = EASY.cave.lights.get(c.x, c.z);
-				gl.uniformMatrix4fv(this.skinShader.rotations, false, 
-					paddler.rotor.matrix.transpose);
-				gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
-				gl.uniform1f(this.skinShader.time, time);
-				gl.uniform1f(this.skinShader.alpha, alpha);
-				gl.uniform1f(this.skinShader.light, light);
-				paddler.skin.bind(1, this.skinShader.skin);
-				paddler.mesh.draw();
-			}
-		}
-		EASY.debug("active: " + active + "/" + il);
+		this.faceTexture.bind(0, this.skinShader.face);
+	},
+	
+	/**
+		draw the paddler
+		
+		@method draw
+	**/
+	
+	draw: function() {
+		var gl = EASY.display.gl;
+		var dist, light, time;
+	
+		c = this.center;
+		time = SOAR.elapsedTime * 0.01;
+		light = EASY.cave.lights.get(c.x, c.z);
+		gl.uniformMatrix4fv(this.skinShader.rotations, false, this.rotor.matrix.transpose);
+		gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
+		gl.uniform1f(this.skinShader.time, time);
+		gl.uniform1f(this.skinShader.alpha, 1);
+		gl.uniform1f(this.skinShader.light, light);
+		this.skin.bind(1, this.skinShader.skin);
+		this.mesh.draw();
+	},
+
+	/**
+		teardown after drawing all paddlers
+
+		normally called from base object
+		
+		@method postdraw
+	**/
+	
+	postdraw: function() {
+		var gl = EASY.display.gl;
 		gl.disable(gl.BLEND);
 		gl.disable(gl.CULL_FACE);
 	}
-
+	
 };
+

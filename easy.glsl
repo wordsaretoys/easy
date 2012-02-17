@@ -141,6 +141,7 @@ uniform mat4 rotations;
 uniform vec3 center;
 uniform float time;
 
+varying float alpha;
 varying vec2 uv;
 varying vec3 object;
 
@@ -150,10 +151,16 @@ void main(void) {
 	pos.y += 25.0 * pow(0.05 * texturec.y, 4.0) * sin(time);
 	pos.z += 25.0 * pow(0.05 * texturec.y, 4.0) * cos(time);
 	
+	// transform the vertex
 	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
-	gl_Position = projector * modelview * rotpos;
+	vec4 mvpos = modelview * rotpos;
+	gl_Position = projector * mvpos;
 	uv = texturec;
 	object = position;
+
+	// calculate fade-in alpha value
+	alpha = clamp((25.0 - length(mvpos)) / 5.0, 0.0, 1.0);
+
 }
 </script>
 
@@ -174,9 +181,9 @@ precision mediump float;
 uniform sampler2D face;
 uniform sampler2D skin;
 
-uniform float alpha;
 uniform float light;
 
+varying float alpha;
 varying vec2 uv;
 varying vec3 object;
 

@@ -22,7 +22,8 @@
 		<script type="text/javascript" src="/debug/easy/world.js"></script>
 		<script type="text/javascript" src="/debug/easy/player.js"></script>
 		<script type="text/javascript" src="/debug/easy/cave.js"></script>
-		<script type="text/javascript" src="/debug/easy/paddlers.js"></script>
+		<script type="text/javascript" src="/debug/easy/npcs.js"></script>
+		<script type="text/javascript" src="/debug/easy/paddler.js"></script>
 
 <?php
 include("easy.glsl");
