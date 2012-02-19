@@ -1,3 +1,14 @@
+<script id="fs-cave-texture" type="x-shader/x-fragment">
+
+precision mediump float;
+
+vec3 caveTexture(sampler2D noise, vec2 uv) {
+	return 	texture2D(noise, uv * 0.005).r * vec3(0.3, 0.4, 0.2) +
+			texture2D(noise, uv * 0.05).g * vec3(0.7, 0.6, 0.3) +
+			texture2D(noise, uv * 0.5).b  * vec3(0.1, 0.6, 0.9);
+}
+
+</script>
 <script id="vs-cave-lower" type="x-shader/x-vertex">
 
 /**
@@ -63,9 +74,7 @@ varying vec2 uv;
 varying vec4 object;
 
 void main(void) {
-	vec3 rocktex = 	texture2D(noise, uv * 0.005).r * vec3(0.8, 0.4, 0.2) +
-					texture2D(noise, uv * 0.05).g * vec3(0.3, 0.6, 0.3) +
-					texture2D(noise, uv * 0.5).b  * vec3(0.5, 0.6, 0.9);
+	vec3 rocktex = caveTexture(noise, uv);
 	vec3 leaftex = 	texture2D(leaf, uv * 0.5).rgb;
 	if (object.y > 0.1) {
 		gl_FragColor = vec4(light * light * rocktex, 1.0);
@@ -145,9 +154,7 @@ varying vec2 uv;
 varying vec4 object;
 
 void main(void) {
-	vec3 rocktex = 	texture2D(noise, uv * 0.005).r * vec3(0.8, 0.4, 0.2) +
-					texture2D(noise, uv * 0.05).g * vec3(0.3, 0.6, 0.3) +
-					texture2D(noise, uv * 0.5).b  * vec3(0.5, 0.6, 0.9);
+	vec3 rocktex = caveTexture(noise, uv);
 	gl_FragColor = vec4(light * light * rocktex, 1.0);
 }
 

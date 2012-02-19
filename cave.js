@@ -29,7 +29,8 @@ EASY.cave = {
 	
 		this.lowerShader = SOAR.shader.create(
 			display,
-			SOAR.textOf("vs-cave-lower"), SOAR.textOf("fs-cave-lower"),
+			SOAR.textOf("vs-cave-lower"), 
+			SOAR.textOf("fs-cave-texture") + SOAR.textOf("fs-cave-lower"),
 			["position", "texturec", "a_light"], 
 			["projector", "modelview"],
 			["noise", "leaf"]
@@ -37,7 +38,8 @@ EASY.cave = {
 
 		this.upperShader = SOAR.shader.create(
 			display,
-			SOAR.textOf("vs-cave-upper"), SOAR.textOf("fs-cave-upper"),
+			SOAR.textOf("vs-cave-upper"), 
+			SOAR.textOf("fs-cave-texture") + SOAR.textOf("fs-cave-upper"),
 			["position", "texturec", "a_light"], 
 			["projector", "modelview"],
 			["noise"]

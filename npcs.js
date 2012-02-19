@@ -37,7 +37,7 @@ EASY.npcs = {
 		var pos = SOAR.vector.create();
 		var bound = EASY.world.boundary;
 
-		for (i = 0; i < 250; i++) {
+		for (i = 0; i < 1000; i++) {
 			do {
 				pos.x = rng.getn(bound.x);
 				pos.z = rng.getn(bound.z);
