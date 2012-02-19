@@ -40,6 +40,7 @@ EASY.cave = {
 
 		var lights = SOAR.noise2D.create(1294934, 1, 64, 0.2);
 		var common = SOAR.noise2D.create(5234512, 2, 64, 0.2);
+		var commo2 = SOAR.noise2D.create(9153095, 2, 64, 0.2);
 
 		this.lowerMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
 		this.lowerMesh.add(this.lowerShader.position, 3);
@@ -47,7 +48,7 @@ EASY.cave = {
 		this.lowerMesh.add(this.lowerShader.a_light, 1);
 
 		this.getLowerHeight = function(x, z) {
-			var h = Math.pow(common.get(x, z), 6);
+			var h = Math.pow(commo2.get(x, z) * common.get(x, z), 4);
 			return (h > 6) ? 6 : h;
 		};
 
@@ -79,7 +80,7 @@ EASY.cave = {
 		this.upperMesh.add(this.upperShader.a_light, 1);
 
 		this.getUpperHeight = function(x, z) {
-			var h = 10 - Math.pow(common.get(x, z), 6); 
+			var h = 10 - Math.pow(commo2.get(x, z) * common.get(x, z), 4); 
 			return (h < 4) ? 4 : h;
 		};
 
@@ -181,14 +182,13 @@ EASY.cave = {
 		this.noise1Texture.bind(0, this.lowerShader.noise);
 		this.leafTexture.bind(1, this.lowerShader.leaf);
 		this.lowerMesh.draw();
-		
+
 		gl.cullFace(gl.FRONT);
 
 		this.upperShader.activate();
 		gl.uniformMatrix4fv(this.upperShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.upperShader.modelview, false, camera.modelview());
 		this.noise1Texture.bind(0, this.upperShader.noise);
-		this.lowerMesh.draw();
 		this.upperMesh.draw();
 		
 		gl.disable(gl.CULL_FACE);

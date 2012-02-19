@@ -267,6 +267,9 @@ EASY.player = {
 			case SOAR.KEY.N:
 				EASY.world.stopNpcs = !EASY.world.stopNpcs;
 				break;
+			case SOAR.KEY.G:
+				this.footPosition.y = 200;
+				break;
 		}
 	},
 
