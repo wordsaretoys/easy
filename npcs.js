@@ -31,11 +31,12 @@ EASY.npcs = {
 		this.canvas.width = this.CANVAS_SIZE;
 		this.canvas.height = this.CANVAS_SIZE;
 		this.context = this.canvas.getContext("2d");
-		
+
 		var i;
 		var rng = SOAR.random.create();
 		var pos = SOAR.vector.create();
 		var bound = EASY.world.boundary;
+
 		for (i = 0; i < 1000; i++) {
 			do {
 				pos.x = rng.getn(bound.x);
@@ -47,6 +48,7 @@ EASY.npcs = {
 				EASY.paddler.create(masterSeed.getl(), pos)
 			);
 		}
+
 	},
 	
 	/**
@@ -101,7 +103,7 @@ EASY.npcs = {
 	},
 	
 	/**
-		draw all paddlers visible to player
+		draw all npcs visible to player
 		
 		@method draw
 	**/

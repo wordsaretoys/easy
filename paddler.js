@@ -27,10 +27,8 @@ EASY.paddler = {
 	**/
 
 	init: function() {
-		var display = EASY.display;
-		
 		this.skinShader = SOAR.shader.create(
-			display,
+			EASY.display,
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations", 
@@ -38,7 +36,7 @@ EASY.paddler = {
 			["face", "skin"]
 		);
 		
-		this.faceTexture = SOAR.texture.create(display, this.makeFace());
+		this.makeFace();
 	},
 	
 	/**
@@ -50,7 +48,6 @@ EASY.paddler = {
 		inside the fragment shader.
 		
 		@method makeFace
-		@return pixel array representing texture
 	**/
 	
 	makeFace: function() {
@@ -75,7 +72,10 @@ EASY.paddler = {
 		ctx.arc(12, h - 24, 4, 0, SOAR.PIMUL2, false);
 		ctx.fill();
 	
-		return ctx.getImageData(0, 0, w, h);
+		this.faceTexture = SOAR.texture.create(
+			EASY.display, 
+			ctx.getImageData(0, 0, w, h)
+		);
 	},
 	
 	/**
@@ -115,18 +115,8 @@ EASY.paddler = {
 	**/
 	
 	generate: function() {
-		var display = EASY.display;
-		
-		// create new mesh
-		this.mesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
-		this.mesh.add(this.skinShader.position, 3);
-		this.mesh.add(this.skinShader.texturec, 2);
-
-		// generate the mesh data
-		this.makeModel(this.mesh, this.shaper);
-		
-		// generate a skin
-		this.skin = SOAR.texture.create(display, this.makeSkin(this.seed));
+		this.makeModel();
+		this.makeSkin();
 	},
 	
 	/**
@@ -148,18 +138,21 @@ EASY.paddler = {
 		create a model mesh using a cylindrical base
 		
 		@method makeModel
-		@param m the mesh to append vertexes to
-		@param f the noise function to use as a silhouete model
 	**/
 	
-	makeModel: function(m, f) {
+	makeModel: function() {
 		var stepZ = 1 / this.EXTRUDE_STEPS;
 		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
 		var offset = 1 / EASY.npcs.canvas.height;
+		var mesh;
 		var xa, xb, ya, yb, za, zb;
 		var txa, txb, tya, tyb;
 		var angle, s, c;
 		var ra, rb, e;
+
+		mesh = SOAR.mesh.create(EASY.display, EASY.display.gl.TRIANGLE_STRIP);
+		mesh.add(this.skinShader.position, 3);
+		mesh.add(this.skinShader.texturec, 2);
 
 		for (za = -0.5; za <= 0.5; za += stepZ) {
 			zb = za + stepZ;
@@ -168,8 +161,8 @@ EASY.paddler = {
 			// ra and rb modulate the radius of the cylinder
 			// square root provides a nice rounding effect
 			// without sanding off all of the straight edges
-			ra = Math.sqrt(f.get(txa));
-			rb = Math.sqrt(f.get(txb));
+			ra = Math.sqrt(this.shaper.get(txa));
+			rb = Math.sqrt(this.shaper.get(txb));
 			for (angle = SOAR.PIMUL2; angle >= 0; angle -= stepAngle) {
 				s = Math.sin(angle);
 				c = Math.cos(angle);
@@ -187,27 +180,27 @@ EASY.paddler = {
 				// texture is mirrored across the model
 				tya = Math.abs(ra * c) + offset;
 				tyb = Math.abs(rb * c) + offset;
-				m.set(xa, ya, za, txa, tya);
-				m.set(xb, yb, zb, txb, tyb);
+				mesh.set(xa, ya, za, txa, tya);
+				mesh.set(xb, yb, zb, txb, tyb);
 			}
 		}
-		m.build();
+		mesh.build();
+		this.mesh = mesh;
 	},
 	
 	/**
 		generate random skin texture
 		
 		@method makeSkin
-		@return pixel array representing texture
 	**/
 	
-	makeSkin: function(seed) {
+	makeSkin: function() {
 		var ctx = EASY.npcs.context;
 		var w = EASY.npcs.canvas.width;
 		var h = EASY.npcs.canvas.height;
 		var ww = w / 2;
 		var hh = h / 2;
-		var rng = SOAR.random.create(seed);
+		var rng = SOAR.random.create(this.seed);
 		var r, g, b, base, coat;
 		var i, x, y, s;
 
@@ -234,7 +227,10 @@ EASY.paddler = {
 			ctx.strokeRect(x - s, y, s, s);
 		}
 
-		return ctx.getImageData(0, 0, w, h);
+		this.skin = SOAR.texture.create(
+			EASY.display, 
+			ctx.getImageData(0, 0, w, h)
+		);
 	},
 	
 	/**
