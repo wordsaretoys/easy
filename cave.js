@@ -9,6 +9,7 @@ EASY.cave = {
 
 	BOUND_LIMIT: 1,
 	SEARCH_LIMIT: 32,
+	SEPARATION: 10,
 
 	scratch: {
 		down: SOAR.vector.create(),
@@ -25,78 +26,47 @@ EASY.cave = {
 	
 		var display = EASY.display;
 		var bound = EASY.world.boundary;
-
-		//
-		// create cave floor mesh
-		//
 	
 		this.lowerShader = SOAR.shader.create(
 			display,
-			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave-lower"),
+			SOAR.textOf("vs-cave-lower"), SOAR.textOf("fs-cave-lower"),
 			["position", "texturec", "a_light"], 
 			["projector", "modelview"],
 			["noise", "leaf"]
 		);
 
-		var lights = SOAR.noise2D.create(1294934, 1, 64, 0.2);
-		var common = SOAR.noise2D.create(5234512, 2, 64, 0.2);
-		var commo2 = SOAR.noise2D.create(9153095, 2, 64, 0.2);
-
-		this.lowerMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
-		this.lowerMesh.add(this.lowerShader.position, 3);
-		this.lowerMesh.add(this.lowerShader.texturec, 2);
-		this.lowerMesh.add(this.lowerShader.a_light, 1);
-
-		this.getLowerHeight = function(x, z) {
-			var h = Math.pow(commo2.get(x, z) * common.get(x, z), 4);
-			return (h > 6) ? 6 : h;
-		};
-
-		this.createSheet(
-			this.lowerMesh, 
-			this.getLowerHeight, 
-			function(x, z) {
-				return lights.get(x, z);
-			}
-		);
-		
-		this.lowerMesh.build();
-
-		//
-		// create cave ceiling mesh
-		//
-
 		this.upperShader = SOAR.shader.create(
 			display,
-			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave-upper"),
+			SOAR.textOf("vs-cave-upper"), SOAR.textOf("fs-cave-upper"),
 			["position", "texturec", "a_light"], 
 			["projector", "modelview"],
 			["noise"]
 		);
 
-		this.upperMesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
-		this.upperMesh.add(this.upperShader.position, 3);
-		this.upperMesh.add(this.upperShader.texturec, 2);
-		this.upperMesh.add(this.upperShader.a_light, 1);
+		var lights = SOAR.noise2D.create(1294934, 1, 64, 0.2);
+		var height0 = SOAR.noise2D.create(5234512, 2, 64, 0.2);
+		var height1 = SOAR.noise2D.create(9153095, 2, 64, 0.2);
 
-		this.getUpperHeight = function(x, z) {
-			var h = 10 - Math.pow(commo2.get(x, z) * common.get(x, z), 4); 
-			return (h < 4) ? 4 : h;
+		this.mesh = SOAR.mesh.create(display, display.gl.TRIANGLE_STRIP);
+		this.mesh.add(this.lowerShader.position, 3);
+		this.mesh.add(this.lowerShader.texturec, 2);
+		this.mesh.add(this.lowerShader.a_light, 1);
+		this.mesh.grow(bound.x * bound.z * 2 * 6);
+
+		this.getHeight = function(x, z) {
+			var h = Math.pow(height0.get(x, z) * height1.get(x, z), 4);
+			return (h > 6) ? 6 : h;
 		};
 
 		this.createSheet(
-			this.upperMesh, 
-			this.getUpperHeight, 
+			this.mesh, 
+			this.getHeight, 
 			function(x, z) {
 				return lights.get(x, z);
 			}
 		);
 		
-		this.upperMesh.build();
-		
-		//
-		// set up some constraint limits
-		//
+		this.mesh.build();
 		
 		bound.cx0 = this.BOUND_LIMIT;
 		bound.cx1 = bound.x - this.BOUND_LIMIT;
@@ -181,15 +151,17 @@ EASY.cave = {
 		gl.uniformMatrix4fv(this.lowerShader.modelview, false, camera.modelview());
 		this.noise1Texture.bind(0, this.lowerShader.noise);
 		this.leafTexture.bind(1, this.lowerShader.leaf);
-		this.lowerMesh.draw();
+		this.mesh.draw();
 
 		gl.cullFace(gl.FRONT);
 
+		// though the mesh attributes were defined in terms of the lower shader,
+		// upper shader attributes still work; same underlying representation?
 		this.upperShader.activate();
 		gl.uniformMatrix4fv(this.upperShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.upperShader.modelview, false, camera.modelview());
 		this.noise1Texture.bind(0, this.upperShader.noise);
-		this.upperMesh.draw();
+		this.mesh.draw();
 		
 		gl.disable(gl.CULL_FACE);
 	}

@@ -244,9 +244,9 @@ EASY.paddler = {
 		var dt = SOAR.interval * 0.001;
 		var c = this.center;
 		var o = this.rotor.orientation;
-		var hf = EASY.cave.getLowerHeight(c.x + o.front.x, c.z + o.front.z);
-		var hr = EASY.cave.getLowerHeight(c.x + o.right.x, c.z + o.right.z);
-		var hl = EASY.cave.getLowerHeight(c.x - o.right.x, c.z - o.right.z);
+		var hf = EASY.cave.getHeight(c.x + o.front.x, c.z + o.front.z);
+		var hr = EASY.cave.getHeight(c.x + o.right.x, c.z + o.right.z);
+		var hl = EASY.cave.getHeight(c.x - o.right.x, c.z - o.right.z);
 
 		if (hr < hf) {
 			this.rotor.turn(hf - hr, 0);

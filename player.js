@@ -150,8 +150,8 @@ EASY.player = {
 	
 	constrainVelocity: function(p, v) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.cave.getLowerHeight(p.x, p.z);
-		var uh = EASY.cave.getUpperHeight(p.x, p.z);
+		var lh = EASY.cave.getHeight(p.x, p.z);
+		var uh = EASY.cave.SEPARATION - lh;
 		var down = this.scratch.direction;
 	
 		// on the ground, v can't be negative
@@ -176,9 +176,9 @@ EASY.player = {
 		// generate a vector that points to "down" and whose 
 		// magnitude increases geometrically with the slope
 		down.set(
-			EASY.cave.getLowerHeight(p.x - 1, p.z) - EASY.cave.getLowerHeight(p.x + 1, p.z),
+			EASY.cave.getHeight(p.x - 1, p.z) - EASY.cave.getHeight(p.x + 1, p.z),
 			0, 
-			EASY.cave.getLowerHeight(p.x, p.z - 1) - EASY.cave.getLowerHeight(p.x, p.z + 1)
+			EASY.cave.getHeight(p.x, p.z - 1) - EASY.cave.getHeight(p.x, p.z + 1)
 		).set(
 			Math.pow(down.x, 2) * SOAR.sign(down.x),
 			0,
@@ -202,8 +202,8 @@ EASY.player = {
 	
 	constrainPosition: function(p) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.cave.getLowerHeight(p.x, p.z);
-		var uh = EASY.cave.getUpperHeight(p.x, p.z);
+		var lh = EASY.cave.getHeight(p.x, p.z);
+		var uh = EASY.cave.SEPARATION - lh;
 	
 		// p isn't allowed to be below ground
 		if (p.y < lh) {
@@ -266,9 +266,6 @@ EASY.player = {
 				break;
 			case SOAR.KEY.N:
 				EASY.world.stopNpcs = !EASY.world.stopNpcs;
-				break;
-			case SOAR.KEY.G:
-				this.footPosition.y = 200;
 				break;
 		}
 	},

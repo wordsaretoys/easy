@@ -41,7 +41,7 @@ EASY.npcs = {
 			do {
 				pos.x = rng.getn(bound.x);
 				pos.z = rng.getn(bound.z);
-			} while(EASY.cave.getLowerHeight(pos.x, pos.z) > 1)
+			} while(EASY.cave.getHeight(pos.x, pos.z) > 1)
 			pos.y = rng.getn(5) + 1;
 //			pos.y = 1;
 			this.masterList.push(

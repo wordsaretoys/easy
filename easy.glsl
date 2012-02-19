@@ -1,7 +1,7 @@
-<script id="vs-cave" type="x-shader/x-vertex">
+<script id="vs-cave-lower" type="x-shader/x-vertex">
 
 /**
-	cave vertex shader
+	cave lower vertex shader
 	O' = P * M * V * O transformation, plus texture coordinates
 	and color and lighting values
 	
@@ -79,6 +79,48 @@ void main(void) {
 
 }
 
+</script>
+
+<script id="vs-cave-upper" type="x-shader/x-vertex">
+
+/**
+	cave upper vertex shader
+	O' = P * M * V * O transformation, plus texture coordinates
+	and color and lighting values
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	@param a_light  vertex array of light intensities
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates
+	@param light	light intensity
+	@param object	position in object coordinates
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+attribute float a_light;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+
+varying vec2 uv;
+varying float light;
+varying vec4 object;
+
+void main(void) {
+	object = vec4(position, 1.0);
+	object.y = 10.0 - object.y;
+	gl_Position = projector * modelview * object;
+	uv = texturec;
+	light = a_light;
+	
+}
 </script>
 
 <script id="fs-cave-upper" type="x-shader/x-fragment">
