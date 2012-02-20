@@ -117,6 +117,7 @@ attribute float a_light;
 
 uniform mat4 projector;
 uniform mat4 modelview;
+uniform float separation;
 
 varying vec2 uv;
 varying float light;
@@ -124,7 +125,7 @@ varying vec4 object;
 
 void main(void) {
 	object = vec4(position, 1.0);
-	object.y = 10.0 - object.y;
+	object.y = separation - object.y;
 	gl_Position = projector * modelview * object;
 	uv = texturec;
 	light = a_light;

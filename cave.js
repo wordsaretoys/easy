@@ -9,7 +9,8 @@ EASY.cave = {
 
 	BOUND_LIMIT: 1,
 	SEARCH_LIMIT: 32,
-	SEPARATION: 10,
+	MAX_HEIGHT: 5,
+	SEPARATION: 9,
 	MESH_STEP: 0.75,
 
 	scratch: {
@@ -42,7 +43,7 @@ EASY.cave = {
 			SOAR.textOf("vs-cave-upper"), 
 			SOAR.textOf("fs-cave-texture") + SOAR.textOf("fs-cave-upper"),
 			["position", "texturec", "a_light"], 
-			["projector", "modelview"],
+			["projector", "modelview", "separation"],
 			["noise"]
 		);
 
@@ -56,9 +57,10 @@ EASY.cave = {
 		this.mesh.add(this.lowerShader.a_light, 1);
 		this.mesh.grow(bound.x * bound.z * 2 * 6);
 
+		var maxh = this.MAX_HEIGHT;
 		this.getHeight = function(x, z) {
 			var h = Math.pow(height0.get(x, z) * height1.get(x, z), 4);
-			return (h > 6) ? 6 : h;
+			return (h > maxh) ? maxh : h;
 		};
 
 		this.createSheet(
@@ -163,9 +165,11 @@ EASY.cave = {
 
 		// though the mesh attributes were defined in terms of the lower shader,
 		// upper shader attributes still work; same underlying representation?
+		// TODO: swap out attributes via direct access to mesh array
 		this.upperShader.activate();
 		gl.uniformMatrix4fv(this.upperShader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.upperShader.modelview, false, camera.modelview());
+		gl.uniform1f(this.upperShader.separation, this.SEPARATION);
 		this.noise1Texture.bind(0, this.upperShader.noise);
 		this.mesh.draw();
 		
