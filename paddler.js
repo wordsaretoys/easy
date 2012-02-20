@@ -90,7 +90,8 @@ EASY.paddler = {
 	create: function(seed, start) {
 		var o = Object.create(EASY.paddler);
 
-		o.type = "paddler";	
+		o.rng = SOAR.random.create(seed);
+		o.type = "paddler";
 		o.seed = seed;
 		o.center = SOAR.vector.create().copy(start);
 	
@@ -102,6 +103,8 @@ EASY.paddler = {
 		o.rotor = SOAR.boundRotor.create();
 		
 		o.speed = 1;
+		o.pathTimeout = 0;
+		o.targetPitch = -0.5;
 		
 		return o;		
 	},
@@ -248,12 +251,32 @@ EASY.paddler = {
 		var hr = EASY.cave.getHeight(c.x + o.right.x, c.z + o.right.z);
 		var hl = EASY.cave.getHeight(c.x - o.right.x, c.z - o.right.z);
 
+		this.pathTimeout -= SOAR.interval;
+		if (this.pathTimeout <= 0) {
+			this.pathTimeout = 5000 + this.rng.getl() % 5000;
+			
+			this.targetPitch = this.rng.get() - this.rng.get();
+		}
+/*
+		if (c.y - hf < 0.5) {
+			this.targetPitch = 0.5;
+		}
+		if (EASY.cave.SEPARATION - hf - c.y < 0.5) {
+			this.targetPitch = -0.5;
+		}
+*/	
+		var h = EASY.cave.getHeight(c.x, c.z);
+		var fy = -Math.pow((c.y - EASY.cave.MAX_HEIGHT) / (EASY.cave.MAX_HEIGHT - h), 3);
+
+		this.rotor.turn(0, (o.front.y - fy - this.targetPitch) * 0.01);
+
 		if (hr < hf) {
 			this.rotor.turn(hf - hr, 0);
 		}
 		if (hl < hf) {
 			this.rotor.turn(hl - hf, 0);
 		}
+
 		scr.vel.copy(o.front).mul(this.speed * dt);
 		c.add(scr.vel);
 	},
