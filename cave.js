@@ -10,6 +10,7 @@ EASY.cave = {
 	BOUND_LIMIT: 1,
 	SEARCH_LIMIT: 32,
 	SEPARATION: 10,
+	MESH_STEP: 0.75,
 
 	scratch: {
 		down: SOAR.vector.create(),
@@ -94,18 +95,21 @@ EASY.cave = {
 		var x0 = 0, x1 = bound.x;
 		var z0 = 0, z1 = bound.z;
 		var oddrow = false;
+		var xstep = this.MESH_STEP;
+		var zstep;
 		var xa, xb, ya, yb;
 		var txa, txb, tz;
 		var x, y, z;
 
 		// building a triangle strip-based grid takes some fiddling
 		// we have to construct the grid in different directions on alternating rows
-		for (x = x0; x <= x1; x++) {
-			xa = oddrow ? x + 1 : x;
-			xb = oddrow ? x : x + 1;
+		for (x = x0; x <= x1; x += xstep) {
+			xa = oddrow ? x + xstep : x;
+			xb = oddrow ? x : x + xstep;
 			txa = xa / x1;
 			txb = xb / x1;
-			for (z = oddrow ? z0 : z1; oddrow ? z <= z1 : z >= z0; z += oddrow ? 1 : -1) {
+			zstep = oddrow ? this.MESH_STEP : -this.MESH_STEP;
+			for (z = oddrow ? z0 : z1; oddrow ? z <= z1 : z >= z0; z += zstep) {
 				ya = f(xa, z);
 				yb = f(xb, z);
 				tz = z / z1;
