@@ -33,7 +33,7 @@ EASY.paddler = {
 		var bound = EASY.world.boundary;
 		var i, il, o;
 	
-		this.skinShader = SOAR.shader.create(
+		this.shader = SOAR.shader.create(
 			EASY.display,
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
 			["position", "texturec"], 
@@ -41,6 +41,8 @@ EASY.paddler = {
 				"center", "time", "light", "alpha"],
 			["face", "skin"]
 		);
+		
+		this.rng = SOAR.random.create();
 		
 		this.makeFace();
 
@@ -107,7 +109,6 @@ EASY.paddler = {
 	create: function(seed, start) {
 		var o = Object.create(EASY.paddler);
 
-		o.rng = SOAR.random.create(seed);
 		o.seed = seed;
 		o.center = SOAR.vector.create().copy(start);
 	
@@ -170,8 +171,8 @@ EASY.paddler = {
 		var ra, rb, e;
 
 		mesh = SOAR.mesh.create(EASY.display, EASY.display.gl.TRIANGLE_STRIP);
-		mesh.add(this.skinShader.position, 3);
-		mesh.add(this.skinShader.texturec, 2);
+		mesh.add(this.shader.position, 3);
+		mesh.add(this.shader.texturec, 2);
 
 		for (za = -0.5; za <= 0.5; za += stepZ) {
 			zb = za + stepZ;
@@ -219,9 +220,11 @@ EASY.paddler = {
 		var h = EASY.models.canvas.height;
 		var ww = w / 2;
 		var hh = h / 2;
-		var rng = SOAR.random.create(this.seed);
+		var rng = this.rng;
 		var r, g, b, base, coat;
 		var i, x, y, s;
+
+		rng.reseed(this.seed);
 
 		ctx.clearRect(0, 0, w, h);
 		r = Math.floor(rng.getn(256));
@@ -307,6 +310,7 @@ EASY.paddler = {
 	predraw: function() {
 		var gl = EASY.display.gl;
 		var camera = EASY.player.camera;
+		var shader = this.shader;
 
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
@@ -314,10 +318,10 @@ EASY.paddler = {
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		this.skinShader.activate();
-		gl.uniformMatrix4fv(this.skinShader.projector, false, camera.projector());
-		gl.uniformMatrix4fv(this.skinShader.modelview, false, camera.modelview());
-		this.faceTexture.bind(0, this.skinShader.face);
+		shader.activate();
+		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
+		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+		this.faceTexture.bind(0, shader.face);
 	},
 	
 	/**
@@ -328,17 +332,17 @@ EASY.paddler = {
 	
 	draw: function() {
 		var gl = EASY.display.gl;
-		var dist, light, time;
+		var shader = this.shader;
+		var center, light, time;
 	
-		c = this.center;
+		center = this.center;
 		time = SOAR.elapsedTime * 0.01;
-		light = EASY.cave.lights.get(c.x, c.z);
-		gl.uniformMatrix4fv(this.skinShader.rotations, false, this.rotor.matrix.transpose);
-		gl.uniform3f(this.skinShader.center, c.x, c.y, c.z);
-		gl.uniform1f(this.skinShader.time, time);
-		gl.uniform1f(this.skinShader.alpha, 1);
-		gl.uniform1f(this.skinShader.light, light);
-		this.skin.bind(1, this.skinShader.skin);
+		light = EASY.cave.lights.get(center.x, center.z);
+		gl.uniformMatrix4fv(shader.rotations, false, this.rotor.matrix.transpose);
+		gl.uniform3f(shader.center, center.x, center.y, center.z);
+		gl.uniform1f(shader.time, time);
+		gl.uniform1f(shader.light, light);
+		this.skin.bind(1, shader.skin);
 		this.mesh.draw();
 	},
 

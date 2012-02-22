@@ -61,22 +61,12 @@ EASY.player = {
 		dom.window.bind("resize", dom.mouseTracker.resize);
 		dom.mouseTracker.resize();
 
-		var that = this;		
-		dom.window.bind("keydown", function(event) {
-			that.onKeyDown(event);
-		});
-		dom.window.bind("keyup", function(event) {
-			that.onKeyUp(event);
-		});
-		dom.mouseTracker.bind("mousedown", function(event) {
-			that.onMouseDown(event);
-		});
-		dom.mouseTracker.bind("mouseup", function(event) {
-			that.onMouseUp(event);
-		});
-		dom.mouseTracker.bind("mousemove", function(event) {
-			that.onMouseMove(event);
-		});
+		dom.window.bind("keydown", this.onKeyDown);
+		dom.window.bind("keyup", this.onKeyUp);
+
+		dom.mouseTracker.bind("mousedown", this.onMouseDown);
+		dom.mouseTracker.bind("mouseup", this.onMouseUp);
+		dom.mouseTracker.bind("mousemove", this.onMouseMove);
 
 		// create a yaw/pitch constrained camera
 		this.camera = SOAR.camera.create(
@@ -240,7 +230,8 @@ EASY.player = {
 
 	onKeyDown: function(event) {
 
-		var motion = this.motion;
+		var that = EASY.player;
+		var motion = that.motion;
 		
 		switch(event.keyCode) {
 			case SOAR.KEY.A:
@@ -256,7 +247,7 @@ EASY.player = {
 				motion.moveback = true;
 				break;
 			case SOAR.KEY.SHIFT:
-				this.sprint = true;
+				that.sprint = true;
 				break;
 				
 // debugging keys -- remove in production release
@@ -280,7 +271,8 @@ EASY.player = {
 
 	onKeyUp: function(event) {
 
-		var motion = this.motion;
+		var that = EASY.player;
+		var motion = that.motion;
 
 		switch(event.keyCode) {
 		
@@ -297,7 +289,7 @@ EASY.player = {
 				motion.moveback = false;
 				break;
 			case SOAR.KEY.SHIFT:
-				this.sprint = false;
+				that.sprint = false;
 				break;
 		}
 	},
@@ -311,7 +303,7 @@ EASY.player = {
 	**/
 
 	onMouseDown: function(event) {
-		this.mouse.down = true;
+		EASY.player.mouse.down = true;
 		return false;
 	},
 	
@@ -324,7 +316,7 @@ EASY.player = {
 	**/
 
 	onMouseUp: function(event) {
-		this.mouse.down = false;
+		EASY.player.mouse.down = false;
 		return false;
 	},
 
@@ -337,15 +329,16 @@ EASY.player = {
 	**/
 
 	onMouseMove: function(event) {
+		var that = EASY.player;
 		var dx, dy;
 
-		if (this.mouse.down) {
-			dx = this.SPIN_RATE * (event.pageX - this.mouse.x);
-			dy = this.SPIN_RATE * (event.pageY - this.mouse.y);
-			this.camera.turn(-dx, -dy);
+		if (that.mouse.down) {
+			dx = that.SPIN_RATE * (event.pageX - that.mouse.x);
+			dy = that.SPIN_RATE * (event.pageY - that.mouse.y);
+			that.camera.turn(-dx, -dy);
 		}
-		this.mouse.x = event.pageX;
-		this.mouse.y = event.pageY;
+		that.mouse.x = event.pageX;
+		that.mouse.y = event.pageY;
 		return false;
 	},
 	
