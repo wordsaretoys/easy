@@ -100,7 +100,6 @@ EASY.cave = {
 		var xstep = this.MESH_STEP;
 		var zstep;
 		var xa, xb, ya, yb;
-		var txa, txb, tz;
 		var x, y, z;
 
 		// building a triangle strip-based grid takes some fiddling
@@ -108,13 +107,10 @@ EASY.cave = {
 		for (x = x0; x <= x1; x += xstep) {
 			xa = oddrow ? x + xstep : x;
 			xb = oddrow ? x : x + xstep;
-			txa = xa / x1;
-			txb = xb / x1;
 			zstep = oddrow ? this.MESH_STEP : -this.MESH_STEP;
 			for (z = oddrow ? z0 : z1; oddrow ? z <= z1 : z >= z0; z += zstep) {
 				ya = f(xa, z);
 				yb = f(xb, z);
-				tz = z / z1;
 				m.set(xa, ya, z, xa, z, l(xa, z));
 				m.set(xb, yb, z, xb, z, l(xb, z));
 			}
