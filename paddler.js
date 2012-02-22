@@ -13,6 +13,7 @@
 
 EASY.paddler = {
 
+	TOTAL_COUNT: 100,
 	EXTRUDE_STEPS: 24,
 
 	scratch: {
@@ -27,6 +28,11 @@ EASY.paddler = {
 	**/
 
 	init: function() {
+		var rng = SOAR.random.create(302921);
+		var pos = SOAR.vector.create();
+		var bound = EASY.world.boundary;
+		var i, il, o;
+	
 		this.skinShader = SOAR.shader.create(
 			EASY.display,
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
@@ -37,6 +43,17 @@ EASY.paddler = {
 		);
 		
 		this.makeFace();
+
+		for (i = 0, il = this.TOTAL_COUNT; i < il; i++) {
+			do {
+				pos.x = rng.getn(bound.x);
+				pos.z = rng.getn(bound.z);
+			} while(EASY.cave.getHeight(pos.x, pos.z) > 1)
+			pos.y = rng.getn(5) + 1;
+//			pos.y = 1;
+			o = EASY.paddler.create(rng.getl(), pos);
+			EASY.npcs.add("paddler", o);
+		}
 	},
 	
 	/**
@@ -91,7 +108,6 @@ EASY.paddler = {
 		var o = Object.create(EASY.paddler);
 
 		o.rng = SOAR.random.create(seed);
-		o.type = "paddler";
 		o.seed = seed;
 		o.center = SOAR.vector.create().copy(start);
 	
@@ -254,7 +270,6 @@ EASY.paddler = {
 		this.pathTimeout -= SOAR.interval;
 		if (this.pathTimeout <= 0) {
 			this.pathTimeout = 5000 + this.rng.getl() % 5000;
-			
 			this.targetPitch = this.rng.get() - this.rng.get();
 		}
 /*

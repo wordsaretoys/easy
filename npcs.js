@@ -15,8 +15,6 @@ EASY.npcs = {
 	masterList: [],
 	activeList: [],
 
-	phase: 0,
-
 	/**
 		initialize members
 		
@@ -24,78 +22,81 @@ EASY.npcs = {
 	**/
 
 	init: function() {
-		var display = EASY.display;
-		var masterSeed = SOAR.random.create();
-	
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = this.CANVAS_SIZE;
 		this.canvas.height = this.CANVAS_SIZE;
 		this.context = this.canvas.getContext("2d");
-
-		var i;
-		var rng = SOAR.random.create();
-		var pos = SOAR.vector.create();
-		var bound = EASY.world.boundary;
-
-		for (i = 0; i < 1000; i++) {
-			do {
-				pos.x = rng.getn(bound.x);
-				pos.z = rng.getn(bound.z);
-			} while(EASY.cave.getHeight(pos.x, pos.z) > 1)
-			pos.y = rng.getn(5) + 1;
-//			pos.y = 1;
-			this.masterList.push(
-				EASY.paddler.create(masterSeed.getl(), pos)
-			);
-		}
-
+		
+		var that = this;
+		SOAR.schedule(function() {
+			that.updateActiveList();
+		}, 1000, true);
 	},
 	
 	/**
-		handle updates to the npc collection
+		add object to master list
+		
+		@method add
+		@param type string representing type of object
+		@param o object to add
+	**/
+	
+	add: function(type, o) {
+		o.type = type;
+		this.masterList.push(o);
+	},
+	
+	/**
+		update membership in the active collection
+		
+		do this periodically--NOT on every animation frame--
+		to refresh which models are displayed and to release
+		GL resources which aren't used anymore.
+		
+		@method updateActiveList
+	**/
+	
+	updateActiveList: function() {
+		var camera = EASY.player.camera;
+		var dt = SOAR.interval * 0.001;
+		var i, il, npc, d;
+	
+		this.activeList.length = 0;
+		for (i = 0, il = this.masterList.length; i < il; i++) {
+			npc = this.masterList[i];
+			d = camera.position.distance(npc.center);
+			if (d > this.DELETE_RADIUS) {
+				if (npc.mesh) {
+					npc.release();
+				}
+			}
+			if (d <= this.CREATE_RADIUS) {
+				if (!npc.mesh) {
+					npc.generate();
+				}
+				this.activeList.push(npc);
+			}
+		}
+		
+		// sort the regenerated list by npc type
+		this.activeList.sort(function(a, b) {
+			return a.type > b.type;
+		});
+
+		EASY.debug(this.activeList.length + " / " + this.masterList.length);
+	},
+	
+	/**
+		update members OF the active collection
 		
 		@method update
 	**/
 
 	update: function() {
-		var scr = this.scratch;
-		var camera = EASY.player.camera;
-		var dt = SOAR.interval * 0.001;
-		var i, il, npc, d;
-
-		// periodically regenerate the active list,
-		// generating and the releasing GL objects
-		// as needed
-		if ( (this.phase++) % 100 === 0) {
-		
-			this.activeList.length = 0;
-			for (i = 0, il = this.masterList.length; i < il; i++) {
-				npc = this.masterList[i];
-				d = camera.position.distance(npc.center);
-				if (d > this.DELETE_RADIUS) {
-					if (npc.mesh) {
-						npc.release();
-					}
-				}
-				if (d <= this.CREATE_RADIUS) {
-					if (!npc.mesh) {
-						npc.generate();
-					}
-					this.activeList.push(npc);
-				}
-			}
-			
-			// sort the regenerated list by npc type
-			this.activeList.sort(function(a, b) {
-				return a.type > b.type;
-			});
-		}
-		
-		EASY.debug(this.activeList.length + " / " + this.masterList.length);
+		var i, il;
 
 		// allow all active npcs to update themselves
 		if (!EASY.world.stopNpcs) {
-
 			for (i = 0, il = this.activeList.length; i < il; i++) {
 				this.activeList[i].update();
 			}
