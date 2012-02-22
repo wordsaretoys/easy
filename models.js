@@ -1,11 +1,11 @@
 /**
-	manage npc creation, display, update, and destruction
+	manage model creation, display, update, and destruction
 	
 	@namespace EASY
-	@class npcs
+	@class models
 **/
 
-EASY.npcs = {
+EASY.models = {
 
 	CANVAS_SIZE: 256,
 	
@@ -59,26 +59,26 @@ EASY.npcs = {
 	updateActiveList: function() {
 		var camera = EASY.player.camera;
 		var dt = SOAR.interval * 0.001;
-		var i, il, npc, d;
+		var i, il, model, d;
 	
 		this.activeList.length = 0;
 		for (i = 0, il = this.masterList.length; i < il; i++) {
-			npc = this.masterList[i];
-			d = camera.position.distance(npc.center);
+			model = this.masterList[i];
+			d = camera.position.distance(model.center);
 			if (d > this.DELETE_RADIUS) {
-				if (npc.mesh) {
-					npc.release();
+				if (model.mesh) {
+					model.release();
 				}
 			}
 			if (d <= this.CREATE_RADIUS) {
-				if (!npc.mesh) {
-					npc.generate();
+				if (!model.mesh) {
+					model.generate();
 				}
-				this.activeList.push(npc);
+				this.activeList.push(model);
 			}
 		}
 		
-		// sort the regenerated list by npc type
+		// sort the regenerated list by model type
 		this.activeList.sort(function(a, b) {
 			return a.type > b.type;
 		});
@@ -95,8 +95,8 @@ EASY.npcs = {
 	update: function() {
 		var i, il;
 
-		// allow all active npcs to update themselves
-		if (!EASY.world.stopNpcs) {
+		// allow all active model to update themselves
+		if (!EASY.world.stopModels) {
 			for (i = 0, il = this.activeList.length; i < il; i++) {
 				this.activeList[i].update();
 			}
@@ -104,13 +104,13 @@ EASY.npcs = {
 	},
 	
 	/**
-		draw all npcs visible to player
+		draw all models visible to player
 		
 		@method draw
 	**/
 	
 	draw: function() {
-		var i, npc, last;
+		var i, model, last;
 		var il = this.activeList.length;
 
 		if (il > 0) {
@@ -119,15 +119,15 @@ EASY.npcs = {
 		}
 
 		for (i = 0; i < il; i++) {
-			npc = this.activeList[i];
+			model = this.activeList[i];
 
-			if (last.type !== npc.type) {
+			if (last.type !== model.type) {
 				last.postdraw();
-				last = npc;
+				last = model;
 				last.predraw();
 			}
 
-			npc.draw();
+			model.draw();
 			
 		}
 		

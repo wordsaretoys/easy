@@ -265,7 +265,7 @@ EASY.player = {
 				EASY.world.hideCave = !EASY.world.hideCave;
 				break;
 			case SOAR.KEY.N:
-				EASY.world.stopNpcs = !EASY.world.stopNpcs;
+				EASY.world.stopModels = !EASY.world.stopModels;
 				break;
 		}
 	},

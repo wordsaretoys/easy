@@ -52,7 +52,7 @@ EASY.paddler = {
 			pos.y = rng.getn(5) + 1;
 //			pos.y = 1;
 			o = EASY.paddler.create(rng.getl(), pos);
-			EASY.npcs.add("paddler", o);
+			EASY.models.add("paddler", o);
 		}
 	},
 	
@@ -68,9 +68,9 @@ EASY.paddler = {
 	**/
 	
 	makeFace: function() {
-		var ctx = EASY.npcs.context;
-		var w = EASY.npcs.canvas.width;
-		var h = EASY.npcs.canvas.height;
+		var ctx = EASY.models.context;
+		var w = EASY.models.canvas.width;
+		var h = EASY.models.canvas.height;
 		
 		ctx.clearRect(0, 0, w, h);
 
@@ -162,7 +162,7 @@ EASY.paddler = {
 	makeModel: function() {
 		var stepZ = 1 / this.EXTRUDE_STEPS;
 		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
-		var offset = 1 / EASY.npcs.canvas.height;
+		var offset = 1 / EASY.models.canvas.height;
 		var mesh;
 		var xa, xb, ya, yb, za, zb;
 		var txa, txb, tya, tyb;
@@ -214,9 +214,9 @@ EASY.paddler = {
 	**/
 	
 	makeSkin: function() {
-		var ctx = EASY.npcs.context;
-		var w = EASY.npcs.canvas.width;
-		var h = EASY.npcs.canvas.height;
+		var ctx = EASY.models.context;
+		var w = EASY.models.canvas.width;
+		var h = EASY.models.canvas.height;
 		var ww = w / 2;
 		var hh = h / 2;
 		var rng = SOAR.random.create(this.seed);

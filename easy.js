@@ -42,7 +42,7 @@ var EASY = {
 		// while waiting for resource load, initialize game objects
 		EASY.cave.init();
 		EASY.player.init();
-		EASY.npcs.init();
+		EASY.models.init();
 		EASY.paddler.init();
 
 		// begin async loading of resources from the server
@@ -79,7 +79,7 @@ var EASY = {
 	
 	update: function() {
 		EASY.player.update();
-		EASY.npcs.update();
+		EASY.models.update();
 	},
 	
 	/**
@@ -101,7 +101,7 @@ var EASY = {
 		
 		if (!EASY.world.hideCave)
 			EASY.cave.draw();
-		EASY.npcs.draw();
+		EASY.models.draw();
 	},
 
 	/**
