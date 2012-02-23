@@ -36,9 +36,9 @@ EASY.pile = {
 		
 		this.bumps = SOAR.noise1D.create(1029192, 3 * this.MESH_STEP, 4, 2);
 		
-		pos.set(76, 0, 243);
-		var o = EASY.pile.create("dirt", pos);
-		EASY.models.add("dirtpile", o);
+//		pos.set(76, 0, 243);
+//		var o = EASY.pile.create("dirt", pos);
+//		EASY.models.add("dirtpile", o);
 
 	},
 
@@ -168,7 +168,7 @@ EASY.pile = {
 		var center = this.center;
 	
 		gl.uniform3f(this.shader.center, center.x, center.y, center.z);
-		this.skin.bind(1, this.shader.skin);
+		this.skin.bind(0, this.shader.skin);
 		this.mesh.draw();
 	},
 

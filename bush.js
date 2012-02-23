@@ -11,8 +11,8 @@
 
 EASY.bush = {
 
-	MESH_STEP: 0.05,
-	
+	PALETTE_SIZE: 8,
+
 	scratch: {
 		pos: SOAR.vector.create()
 	},
@@ -30,16 +30,29 @@ EASY.bush = {
 		this.shader = SOAR.shader.create(
 			EASY.display,
 			SOAR.textOf("vs-bush"), SOAR.textOf("fs-bush"),
-			["position", "texturec"], 
+			["position", "a_color"], 
 			["projector", "modelview", "center", "alpha"],
-			["skin"]
+			["palette"]
 		);
 		
 		this.rng = SOAR.random.create();
+		var o, rng = this.rng;
+		var bound = EASY.world.boundary;
 		
 //		pos.set(76, 0, 243);
-//		var o = EASY.bush.create(123212, pos);
+//		var o = EASY.bush.create(92223, pos);
 //		EASY.models.add("bush", o);
+		
+		for (i = 0, il = 1000; i < il; i++) {
+			do {
+				pos.x = rng.getn(bound.x);
+				pos.z = rng.getn(bound.z);
+			} while(EASY.cave.getHeight(pos.x, pos.z) > 0.1)
+			pos.y = 0;
+			o = EASY.bush.create(rng.getl(), pos);
+			EASY.models.add("bush", o);
+		}
+		
 	},
 	
 	/**
@@ -61,7 +74,7 @@ EASY.bush = {
 	},
 	
 	/**
-		generate a model/skin for a bush
+		generate a model/palette for a bush
 		
 		call when the bush must be visible to the player
 		
@@ -70,7 +83,7 @@ EASY.bush = {
 	
 	generate: function() {
 		this.makeModel();
-		this.makeSkin();
+		this.makePalette();
 	},
 	
 	/**
@@ -83,101 +96,81 @@ EASY.bush = {
 	
 	release: function() {
 		this.mesh.release();
-		this.skin.release();
+		this.palette.release();
 		delete this.mesh;
-		delete this.skin;
+		delete this.palette;
 	},
 
 	/**
-		create a model mesh using a flat sheet base
+		create a model mesh using a random walk
 		
 		@method makeModel
 	**/
 	
 	makeModel: function() {
-		var oddrow = false;
-		var xstep = this.MESH_STEP;
-		var zstep;
-		var xa, xb, ya, yb;
-		var txa, txb, tz;
-		var x, y, z;
+		var rng = this.rng;
+		var angle, sina, cosa;
+		var rx, rz;
+		var x, y, z, c;
+		var i, j, k;
+		
+		var fold = 11;
+		var reps = 250;
 
-		mesh = SOAR.mesh.create(EASY.display, EASY.display.gl.TRIANGLE_STRIP);
+		mesh = SOAR.mesh.create(EASY.display);
 		mesh.add(this.shader.position, 3);
-		mesh.add(this.shader.texturec, 2);
+		mesh.add(this.shader.a_color, 1);
 
-		for (x = -0.5; x < 0.49; x += xstep) {
-			xa = oddrow ? x + xstep : x;
-			xb = oddrow ? x : x + xstep;
-			txa = xa + 0.5;
-			txb = xb + 0.5;
-			zstep = oddrow ? this.MESH_STEP : -this.MESH_STEP;
-			for (z = oddrow ? -0.5 : 0.5; oddrow ? z < 0.5 : z > -0.5; z += zstep) {
-				ya = this.scratch.pos.set(xa, 1, z).norm().y - 0.9;
-				yb = this.scratch.pos.set(xb, 1, z).norm().y - 0.9;
-				tz = z + 0.5;
-				mesh.set(xa, ya, z, txa, tz);
-				mesh.set(xb, yb, z, txb, tz);
+		for (i = 0; i < fold; i++) {
+		
+			angle = SOAR.PIMUL2 * i / fold;
+			sina = Math.sin(angle);
+			cosa = Math.cos(angle);
+			rng.reseed(this.seed);
+			x = y = z = 0;
+			for (j = 0; j < reps; j++) {
+				c = this.PALETTE_SIZE * rng.get();
+				for (k = 0; k < 3; k++) {
+					x += 0.05 * (rng.get() - 0.5);
+					y += 0.05 * (rng.get() - 0.5);
+					z += 0.05 * (rng.get() - 0.5);
+					rx = x * cosa - z * sina;
+					rz = x * sina + z * cosa;
+					mesh.set(rx, y, rz, c);
+					x = Math.min(1, Math.max(x, -1));
+					y = Math.min(1, Math.max(y, 0));
+					z = Math.min(1, Math.max(z, -1));
+				}
 			}
-			oddrow = !oddrow;
 		}
-
 		mesh.build();
 		this.mesh = mesh;
 	},
 	
 	/**
-		generate random skin texture
+		generate random palette as texture
 		
-		@method makeSkin
+		@method makePalette
 	**/
 	
-	makeSkin: function() {
+	makePalette: function() {
 		var ctx = EASY.models.context;
-		var w = EASY.models.canvas.width;
-		var h = EASY.models.canvas.height;
-		var ww = w / 2;
-		var hh = h / 2;
 		var rng = this.rng;
-		var palette = [];
+		var palette;
 		var r, g, b;
-		var i, j;
+		var i, il;
 
 //		rng.reseed(this.seed);
-		ctx.clearRect(0, 0, w, h);
-/*
-		ctx.strokeStyle = "rgb(0, 0, 0)";
-		ctx.lineWidth = 1;
-		for (i = 0; i < 100; i++) {
-			ctx.beginPath();
-			ctx.moveTo(ww, hh);
-			ctx.lineTo(rng.getn(w), rng.getn(h));
-			ctx.stroke();
-		}
-*/
-//		for (i = 0; i < 10; i++) {	
-			r = Math.floor(rng.getn(256));
-			g = Math.floor(rng.getn(256));
-			b = Math.floor(rng.getn(256));
-			ctx.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", 0.05)";
-			for (j = 0; j < 10000; j++) {
-				ctx.fillRect(rng.getn(w), rng.getn(h), 16, 16);
-			}
-//		}
-		
-		this.skin = SOAR.texture.create(
-			EASY.display, 
-			ctx.getImageData(0, 0, w, h)
-		);
-	},
-	
-	/**
-		static model, update is placeholder function
-		
-		@method update
-	**/
+		ctx.clearRect(0, 0, 1, this.PALETTE_SIZE);
 
-	update: function() {
+		palette = ctx.createImageData(1, this.PALETTE_SIZE);
+		for (i = 0, il = this.PALETTE_SIZE * 4; i < il; i += 4) {
+			palette.data[i    ] = Math.floor(rng.getn(256));
+			palette.data[i + 1] = Math.floor(rng.getn(256));
+			palette.data[i + 2] = Math.floor(rng.getn(256));
+			palette.data[i + 3] = 255;
+		}
+		this.palette = SOAR.texture.create(EASY.display, palette);
 	},
 	
 	/**
@@ -192,9 +185,6 @@ EASY.bush = {
 		var gl = EASY.display.gl;
 		var camera = EASY.player.camera;
 		var shader = this.shader;
-
-		gl.enable(gl.CULL_FACE);
-		gl.cullFace(gl.BACK);
 
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -215,7 +205,7 @@ EASY.bush = {
 		var center = this.center;
 	
 		gl.uniform3f(this.shader.center, center.x, center.y, center.z);
-		this.skin.bind(1, this.shader.skin);
+		this.palette.bind(0, this.shader.palette);
 		this.mesh.draw();
 	},
 
@@ -230,7 +220,6 @@ EASY.bush = {
 	postdraw: function() {
 		var gl = EASY.display.gl;
 		gl.disable(gl.BLEND);
-		gl.disable(gl.CULL_FACE);
 	}
 	
 };

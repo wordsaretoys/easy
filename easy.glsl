@@ -255,10 +255,10 @@ void main(void) {
 
 /**
 	bush vertex shader
-	O' = P * V * (O + c) transformation, plus texture coordinates
+	O' = P * V * (O + c) transformation
 	
 	@param position vertex array of positions
-	@param texturec vertex array of texture coordinates
+	@param a_color	vertex array of color indicies
 	
 	@param projector projector matrix
 	@param modelview modelview matrix
@@ -266,25 +266,25 @@ void main(void) {
 	
 	(passed to fragment shader for each vertex)
 	@param alpha	fade-in alpha value
-	@param uv		texture coordinates of fragment
+	@param color	index into color palette
 	
 **/
 
 attribute vec3 position;
-attribute vec2 texturec;
+attribute float a_color;
 
 uniform mat4 projector;
 uniform mat4 modelview;
 uniform vec3 center;
 
 varying float alpha;
-varying vec2 uv;
+varying float color;
 
 void main(void) {
 	// transform the vertex
 	vec4 mvpos = modelview * vec4(position + center, 1.0);
 	gl_Position = projector * mvpos;
-	uv = texturec;
+	color = a_color;
 
 	// calculate fade-in alpha value
 	alpha = clamp((25.0 - length(mvpos)) / 5.0, 0.0, 1.0);
@@ -296,23 +296,24 @@ void main(void) {
 /**
 	bush fragment shader
 	
-	@param skin		specific skin texture
+	@param palette	color palette
 
 	@param alpha	fade-in alpha value
-	@param uv		texture coordinates of fragment
+	@param color	index into color palette
 	
 **/
 
 precision mediump float;
 
-uniform sampler2D skin;
+uniform sampler2D palette;
 
 varying float alpha;
-varying vec2 uv;
+varying float color;
 
 void main(void) {
-	vec4 skinColor = texture2D(skin, uv);
-	gl_FragColor = vec4(skinColor.rgb, alpha * skinColor.a);
+	vec2 index = vec2(1.0, color);
+	vec4 pcolor = texture2D(palette, index);
+	gl_FragColor = vec4(pcolor.rgb, alpha * pcolor.a);
 }
 
 </script>
