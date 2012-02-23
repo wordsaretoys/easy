@@ -134,15 +134,6 @@ EASY.pile = {
 	},
 	
 	/**
-		static model, update is placeholder function
-		
-		@method update
-	**/
-
-	update: function() {
-	},
-	
-	/**
 		setup for drawing all piles
 
 		normally called from base object

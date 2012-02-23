@@ -95,10 +95,12 @@ EASY.models = {
 	update: function() {
 		var i, il;
 
-		// allow all active model to update themselves
+		// allow all active models to update themselves
 		if (!EASY.world.stopModels) {
 			for (i = 0, il = this.activeList.length; i < il; i++) {
-				this.activeList[i].update();
+				if (this.activeList[i].update) {
+					this.activeList[i].update();
+				}
 			}
 		}
 	},
