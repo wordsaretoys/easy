@@ -83,7 +83,7 @@ EASY.models = {
 			return a.type > b.type;
 		});
 
-		EASY.debug(this.activeList.length + " / " + this.masterList.length);
+//		EASY.debug(this.activeList.length + " / " + this.masterList.length);
 	},
 	
 	/**

@@ -185,7 +185,6 @@ void main(void) {
 
 attribute vec3 position;
 attribute vec2 texturec;
-attribute float a_light;
 
 uniform mat4 projector;
 uniform mat4 modelview;
@@ -212,7 +211,6 @@ void main(void) {
 
 	// calculate fade-in alpha value
 	alpha = clamp((25.0 - length(mvpos)) / 5.0, 0.0, 1.0);
-
 }
 </script>
 
@@ -223,6 +221,7 @@ void main(void) {
 	
 	@param face		standard face texture
 	@param skin		specific skin texture
+	@param light	light value for entire body
 
 	@param alpha	fade-in alpha value
 	@param uv		texture coordinates of fragment
@@ -234,7 +233,6 @@ precision mediump float;
 
 uniform sampler2D face;
 uniform sampler2D skin;
-
 uniform float light;
 
 varying float alpha;
@@ -249,6 +247,72 @@ void main(void) {
 		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
 	}
 	gl_FragColor = vec4(light * skinColor.rgb, alpha);
+}
+
+</script>
+
+<script id="vs-bush" type="x-shader/x-vertex">
+
+/**
+	bush vertex shader
+	O' = P * V * (O + c) transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param center model center vector
+	
+	(passed to fragment shader for each vertex)
+	@param alpha	fade-in alpha value
+	@param uv		texture coordinates of fragment
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform vec3 center;
+
+varying float alpha;
+varying vec2 uv;
+
+void main(void) {
+	// transform the vertex
+	vec4 mvpos = modelview * vec4(position + center, 1.0);
+	gl_Position = projector * mvpos;
+	uv = texturec;
+
+	// calculate fade-in alpha value
+	alpha = clamp((25.0 - length(mvpos)) / 5.0, 0.0, 1.0);
+}
+</script>
+
+<script id="fs-bush" type="x-shader/x-fragment">
+
+/**
+	bush fragment shader
+	
+	@param skin		specific skin texture
+
+	@param alpha	fade-in alpha value
+	@param uv		texture coordinates of fragment
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D skin;
+
+varying float alpha;
+varying vec2 uv;
+
+void main(void) {
+	vec4 skinColor = texture2D(skin, uv);
+	gl_FragColor = vec4(skinColor.rgb, alpha * skinColor.a);
 }
 
 </script>

@@ -44,6 +44,7 @@ var EASY = {
 		EASY.player.init();
 		EASY.models.init();
 		EASY.paddler.init();
+		EASY.bush.init();
 
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.world.resources, function() {

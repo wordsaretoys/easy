@@ -24,6 +24,7 @@
 		<script type="text/javascript" src="/debug/easy/cave.js"></script>
 		<script type="text/javascript" src="/debug/easy/models.js"></script>
 		<script type="text/javascript" src="/debug/easy/paddler.js"></script>
+		<script type="text/javascript" src="/debug/easy/bush.js"></script>
 
 <?php
 include("easy.glsl");
