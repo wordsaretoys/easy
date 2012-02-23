@@ -35,15 +35,15 @@ EASY.world = {
 	},
 	
 	boundary: {
-		x: 300,
-		z: 300
+		x: 25,
+		z: 25
 	},
 	
 	player: {
 		position: {
-			x: 76,
+			x: 12,
 			y: 0,
-			z: 244
+			z: 12
 		},
 		rotation: 0
 	}

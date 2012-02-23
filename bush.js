@@ -42,17 +42,17 @@ EASY.bush = {
 //		pos.set(76, 0, 243);
 //		var o = EASY.bush.create(92223, pos);
 //		EASY.models.add("bush", o);
-		
+/*		
 		for (i = 0, il = 1000; i < il; i++) {
 			do {
 				pos.x = rng.getn(bound.x);
 				pos.z = rng.getn(bound.z);
-			} while(EASY.cave.getHeight(pos.x, pos.z) > 0.1)
+			} while(EASY.cave.getHeight(pos.x, pos.z) > 0.01)
 			pos.y = 0;
 			o = EASY.bush.create(rng.getl(), pos);
 			EASY.models.add("bush", o);
 		}
-		
+*/		
 	},
 	
 	/**
@@ -137,9 +137,9 @@ EASY.bush = {
 					rx = x * cosa - z * sina;
 					rz = x * sina + z * cosa;
 					mesh.set(rx, y, rz, c);
-					x = Math.min(1, Math.max(x, -1));
+					x = Math.min(1, Math.max(x, 0));
 					y = Math.min(1, Math.max(y, 0));
-					z = Math.min(1, Math.max(z, -1));
+					z = Math.min(1, Math.max(z, 0));
 				}
 			}
 		}

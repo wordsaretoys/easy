@@ -11,7 +11,7 @@ EASY.cave = {
 	SEARCH_LIMIT: 32,
 	MAX_HEIGHT: 5,
 	SEPARATION: 9,
-	MESH_STEP: 0.75,
+	MESH_STEP: 0.5,
 
 	scratch: {
 		down: SOAR.vector.create(),

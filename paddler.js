@@ -13,7 +13,7 @@
 
 EASY.paddler = {
 
-	TOTAL_COUNT: 100,
+	TOTAL_COUNT: 0,
 	EXTRUDE_STEPS: 24,
 
 	scratch: {
