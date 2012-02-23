@@ -45,13 +45,18 @@ var EASY = {
 		EASY.models.init();
 		EASY.paddler.init();
 		EASY.bush.init();
+		EASY.pile.init();
 
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.world.resources, function() {
 		
 			// allow game objects to process loaded resources
 			EASY.cave.process();
+			
+			// generate the initial active model list
+			EASY.models.updateActiveList();
 		
+			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
 			SOAR.schedule(EASY.draw, 0, true);
 

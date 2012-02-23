@@ -23,6 +23,14 @@ EASY.world = {
 		leaf: {
 			type: "image",
 			path: "res/leaf.jpg"
+		},
+		stones: {
+			type: "image",
+			path: "res/stones.jpg"
+		},
+		dirt: {
+			type: "image",
+			path: "res/dirt.jpg"
 		}
 	},
 	

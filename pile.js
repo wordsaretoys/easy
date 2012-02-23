@@ -1,15 +1,14 @@
 /**
-	generate and display a bush
+	generate and display a pile
 
-	a bush is a static model with procedurally-generated
-	coloration and structure, used to represent a plant-
-	based ingredient.	
+	represents a generic pile of *something* determined
+	by type and texture assignment.
 	
 	@namespace EASY
-	@class bush
+	@class pile
 **/
 
-EASY.bush = {
+EASY.pile = {
 
 	MESH_STEP: 0.05,
 	
@@ -18,65 +17,69 @@ EASY.bush = {
 	},
 
 	/**
-		init objects and resources required by all bushes
+		init objects and resources required by all piles
 		and add them to the base object
 		
 		@method init
 	**/
 
 	init: function() {
-		var pos = SOAR.vector.create();
+		var pos = this.scratch.pos;
 	
 		this.shader = SOAR.shader.create(
 			EASY.display,
-			SOAR.textOf("vs-bush"), SOAR.textOf("fs-bush"),
+			SOAR.textOf("vs-pile"), SOAR.textOf("fs-pile"),
 			["position", "texturec"], 
 			["projector", "modelview", "center", "alpha"],
 			["skin"]
 		);
 		
-		this.rng = SOAR.random.create();
+		this.bumps = SOAR.noise1D.create(1029192, 3 * this.MESH_STEP, 4, 2);
 		
-//		pos.set(76, 0, 243);
-//		var o = EASY.bush.create(123212, pos);
-//		EASY.models.add("bush", o);
+		pos.set(76, 0, 243);
+		var o = EASY.pile.create("dirt", pos);
+		EASY.models.add("dirtpile", o);
+
 	},
-	
+
 	/**
-		create a bush
+		create a pile
 		
 		@method create
-		@param seed number to seed generation algorithms
+		@param skin name of image resource to use as texture skin
 		@param center center position
-		@return new bush object
+		@return new pile object
 	**/
 	
-	create: function(seed, center) {
-		var o = Object.create(EASY.bush);
+	create: function(skin, center) {
+		var o = Object.create(EASY.pile);
 
-		o.seed = seed;
+		o.skinName = skin;
 		o.center = SOAR.vector.create().copy(center);
 	
 		return o;		
 	},
 	
 	/**
-		generate a model/skin for a bush
+		generate a model/skin for a pile
 		
-		call when the bush must be visible to the player
+		call when the pile must be visible to the player
 		
 		@method generate
 	**/
 	
 	generate: function() {
 		this.makeModel();
-		this.makeSkin();
+		this.skin = SOAR.texture.create(
+			EASY.display, 
+			EASY.world.resources[this.skinName].data
+		);
 	},
 	
 	/**
-		release all GL resources for this bush
+		release all GL resources for this pile
 
-		call once the bush is out of range of the player
+		call once the pile is out of range of the player
 		
 		@method release
 	**/
@@ -101,6 +104,7 @@ EASY.bush = {
 		var xa, xb, ya, yb;
 		var txa, txb, tz;
 		var x, y, z;
+		var rxa, rxb, rz;
 
 		mesh = SOAR.mesh.create(EASY.display, EASY.display.gl.TRIANGLE_STRIP);
 		mesh.add(this.shader.position, 3);
@@ -112,63 +116,21 @@ EASY.bush = {
 			txa = xa + 0.5;
 			txb = xb + 0.5;
 			zstep = oddrow ? this.MESH_STEP : -this.MESH_STEP;
+			rxa = xa + this.bumps.get(xa);
+			rxb = xb + this.bumps.get(xb);
 			for (z = oddrow ? -0.5 : 0.5; oddrow ? z < 0.5 : z > -0.5; z += zstep) {
+				tz = z + 0.5;
 				ya = this.scratch.pos.set(xa, 1, z).norm().y - 0.9;
 				yb = this.scratch.pos.set(xb, 1, z).norm().y - 0.9;
-				tz = z + 0.5;
-				mesh.set(xa, ya, z, txa, tz);
-				mesh.set(xb, yb, z, txb, tz);
+				rz = z + this.bumps.get(z);
+				mesh.set(rxa, ya, rz, txa, tz);
+				mesh.set(rxb, yb, rz, txb, tz);
 			}
 			oddrow = !oddrow;
 		}
 
 		mesh.build();
 		this.mesh = mesh;
-	},
-	
-	/**
-		generate random skin texture
-		
-		@method makeSkin
-	**/
-	
-	makeSkin: function() {
-		var ctx = EASY.models.context;
-		var w = EASY.models.canvas.width;
-		var h = EASY.models.canvas.height;
-		var ww = w / 2;
-		var hh = h / 2;
-		var rng = this.rng;
-		var palette = [];
-		var r, g, b;
-		var i, j;
-
-//		rng.reseed(this.seed);
-		ctx.clearRect(0, 0, w, h);
-/*
-		ctx.strokeStyle = "rgb(0, 0, 0)";
-		ctx.lineWidth = 1;
-		for (i = 0; i < 100; i++) {
-			ctx.beginPath();
-			ctx.moveTo(ww, hh);
-			ctx.lineTo(rng.getn(w), rng.getn(h));
-			ctx.stroke();
-		}
-*/
-//		for (i = 0; i < 10; i++) {	
-			r = Math.floor(rng.getn(256));
-			g = Math.floor(rng.getn(256));
-			b = Math.floor(rng.getn(256));
-			ctx.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", 0.05)";
-			for (j = 0; j < 10000; j++) {
-				ctx.fillRect(rng.getn(w), rng.getn(h), 16, 16);
-			}
-//		}
-		
-		this.skin = SOAR.texture.create(
-			EASY.display, 
-			ctx.getImageData(0, 0, w, h)
-		);
 	},
 	
 	/**
@@ -181,7 +143,7 @@ EASY.bush = {
 	},
 	
 	/**
-		setup for drawing all bushes
+		setup for drawing all piles
 
 		normally called from base object
 		
@@ -205,7 +167,7 @@ EASY.bush = {
 	},
 	
 	/**
-		draw the bush
+		draw the pile
 		
 		@method draw
 	**/
@@ -220,7 +182,7 @@ EASY.bush = {
 	},
 
 	/**
-		teardown after drawing all bushes
+		teardown after drawing all piles
 
 		normally called from base object
 		

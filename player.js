@@ -78,6 +78,7 @@ EASY.player = {
 		// move player to starting point and orientation
 		this.footPosition.copy(EASY.world.player.position);
 		this.camera.turn(EASY.world.player.rotation, 0);
+		this.update();
 	},
 	
 	/**
