@@ -9,10 +9,10 @@ vec3 caveTexture(sampler2D noise, vec2 uv) {
 }
 
 </script>
-<script id="vs-cave-lower" type="x-shader/x-vertex">
+<script id="vs-cave" type="x-shader/x-vertex">
 
 /**
-	cave lower vertex shader
+	cave vertex shader
 	O' = P * M * V * O transformation, plus texture coordinates
 	and color and lighting values
 	
@@ -50,10 +50,10 @@ void main(void) {
 }
 </script>
 
-<script id="fs-cave-lower" type="x-shader/x-fragment">
+<script id="fs-cave" type="x-shader/x-fragment">
 
 /**
-	cave floor fragment shader
+	cave fragment shader
 	
 	@param noise the rock noise texture
 	@param leaf	 the leaf texture
@@ -76,8 +76,9 @@ varying vec4 object;
 void main(void) {
 	vec3 rocktex = caveTexture(noise, uv);
 	vec3 leaftex = 	texture2D(leaf, uv * 0.5).rgb;
-	if (object.y > 0.1) {
+//	if (object.y > 0.1) {
 		gl_FragColor = vec4(light * light * rocktex, 1.0);
+/*
 	} else {
 		float a1 = (0.1 - object.y) / 0.1;
 		float a2 = 4.0 * a1 * (texture2D(noise, uv * 0.1).r - texture2D(noise, uv * 0.01).g);
@@ -85,78 +86,7 @@ void main(void) {
 		vec3 tex = mix(rocktex, leaftex, a3);
 		gl_FragColor = vec4(light * light * tex, 1.0);
 	}
-
-}
-
-</script>
-
-<script id="vs-cave-upper" type="x-shader/x-vertex">
-
-/**
-	cave upper vertex shader
-	O' = P * M * V * O transformation, plus texture coordinates
-	and color and lighting values
-	
-	@param position vertex array of positions
-	@param texturec vertex array of texture coordinates
-	@param a_light  vertex array of light intensities
-	
-	@param projector projector matrix
-	@param modelview modelview matrix
-	
-	(passed to fragment shader for each vertex)
-	@param uv		texture coordinates
-	@param light	light intensity
-	@param object	position in object coordinates
-	
-**/
-
-attribute vec3 position;
-attribute vec2 texturec;
-attribute float a_light;
-
-uniform mat4 projector;
-uniform mat4 modelview;
-uniform float separation;
-
-varying vec2 uv;
-varying float light;
-varying vec4 object;
-
-void main(void) {
-	object = vec4(position, 1.0);
-	object.y = separation - object.y;
-	gl_Position = projector * modelview * object;
-	uv = texturec;
-	light = a_light;
-	
-}
-</script>
-
-<script id="fs-cave-upper" type="x-shader/x-fragment">
-
-/**
-	cave ceiling fragment shader
-	
-	@param noise	the rock noise texture
-
-	@param light	light intensity
-	@param uv		texture coordinates of fragment
-	@param object	position in object coordinates
-	
-**/
-
-precision mediump float;
- 
-uniform sampler2D noise;
-
-varying float light;
-varying vec2 uv;
-varying vec4 object;
-
-void main(void) {
-	vec3 rocktex = caveTexture(noise, uv);
-	gl_FragColor = vec4(light * light * rocktex, 1.0);
+*/
 }
 
 </script>

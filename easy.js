@@ -71,6 +71,11 @@ var EASY = {
 				EASY.draw();
 			}, false);
 			
+			// always release GL resources if page is refreshed
+			window.addEventListener("beforeunload", function() {
+				EASY.chamber.release();
+			}, false);
+			
 			SOAR.run();
 		});
 		
