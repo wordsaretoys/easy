@@ -148,21 +148,7 @@ EASY.player = {
 		if (p.y === lh) {
 			v.y = v.y > 0 ? v.y : 0;
 		}
-/*		
-		// don't permit player to walk into boundary
-		if (p.x < bound.cx0) {
-			v.x = v.x > 0 ? v.x : 0;
-		}
-		if (p.x > bound.cx1) {
-			v.x = v.x < 0 ? v.x : 0;
-		}
-		if (p.z < bound.cz0) {
-			v.z = v.z > 0 ? v.z : 0;
-		}
-		if (p.z > bound.cz1) {
-			v.z = v.z < 0 ? v.z : 0;
-		}
-*/		
+
 		// generate a vector that points to "down" and whose 
 		// magnitude increases geometrically with the slope
 		down.set(
@@ -204,21 +190,6 @@ EASY.player = {
 //		if (p.y + this.PLAYER_HEIGHT + 0.1 >= uh) {
 //			p.y = uh - (this.PLAYER_HEIGHT + 0.1);
 //		}
-/*
-		// don't permit player to walk into boundary
-		if (p.x < bound.cx0) {
-			p.x = bound.cx0;
-		}
-		if (p.x > bound.cx1) {
-			p.x = bound.cx1;
-		}
-		if (p.z < bound.cz0) {
-			p.z = bound.cz0;
-		}
-		if (p.z > bound.cz1) {
-			p.z = bound.cz1;
-		}
-*/
 	},
 	
 	/**

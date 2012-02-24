@@ -7,7 +7,7 @@
 
 EASY.chamber = {
 
-	RADIUS: 64,
+	RADIUS: 32,
 	MAX_HEIGHT: 5,
 	SEPARATION: 9,
 
@@ -38,23 +38,18 @@ EASY.chamber = {
 		);
 
 		var lights = SOAR.noise2D.create(1294934, 1, 8, 0.2);
-		var height0 = SOAR.noise2D.create(5234512, 2, 16, 16 / this.RADIUS);
-		var height1 = SOAR.noise2D.create(9153095, 2, 16, 16 / this.RADIUS);
+		var height0 = SOAR.noise2D.create(5234512, 2, 16, 16 / (this.RADIUS * 2));
+		var height1 = SOAR.noise2D.create(9153095, 2, 16, 16 / (this.RADIUS * 2));
 
 		var a, x, y, i;
-		for (i = 0, a = 16 * 16; i < a; i++) {
-			height0.map[i] = 0;
-		}
-
-		for (a = 0; a < SOAR.PIMUL2; a += SOAR.PIMUL2 / 1024) {
-		
-			x = Math.floor(8 * (1 + Math.cos(a)));
-			y = Math.floor(8 * (1 + Math.sin(a)));
+		for (a = 0; a <= SOAR.PIMUL2; a += SOAR.PIMUL2 / (16 * 16)) {
+			x = Math.round(8 * (1 + Math.cos(a)));
+			y = Math.round(8 * (1 + Math.sin(a)));
 			i = x + 16 * y;
 			height0.map[i] = 1;
 			height1.map[i] = 1;
 		}
-			
+
 
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.lowerShader.position, 3);
@@ -68,8 +63,8 @@ EASY.chamber = {
 		};
 
 		this.generateDisc(7, function(x, z) {
-			var mx = 0.5 * that.RADIUS * (x + 1);
-			var mz = 0.5 * that.RADIUS * (z + 1);
+			var mx = that.RADIUS * (x + 1);
+			var mz = that.RADIUS * (z + 1);
 			var my = that.getHeight(mx, mz);
 			that.mesh.set(mx, my, mz, mx, mz, lights.get(mx, mz));
 		});
