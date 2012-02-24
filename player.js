@@ -117,7 +117,7 @@ EASY.player = {
 		this.velocity.x = scratch.direction.x * speed;
 		this.velocity.y = this.debug ? scratch.direction.y * speed : this.velocity.y - 9.81 * dt;
 		this.velocity.z = scratch.direction.z * speed;
-		this.constrainVelocity(this.footPosition, this.velocity);
+//		this.constrainVelocity(this.footPosition, this.velocity);
 
 		scratch.velocity.copy(this.velocity).mul(dt);
 		this.footPosition.add(scratch.velocity);

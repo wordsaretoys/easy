@@ -21,11 +21,6 @@ EASY.chamber = {
 	
 	init: function() {
 
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = this.CANVAS_SIZE;
-		this.canvas.height = this.CANVAS_SIZE;
-		this.context = this.canvas.getContext("2d");
-	
 		this.shader = SOAR.shader.create(
 			EASY.display,
 			SOAR.textOf("vs-cave"), 
@@ -36,29 +31,35 @@ EASY.chamber = {
 		);
 
 		var s = this.CANVAS_SIZE;
-		this.context.fillStyle = "rgb(0, 0, 0)";
-		this.context.fillRect(0, 0, s, s);
-		this.context.fillStyle = "rgb(255, 2, 0)";
-		this.context.beginPath();
-		this.context.arc(32, 32, 8, 0, SOAR.PIMUL2, false);
-		this.context.fill();
-		this.context.strokeStyle = "rgb(255, 8, 0)";
-		this.context.lineWidth = 4;
-		this.context.beginPath();
-		this.context.moveTo(32, 32);
-		this.context.lineTo(0, 0);
-		this.context.moveTo(32, 32);
-		this.context.lineTo(0, s);
-		this.context.moveTo(18, 18);
-		this.context.lineTo(6, s - 6);
-		this.context.stroke();
-		this.context.fillStyle = "rgb(0, 0, 0)";
-		this.context.fillRect(31, 31, 3, 3);
+		var map = EASY.canvasser.create(this.MAX_HEIGHT, s, s / (this.RADIUS * 2));
+	
+		map.context.fillStyle = "rgb(0, 0, 0)";
+		map.context.fillRect(0, 0, s, s);
+		
+		map.context.strokeStyle = "rgb(255, 0, 0)";
+		map.context.lineWidth = 4;
+		map.context.beginPath();
+		map.context.moveTo(32, 32);
+		map.context.lineTo(0, 0);
+		map.context.moveTo(32, 32);
+		map.context.lineTo(0, s);
+		map.context.stroke();
+		
+		var i;
+		var hs = s / 2;
+		var rng = SOAR.random.create(1212);
+		map.context.fillStyle = "rgba(255, 0, 0, 0.5)";
+		for (i = 0; i < 100; i++) {
+			map.context.fillRect(hs + rng.getm(hs - 16), hs + rng.getm(hs - 16), 4, 4);
+		}
+		map.context.fillStyle = "rgba(255, 255, 0, 0.5)";
+		for (i = 0; i < 100; i++) {
+			map.context.fillRect(hs + rng.getm(hs - 16), hs + rng.getm(hs - 16), 4, 4);
+		}
+		
+		map.map();
 		
 		var lights = SOAR.noise2D.create(1294934, 1, 8, 0.2);
-		var height = SOAR.noise2D.create(82644, this.MAX_HEIGHT, s, s / (this.RADIUS * 2));
-
-		height.import(this.context.getImageData(0, 0, s, s));
 
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
@@ -67,29 +68,33 @@ EASY.chamber = {
 
 		var that = this;
 		this.getHeight = function(x, z) {
-			return -height.get(x, z);
+			return -map.get(0, x, z);
 		};
 
-		this.generateDisc(7, function(x0, z0, x1, z1, x2, z2) {
+		this.generateDisc(8, function(x0, z0, x1, z1, x2, z2) {
 			var mx0, my0, mz0;
 			var mx1, my1, mz1;
 			var mx2, my2, mz2;
 			
 			mx0 = that.RADIUS * (x0 + 1);
 			mz0 = that.RADIUS * (z0 + 1);
-			my0 = height.get(mx0, mz0);
+			my0 = map.get(0, mx0, mz0);
 			mx1 = that.RADIUS * (x1 + 1);
 			mz1 = that.RADIUS * (z1 + 1);
-			my1 = height.get(mx1, mz1);
+			my1 = map.get(0, mx1, mz1);
 			mx2 = that.RADIUS * (x2 + 1);
 			mz2 = that.RADIUS * (z2 + 1);
-			my2 = height.get(mx2, mz2);
+			my2 = map.get(0, mx2, mz2);
 			
 			if (!(my0 === 0 && my1 === 0 && my2 === 0)) {
 
 				that.mesh.set(mx0, -my0, mz0, mx0, mz0, lights.get(mx0, mz0));
 				that.mesh.set(mx2, -my2, mz2, mx2, mz2, lights.get(mx2, mz2));
 				that.mesh.set(mx1, -my1, mz1, mx1, mz1, lights.get(mx1, mz1));
+
+				my0 += map.get(1, mx0, mz0);
+				my1 += map.get(1, mx1, mz1);
+				my2 += map.get(1, mx2, mz2);
 
 				that.mesh.set(mx0, my0 - that.SEPARATION, mz0, mx0, mz0, lights.get(mx0, mz0));
 				that.mesh.set(mx1, my1 - that.SEPARATION, mz1, mx1, mz1, lights.get(mx1, mz1));
