@@ -22,6 +22,7 @@
 		<script type="text/javascript" src="/debug/easy/world.js"></script>
 		<script type="text/javascript" src="/debug/easy/player.js"></script>
 		<script type="text/javascript" src="/debug/easy/cave.js"></script>
+		<script type="text/javascript" src="/debug/easy/chamber.js"></script>
 		<script type="text/javascript" src="/debug/easy/models.js"></script>
 		<script type="text/javascript" src="/debug/easy/paddler.js"></script>
 		<script type="text/javascript" src="/debug/easy/bush.js"></script>

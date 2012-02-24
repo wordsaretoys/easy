@@ -40,7 +40,8 @@ var EASY = {
 		gl.enable(gl.DEPTH_TEST);
 		
 		// while waiting for resource load, initialize game objects
-		EASY.cave.init();
+//		EASY.cave.init();
+		EASY.chamber.init();
 		EASY.player.init();
 		EASY.models.init();
 		EASY.paddler.init();
@@ -51,7 +52,8 @@ var EASY = {
 		SOAR.loadResources(EASY.world.resources, function() {
 		
 			// allow game objects to process loaded resources
-			EASY.cave.process();
+//			EASY.cave.process();
+			EASY.chamber.process();
 			
 			// generate the initial active model list
 			EASY.models.updateActiveList();
@@ -105,8 +107,9 @@ var EASY = {
 		gl.clearColor(0.5, 0.5, 0.5, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		if (!EASY.world.hideCave)
-			EASY.cave.draw();
+//		if (!EASY.world.hideCave)
+//			EASY.cave.draw();
+		EASY.chamber.draw();
 		EASY.models.draw();
 	},
 

@@ -127,7 +127,7 @@ EASY.player = {
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
 		
-//		EASY.debug(this.footPosition.y + "");
+		EASY.debug(this.footPosition.x + "<br>" + this.footPosition.z);
 	},
 	
 	/**
@@ -140,15 +140,15 @@ EASY.player = {
 	
 	constrainVelocity: function(p, v) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.cave.getHeight(p.x, p.z);
-		var uh = EASY.cave.SEPARATION - lh;
+		var lh = EASY.chamber.getHeight(p.x, p.z);
+		var uh = EASY.chamber.SEPARATION - lh;
 		var down = this.scratch.direction;
 	
 		// on the ground, v can't be negative
 		if (p.y === lh) {
 			v.y = v.y > 0 ? v.y : 0;
 		}
-		
+/*		
 		// don't permit player to walk into boundary
 		if (p.x < bound.cx0) {
 			v.x = v.x > 0 ? v.x : 0;
@@ -162,13 +162,13 @@ EASY.player = {
 		if (p.z > bound.cz1) {
 			v.z = v.z < 0 ? v.z : 0;
 		}
-		
+*/		
 		// generate a vector that points to "down" and whose 
 		// magnitude increases geometrically with the slope
 		down.set(
-			EASY.cave.getHeight(p.x - 1, p.z) - EASY.cave.getHeight(p.x + 1, p.z),
+			EASY.chamber.getHeight(p.x - 1, p.z) - EASY.chamber.getHeight(p.x + 1, p.z),
 			0, 
-			EASY.cave.getHeight(p.x, p.z - 1) - EASY.cave.getHeight(p.x, p.z + 1)
+			EASY.chamber.getHeight(p.x, p.z - 1) - EASY.chamber.getHeight(p.x, p.z + 1)
 		).set(
 			Math.pow(down.x, 2) * SOAR.sign(down.x),
 			0,
@@ -192,8 +192,8 @@ EASY.player = {
 	
 	constrainPosition: function(p) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.cave.getHeight(p.x, p.z);
-		var uh = EASY.cave.SEPARATION - lh;
+		var lh = EASY.chamber.getHeight(p.x, p.z);
+		var uh = EASY.chamber.SEPARATION - lh;
 	
 		// p isn't allowed to be below ground
 		if (p.y < lh) {
@@ -204,7 +204,7 @@ EASY.player = {
 //		if (p.y + this.PLAYER_HEIGHT + 0.1 >= uh) {
 //			p.y = uh - (this.PLAYER_HEIGHT + 0.1);
 //		}
-
+/*
 		// don't permit player to walk into boundary
 		if (p.x < bound.cx0) {
 			p.x = bound.cx0;
@@ -218,6 +218,7 @@ EASY.player = {
 		if (p.z > bound.cz1) {
 			p.z = bound.cz1;
 		}
+*/
 	},
 	
 	/**
@@ -258,6 +259,8 @@ EASY.player = {
 			case SOAR.KEY.N:
 				EASY.world.stopModels = !EASY.world.stopModels;
 				break;
+			case SOAR.KEY.G:
+				EASY.player.footPosition.y = 100;
 		}
 	},
 
