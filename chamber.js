@@ -25,7 +25,7 @@ EASY.chamber = {
 			EASY.display,
 			SOAR.textOf("vs-cave"), 
 			SOAR.textOf("fs-cave-texture") + SOAR.textOf("fs-cave"),
-			["position", "texturec", "a_light"], 
+			["position", "texturec"],
 			["projector", "modelview"],
 			["noise", "leaf"]
 		);
@@ -36,74 +36,72 @@ EASY.chamber = {
 		map.context.fillStyle = "rgb(0, 0, 0)";
 		map.context.fillRect(0, 0, s, s);
 		
-		map.context.strokeStyle = "rgb(255, 0, 0)";
-		map.context.lineWidth = 4;
-		map.context.beginPath();
-		map.context.moveTo(32, 32);
-		map.context.lineTo(0, 0);
-		map.context.moveTo(32, 32);
-		map.context.lineTo(0, s);
-		map.context.stroke();
-		
 		var i;
 		var hs = s / 2;
-		var rng = SOAR.random.create(1212);
-		map.context.fillStyle = "rgba(255, 0, 0, 0.5)";
-		for (i = 0; i < 100; i++) {
-			map.context.fillRect(hs + rng.getm(hs - 16), hs + rng.getm(hs - 16), 4, 4);
-		}
+		var rng = SOAR.random.create();
 		map.context.fillStyle = "rgba(255, 255, 0, 0.5)";
 		for (i = 0; i < 100; i++) {
 			map.context.fillRect(hs + rng.getm(hs - 16), hs + rng.getm(hs - 16), 4, 4);
 		}
+		map.context.fillStyle = "rgba(255, 0, 0, 0.5)";
+		for (i = 0; i < 100; i++) {
+			map.context.fillRect(hs + rng.getm(hs - 16), hs + rng.getm(hs - 16), 4, 4);
+		}
+		map.context.fillStyle = "rgba(255, 0, 0, 0.5)";
+		for (i = 0; i < 50; i++) {
+			map.context.fillRect(rng.getn(20), hs + rng.getm(2), 4, 4);
+		}
+		for (i = 0; i < 50; i++) {
+			map.context.fillRect(hs + rng.getm(2), rng.getn(20), 4, 4);
+		}
 		
 		map.map();
 		
-		var lights = SOAR.noise2D.create(1294934, 1, 8, 0.2);
-
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
-		this.mesh.add(this.shader.a_light, 1);
 
 		var that = this;
-		this.getHeight = function(x, z) {
+		var gap = this.SEPARATION + this.MAX_HEIGHT;
+		this.getFloorHeight = function(x, z) {
 			return -map.get(0, x, z);
 		};
+		this.getCeilingHeight = function(x, z) {
+			return map.get(0, x, z) + map.get(1, x, z) - that.SEPARATION;
+		}
 
-		this.generateDisc(8, function(x0, z0, x1, z1, x2, z2) {
+		this.generateDisc(7, function(x0, z0, x1, z1, x2, z2) {
 			var mx0, my0, mz0;
 			var mx1, my1, mz1;
 			var mx2, my2, mz2;
 			
 			mx0 = that.RADIUS * (x0 + 1);
 			mz0 = that.RADIUS * (z0 + 1);
-			my0 = map.get(0, mx0, mz0);
+			my0 = that.getFloorHeight(mx0, mz0);
 			mx1 = that.RADIUS * (x1 + 1);
 			mz1 = that.RADIUS * (z1 + 1);
-			my1 = map.get(0, mx1, mz1);
+			my1 = that.getFloorHeight(mx1, mz1);
 			mx2 = that.RADIUS * (x2 + 1);
 			mz2 = that.RADIUS * (z2 + 1);
-			my2 = map.get(0, mx2, mz2);
+			my2 = that.getFloorHeight(mx2, mz2);
 			
 			if (!(my0 === 0 && my1 === 0 && my2 === 0)) {
 
-				that.mesh.set(mx0, -my0, mz0, mx0, mz0, lights.get(mx0, mz0));
-				that.mesh.set(mx2, -my2, mz2, mx2, mz2, lights.get(mx2, mz2));
-				that.mesh.set(mx1, -my1, mz1, mx1, mz1, lights.get(mx1, mz1));
+				that.mesh.set(mx0, my0, mz0, mx0, mz0);
+				that.mesh.set(mx2, my2, mz2, mx2, mz2);
+				that.mesh.set(mx1, my1, mz1, mx1, mz1);
 
-				my0 += map.get(1, mx0, mz0);
-				my1 += map.get(1, mx1, mz1);
-				my2 += map.get(1, mx2, mz2);
+				my0 = that.getCeilingHeight(mx0, mz0);
+				my1 = that.getCeilingHeight(mx1, mz1);
+				my2 = that.getCeilingHeight(mx2, mz2);
 
-				that.mesh.set(mx0, my0 - that.SEPARATION, mz0, mx0, mz0, lights.get(mx0, mz0));
-				that.mesh.set(mx1, my1 - that.SEPARATION, mz1, mx1, mz1, lights.get(mx1, mz1));
-				that.mesh.set(mx2, my2 - that.SEPARATION, mz2, mx2, mz2, lights.get(mx2, mz2));
+				that.mesh.set(mx0, my0, mz0, mx0, mz0);
+				that.mesh.set(mx1, my1, mz1, mx1, mz1);
+				that.mesh.set(mx2, my2, mz2, mx2, mz2);
 			}
 		});
 		
 		this.mesh.build();
-		this.lights = lights;
 	},
 	
 	/**

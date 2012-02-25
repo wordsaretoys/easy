@@ -36,11 +36,11 @@ EASY.world = {
 	
 	player: {
 		position: {
-			x: 12,
-			y: 0,
-			z: 12
+			x: 33,
+			y: -2,
+			z: 8
 		},
-		rotation: 6 * Math.PI / 9
+		rotation: Math.PI
 	}
 
 };

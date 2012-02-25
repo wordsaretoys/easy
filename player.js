@@ -140,8 +140,8 @@ EASY.player = {
 	
 	constrainVelocity: function(p, v) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.chamber.getHeight(p.x, p.z);
-		var uh = EASY.chamber.SEPARATION - lh;
+		var lh = EASY.chamber.getFloorHeight(p.x, p.z);
+		var uh = EASY.chamber.getCeilingHeight(p.x, p.z);
 		var down = this.scratch.direction;
 	
 		// on the ground, v can't be negative
@@ -178,8 +178,8 @@ EASY.player = {
 	
 	constrainPosition: function(p) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.chamber.getHeight(p.x, p.z);
-		var uh = EASY.chamber.SEPARATION - lh;
+		var lh = EASY.chamber.getFloorHeight(p.x, p.z);
+		var uh = EASY.chamber.getCeilingHeight(p.x, p.z);
 	
 		// p isn't allowed to be below ground
 		if (p.y < lh) {

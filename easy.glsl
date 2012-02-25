@@ -14,11 +14,9 @@ vec3 caveTexture(sampler2D noise, vec2 uv) {
 /**
 	cave vertex shader
 	O' = P * M * V * O transformation, plus texture coordinates
-	and color and lighting values
 	
 	@param position vertex array of positions
 	@param texturec vertex array of texture coordinates
-	@param a_light  vertex array of light intensities
 	
 	@param projector projector matrix
 	@param modelview modelview matrix
@@ -32,20 +30,17 @@ vec3 caveTexture(sampler2D noise, vec2 uv) {
 
 attribute vec3 position;
 attribute vec2 texturec;
-attribute float a_light;
 
 uniform mat4 projector;
 uniform mat4 modelview;
 
 varying vec2 uv;
-varying float light;
 varying vec4 object;
 
 void main(void) {
 	object = vec4(position, 1.0);
 	gl_Position = projector * modelview * object;
 	uv = texturec;
-	light = a_light;
 	
 }
 </script>
@@ -58,7 +53,6 @@ void main(void) {
 	@param noise the rock noise texture
 	@param leaf	 the leaf texture
 
-	@param light	light intensity
 	@param uv		texture coordinates of fragment
 	@param object	position in object coordinates
 	
@@ -69,15 +63,19 @@ precision mediump float;
 uniform sampler2D noise;
 uniform sampler2D leaf;
 
-varying float light;
 varying vec2 uv;
 varying vec4 object;
 
 void main(void) {
+
+	float hl;
+	hl = (4.0 - abs(object.y)) / 4.0;
+
 	vec3 rocktex = caveTexture(noise, uv);
 	vec3 leaftex = 	texture2D(leaf, uv * 0.5).rgb;
+	gl_FragColor = vec4(hl * rocktex, 1.0);
 //	if (object.y > 0.1) {
-		gl_FragColor = vec4(light * light * rocktex, 1.0);
+//		gl_FragColor = vec4(light * light * rocktex, 1.0);
 /*
 	} else {
 		float a1 = (0.1 - object.y) / 0.1;
