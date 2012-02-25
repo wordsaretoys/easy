@@ -116,6 +116,9 @@ EASY.chamber = {
 	
 	generateDisc: function(detail, callback) {
 		
+		// TODO: needs to be optimized so we don't recurse
+		// into every triangle. also, need unit square version
+		
 		function recurse(level, x0, y0, x1, y1, x2, y2) {
 		
 			var x3, y3;

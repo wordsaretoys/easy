@@ -183,17 +183,15 @@ void main(void) {
 
 /**
 	bush vertex shader
-	O' = P * V * (O + c) transformation
+	O' = P * V * O transformation
 	
 	@param position vertex array of positions
 	@param a_color	vertex array of color indicies
 	
 	@param projector projector matrix
 	@param modelview modelview matrix
-	@param center model center vector
 	
 	(passed to fragment shader for each vertex)
-	@param alpha	fade-in alpha value
 	@param color	index into color palette
 	
 **/
@@ -203,19 +201,12 @@ attribute float a_color;
 
 uniform mat4 projector;
 uniform mat4 modelview;
-uniform vec3 center;
 
-varying float alpha;
 varying float color;
 
 void main(void) {
-	// transform the vertex
-	vec4 mvpos = modelview * vec4(position + center, 1.0);
-	gl_Position = projector * mvpos;
+	gl_Position = projector * modelview * vec4(position, 1.0);
 	color = a_color;
-
-	// calculate fade-in alpha value
-	alpha = clamp((25.0 - length(mvpos)) / 5.0, 0.0, 1.0);
 }
 </script>
 
@@ -226,7 +217,6 @@ void main(void) {
 	
 	@param palette	color palette
 
-	@param alpha	fade-in alpha value
 	@param color	index into color palette
 	
 **/
@@ -235,13 +225,11 @@ precision mediump float;
 
 uniform sampler2D palette;
 
-varying float alpha;
 varying float color;
 
 void main(void) {
 	vec2 index = vec2(1.0, color);
-	vec4 pcolor = texture2D(palette, index);
-	gl_FragColor = vec4(pcolor.rgb, alpha * pcolor.a);
+	gl_FragColor = texture2D(palette, index);
 }
 
 </script>

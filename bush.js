@@ -1,5 +1,5 @@
 /**
-	generate and display a bush
+	generate and display bushes
 
 	a bush is a static model with procedurally-generated
 	coloration and structure, used to represent a plant-
@@ -11,7 +11,7 @@
 
 EASY.bush = {
 
-	PALETTE_SIZE: 8,
+	PALETTE_SIZE: 256,
 
 	scratch: {
 		pos: SOAR.vector.create()
@@ -25,90 +25,56 @@ EASY.bush = {
 	**/
 
 	init: function() {
-		var pos = SOAR.vector.create();
-	
 		this.shader = SOAR.shader.create(
 			EASY.display,
 			SOAR.textOf("vs-bush"), SOAR.textOf("fs-bush"),
 			["position", "a_color"], 
-			["projector", "modelview", "center", "alpha"],
+			["projector", "modelview"],
 			["palette"]
 		);
 		
-		this.rng = SOAR.random.create();
-		var o, rng = this.rng;
-		var bound = EASY.world.boundary;
-		
-//		pos.set(76, 0, 243);
-//		var o = EASY.bush.create(92223, pos);
-//		EASY.models.add("bush", o);
-/*		
-		for (i = 0, il = 1000; i < il; i++) {
-			do {
-				pos.x = rng.getn(bound.x);
-				pos.z = rng.getn(bound.z);
-			} while(EASY.cave.getHeight(pos.x, pos.z) > 0.01)
-			pos.y = 0;
-			o = EASY.bush.create(rng.getl(), pos);
-			EASY.models.add("bush", o);
-		}
-*/		
-	},
-	
-	/**
-		create a bush
-		
-		@method create
-		@param seed number to seed generation algorithms
-		@param center center position
-		@return new bush object
-	**/
-	
-	create: function(seed, center) {
-		var o = Object.create(EASY.bush);
+		this.rng = SOAR.random.create(12345);
 
-		o.seed = seed;
-		o.center = SOAR.vector.create().copy(center);
-	
-		return o;		
+		this.mesh = SOAR.mesh.create(EASY.display);
+		this.mesh.add(this.shader.position, 3);
+		this.mesh.add(this.shader.a_color, 1);
+		
+		var i, il;
+		EASY.models.context.clearRect(0, 0, 1, this.PALETTE_SIZE);
+		palette = EASY.models.context.createImageData(1, this.PALETTE_SIZE);
+		for (i = 0, il = this.PALETTE_SIZE * 4; i < il; i += 4) {
+			palette.data[i    ] = Math.floor(this.rng.getn(256));
+			palette.data[i + 1] = Math.floor(this.rng.getn(256));
+			palette.data[i + 2] = Math.floor(this.rng.getn(256));
+			palette.data[i + 3] = 255;
+		}
+		this.palette = SOAR.texture.create(EASY.display, palette);
+
+		var pos = SOAR.vector.create();
+		
+		for (i = 0, il = 10; i < il; i++) {
+			do {
+				pos.x = this.rng.getn(EASY.chamber.RADIUS * 2);
+				pos.z = this.rng.getn(EASY.chamber.RADIUS * 2);
+			} while(EASY.chamber.getFloorHeight(pos.x, pos.z) > -3)
+			pos.y = EASY.chamber.getFloorHeight(pos.x, pos.z);
+			this.generate(this.rng.getl(), pos);
+		}
+
+		this.mesh.build();
 	},
 	
 	/**
-		generate a model/palette for a bush
-		
-		call when the bush must be visible to the player
+		add a bush to the mesh
 		
 		@method generate
+		@param seed random seed to init generator
+		@param start position to start generator
 	**/
 	
-	generate: function() {
-		this.makeModel();
-		this.makePalette();
-	},
-	
-	/**
-		release all GL resources for this bush
-
-		call once the bush is out of range of the player
-		
-		@method release
-	**/
-	
-	release: function() {
-		this.mesh.release();
-		this.palette.release();
-		delete this.mesh;
-		delete this.palette;
-	},
-
-	/**
-		create a model mesh using a random walk
-		
-		@method makeModel
-	**/
-	
-	makeModel: function() {
+	generate: function(seed, start) {
 		var rng = this.rng;
+		var mesh = this.mesh;
 		var angle, sina, cosa;
 		var rx, rz;
 		var x, y, z, c;
@@ -117,17 +83,14 @@ EASY.bush = {
 		var fold = 11;
 		var reps = 250;
 
-		mesh = SOAR.mesh.create(EASY.display);
-		mesh.add(this.shader.position, 3);
-		mesh.add(this.shader.a_color, 1);
-
 		for (i = 0; i < fold; i++) {
 		
 			angle = SOAR.PIMUL2 * i / fold;
 			sina = Math.sin(angle);
 			cosa = Math.cos(angle);
-			rng.reseed(this.seed);
 			x = y = z = 0;
+			rng.reseed(seed);
+
 			for (j = 0; j < reps; j++) {
 				c = this.PALETTE_SIZE * rng.get();
 				for (k = 0; k < 3; k++) {
@@ -136,66 +99,17 @@ EASY.bush = {
 					z += 0.05 * (rng.get() - 0.5);
 					rx = x * cosa - z * sina;
 					rz = x * sina + z * cosa;
-					mesh.set(rx, y, rz, c);
+					mesh.set(rx + start.x, y + start.y, rz + start.z, c);
 					x = Math.min(1, Math.max(x, 0));
 					y = Math.min(1, Math.max(y, 0));
 					z = Math.min(1, Math.max(z, 0));
 				}
 			}
 		}
-		mesh.build();
-		this.mesh = mesh;
 	},
 	
 	/**
-		generate random palette as texture
-		
-		@method makePalette
-	**/
-	
-	makePalette: function() {
-		var ctx = EASY.models.context;
-		var rng = this.rng;
-		var palette;
-		var r, g, b;
-		var i, il;
-
-//		rng.reseed(this.seed);
-		ctx.clearRect(0, 0, 1, this.PALETTE_SIZE);
-
-		palette = ctx.createImageData(1, this.PALETTE_SIZE);
-		for (i = 0, il = this.PALETTE_SIZE * 4; i < il; i += 4) {
-			palette.data[i    ] = Math.floor(rng.getn(256));
-			palette.data[i + 1] = Math.floor(rng.getn(256));
-			palette.data[i + 2] = Math.floor(rng.getn(256));
-			palette.data[i + 3] = 255;
-		}
-		this.palette = SOAR.texture.create(EASY.display, palette);
-	},
-	
-	/**
-		setup for drawing all bushes
-
-		normally called from base object
-		
-		@method predraw
-	**/
-	
-	predraw: function() {
-		var gl = EASY.display.gl;
-		var camera = EASY.player.camera;
-		var shader = this.shader;
-
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-		shader.activate();
-		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
-		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-	},
-	
-	/**
-		draw the bush
+		draw the bushes mesh
 		
 		@method draw
 	**/
@@ -203,23 +117,32 @@ EASY.bush = {
 	draw: function() {
 		var gl = EASY.display.gl;
 		var center = this.center;
+		var shader = this.shader;
+		var camera = EASY.player.camera;
 	
-		gl.uniform3f(this.shader.center, center.x, center.y, center.z);
-		this.palette.bind(0, this.shader.palette);
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+		shader.activate();
+		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
+		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+		this.palette.bind(0, shader.palette);
 		this.mesh.draw();
+		
+		gl.disable(gl.BLEND);
 	},
 
 	/**
-		teardown after drawing all bushes
+		release all GL resources for this bush
 
-		normally called from base object
-		
-		@method postdraw
+		@method release
 	**/
 	
-	postdraw: function() {
-		var gl = EASY.display.gl;
-		gl.disable(gl.BLEND);
+	release: function() {
+		this.mesh.release();
+		this.palette.release();
+		delete this.mesh;
+		delete this.palette;
 	}
 	
 };

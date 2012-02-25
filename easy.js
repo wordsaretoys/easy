@@ -116,6 +116,7 @@ var EASY = {
 //			EASY.cave.draw();
 		EASY.chamber.draw();
 		EASY.models.draw();
+		EASY.bush.draw();
 	},
 
 	/**
