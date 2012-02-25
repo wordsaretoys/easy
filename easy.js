@@ -74,6 +74,7 @@ var EASY = {
 			// always release GL resources if page is refreshed
 			window.addEventListener("beforeunload", function() {
 				EASY.chamber.release();
+				EASY.bush.release();
 			}, false);
 			
 			SOAR.run();

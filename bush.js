@@ -11,7 +11,8 @@
 
 EASY.bush = {
 
-	PALETTE_SIZE: 256,
+	MASTER_PALETTE: 256,
+	MODEL_PALETTE: 3,
 
 	scratch: {
 		pos: SOAR.vector.create()
@@ -40,9 +41,9 @@ EASY.bush = {
 		this.mesh.add(this.shader.a_color, 1);
 		
 		var i, il;
-		EASY.models.context.clearRect(0, 0, 1, this.PALETTE_SIZE);
-		palette = EASY.models.context.createImageData(1, this.PALETTE_SIZE);
-		for (i = 0, il = this.PALETTE_SIZE * 4; i < il; i += 4) {
+		EASY.models.context.clearRect(0, 0, 1, this.MASTER_PALETTE);
+		palette = EASY.models.context.createImageData(1, this.MASTER_PALETTE);
+		for (i = 0, il = this.MASTER_PALETTE * 4; i < il; i += 4) {
 			palette.data[i    ] = Math.floor(this.rng.getn(256));
 			palette.data[i + 1] = Math.floor(this.rng.getn(256));
 			palette.data[i + 2] = Math.floor(this.rng.getn(256));
@@ -82,6 +83,11 @@ EASY.bush = {
 		
 		var fold = 11;
 		var reps = 250;
+		
+		var palette = [];
+		for (i = 0; i < this.MODEL_PALETTE; i++) {
+			palette[i] = rng.get();
+		}
 
 		for (i = 0; i < fold; i++) {
 		
@@ -92,7 +98,7 @@ EASY.bush = {
 			rng.reseed(seed);
 
 			for (j = 0; j < reps; j++) {
-				c = this.PALETTE_SIZE * rng.get();
+				c = palette[Math.floor(rng.getn(this.MODEL_PALETTE))];
 				for (k = 0; k < 3; k++) {
 					x += 0.05 * (rng.get() - 0.5);
 					y += 0.05 * (rng.get() - 0.5);
