@@ -2,10 +2,9 @@
 	provides an interpolated 2D function over a canvas
 	
 	adapted from the 2D noise function. draw over the
-	context as usual, call the map function to make a
-	bitmap of the canvas, then call one or more get()
-	functions. there are three channels (r, g, b) and
-	each has an associated get.	
+	context as usual, call the map() function to make
+	a bitmap of the canvas, then call get() with the 
+	channel number.
 	
 	@namespace EASY
 	@class canvasser

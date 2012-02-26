@@ -34,7 +34,7 @@ EASY.bush = {
 			["palette"]
 		);
 		
-		this.rng = SOAR.random.create(12345);
+		this.rng = SOAR.random.create();
 
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
@@ -52,8 +52,8 @@ EASY.bush = {
 		this.palette = SOAR.texture.create(EASY.display, palette);
 
 		var pos = SOAR.vector.create();
-		
-		for (i = 0, il = 10; i < il; i++) {
+/*		
+		for (i = 0, il = 1; i < il; i++) {
 			do {
 				pos.x = this.rng.getn(EASY.chamber.RADIUS * 2);
 				pos.z = this.rng.getn(EASY.chamber.RADIUS * 2);
@@ -61,6 +61,8 @@ EASY.bush = {
 			pos.y = EASY.chamber.getFloorHeight(pos.x, pos.z);
 			this.generate(this.rng.getl(), pos);
 		}
+*/		
+//		this.generate(this.rng.getl(), {x: 33, y: -3.3, z: 12});
 
 		this.mesh.build();
 	},
