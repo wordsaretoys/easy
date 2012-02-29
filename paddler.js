@@ -70,9 +70,9 @@ EASY.paddler = {
 	**/
 	
 	makeFace: function() {
-		var ctx = EASY.models.context;
-		var w = EASY.models.canvas.width;
-		var h = EASY.models.canvas.height;
+		var ctx = EASY.texture.context;
+		var w = EASY.texture.canvas.width;
+		var h = EASY.texture.canvas.height;
 		
 		ctx.clearRect(0, 0, w, h);
 
@@ -215,9 +215,9 @@ EASY.paddler = {
 	**/
 	
 	makeSkin: function() {
-		var ctx = EASY.models.context;
-		var w = EASY.models.canvas.width;
-		var h = EASY.models.canvas.height;
+		var ctx = EASY.texture.context;
+		var w = EASY.texture.canvas.width;
+		var h = EASY.texture.canvas.height;
 		var ww = w / 2;
 		var hh = h / 2;
 		var rng = this.rng;

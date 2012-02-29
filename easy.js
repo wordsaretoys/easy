@@ -39,6 +39,13 @@ var EASY = {
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.DEPTH_TEST);
 		
+		// create an offscreen canvas for texture generation
+		EASY.texture = {};
+		EASY.texture.canvas = document.createElement("canvas");
+		EASY.texture.canvas.width = 256;
+		EASY.texture.canvas.height = 256;
+		EASY.texture.context = EASY.texture.canvas.getContext("2d");
+		
 		// while waiting for resource load, initialize game objects
 		EASY.chamber.init();
 		EASY.player.init();

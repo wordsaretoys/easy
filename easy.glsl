@@ -1,14 +1,3 @@
-<script id="fs-cave-texture" type="x-shader/x-fragment">
-
-precision mediump float;
-
-vec3 caveTexture(sampler2D noise, vec2 uv) {
-	return 	texture2D(noise, uv * 0.005).r * vec3(0.3, 0.4, 0.2) +
-			texture2D(noise, uv * 0.05).g * vec3(0.7, 0.6, 0.3) +
-			texture2D(noise, uv * 0.5).b  * vec3(0.1, 0.6, 0.9);
-}
-
-</script>
 <script id="vs-cave" type="x-shader/x-vertex">
 
 /**
@@ -50,7 +39,10 @@ void main(void) {
 /**
 	cave fragment shader
 	
-	@param rock a rock texture
+	@param rock 	a rock texture
+	@param color0 	color in RGB format 
+	@param color1 	color in RGB format 
+	@param color2 	color in RGB format 
 
 	@param uv		texture coordinates of fragment
 	@param object	position in object coordinates
@@ -60,19 +52,20 @@ void main(void) {
 precision mediump float;
  
 uniform sampler2D rock;
+uniform vec3 color0;
+uniform vec3 color1;
+uniform vec3 color2;
 
 varying vec2 uv;
 varying vec4 object;
 
 void main(void) {
 
-	float hl;
-	hl = 0.1 + (4.0 - abs(object.y)) / 4.0;
-	
-	float ll;
-	ll = 1.0 - pow((32.0 - object.z) / 32.0, 2.0);
-
-	vec3 rocktex = caveTexture(rock, uv);
+	float hl = (4.5 - abs(object.y)) / 4.5;
+	float ll = 1.0 - pow(abs(32.0 - object.z) / 32.0, 2.0);
+	vec3 rocktex = 	texture2D(rock, uv * 0.005).r * color0 +
+					texture2D(rock, uv * 0.05).r * color1 +
+					texture2D(rock, uv * 0.5).r  * color2;
 	gl_FragColor = vec4(ll * hl * rocktex, 1.0);
 }
 

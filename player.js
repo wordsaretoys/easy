@@ -74,11 +74,6 @@ EASY.player = {
 			SOAR.camera.BOUND_ROTATION);
 		this.camera.nearLimit = 0.01;
 		this.camera.farLimit = 1024;
-		
-		// move player to starting point and orientation
-		this.footPosition.copy(EASY.world.player.position);
-		this.camera.turn(EASY.world.player.rotation, 0);
-//		this.update();
 	},
 	
 	/**

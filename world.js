@@ -32,15 +32,6 @@ EASY.world = {
 			type: "image",
 			path: "res/dirt.jpg"
 		}
-	},
-	
-	player: {
-		position: {
-			x: 32,
-			y: -2,
-			z: 32
-		},
-		rotation: 0
 	}
-
+	
 };

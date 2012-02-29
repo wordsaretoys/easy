@@ -7,8 +7,6 @@
 
 EASY.models = {
 
-	CANVAS_SIZE: 256,
-	
 	CREATE_RADIUS: 30,
 	DELETE_RADIUS: 35,
 
@@ -22,11 +20,6 @@ EASY.models = {
 	**/
 
 	init: function() {
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = this.CANVAS_SIZE;
-		this.canvas.height = this.CANVAS_SIZE;
-		this.context = this.canvas.getContext("2d");
-		
 		var that = this;
 		SOAR.schedule(function() {
 			that.updateActiveList();
