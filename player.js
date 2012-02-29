@@ -190,6 +190,12 @@ EASY.player = {
 //		if (p.y + this.PLAYER_HEIGHT + 0.1 >= uh) {
 //			p.y = uh - (this.PLAYER_HEIGHT + 0.1);
 //		}
+
+		// if we've gone past the exit, signal that it's
+		// time to go to a new cave chamber
+		if (p.z <= 0) {
+			EASY.chamber.generate();
+		}
 	},
 	
 	/**
