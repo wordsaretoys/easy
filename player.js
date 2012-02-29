@@ -78,7 +78,7 @@ EASY.player = {
 		// move player to starting point and orientation
 		this.footPosition.copy(EASY.world.player.position);
 		this.camera.turn(EASY.world.player.rotation, 0);
-		this.update();
+//		this.update();
 	},
 	
 	/**
@@ -152,9 +152,9 @@ EASY.player = {
 		// generate a vector that points to "down" and whose 
 		// magnitude increases geometrically with the slope
 		down.set(
-			EASY.chamber.getHeight(p.x - 1, p.z) - EASY.chamber.getHeight(p.x + 1, p.z),
+			EASY.chamber.getFloorHeight(p.x - 1, p.z) - EASY.chamber.getFloorHeight(p.x + 1, p.z),
 			0, 
-			EASY.chamber.getHeight(p.x, p.z - 1) - EASY.chamber.getHeight(p.x, p.z + 1)
+			EASY.chamber.getFloorHeight(p.x, p.z - 1) - EASY.chamber.getFloorHeight(p.x, p.z + 1)
 		).set(
 			Math.pow(down.x, 2) * SOAR.sign(down.x),
 			0,
@@ -232,6 +232,11 @@ EASY.player = {
 				break;
 			case SOAR.KEY.G:
 				EASY.player.footPosition.y = 100;
+				EASY.player.velocity.y = 0;
+				break;
+			case SOAR.KEY.T:
+				EASY.chamber.generate();
+				break;
 		}
 	},
 

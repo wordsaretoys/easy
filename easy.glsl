@@ -50,8 +50,7 @@ void main(void) {
 /**
 	cave fragment shader
 	
-	@param noise the rock noise texture
-	@param leaf	 the leaf texture
+	@param rock a rock texture
 
 	@param uv		texture coordinates of fragment
 	@param object	position in object coordinates
@@ -60,8 +59,7 @@ void main(void) {
 
 precision mediump float;
  
-uniform sampler2D noise;
-uniform sampler2D leaf;
+uniform sampler2D rock;
 
 varying vec2 uv;
 varying vec4 object;
@@ -69,22 +67,13 @@ varying vec4 object;
 void main(void) {
 
 	float hl;
-	hl = (4.0 - abs(object.y)) / 4.0;
+	hl = 0.1 + (4.0 - abs(object.y)) / 4.0;
+	
+	float ll;
+	ll = 1.0 - pow((32.0 - object.z) / 32.0, 2.0);
 
-	vec3 rocktex = caveTexture(noise, uv);
-	vec3 leaftex = 	texture2D(leaf, uv * 0.5).rgb;
-	gl_FragColor = vec4(hl * rocktex, 1.0);
-//	if (object.y > 0.1) {
-//		gl_FragColor = vec4(light * light * rocktex, 1.0);
-/*
-	} else {
-		float a1 = (0.1 - object.y) / 0.1;
-		float a2 = 4.0 * a1 * (texture2D(noise, uv * 0.1).r - texture2D(noise, uv * 0.01).g);
-		float a3 = clamp(a2 * a2, 0.0, 1.0);
-		vec3 tex = mix(rocktex, leaftex, a3);
-		gl_FragColor = vec4(light * light * tex, 1.0);
-	}
-*/
+	vec3 rocktex = caveTexture(rock, uv);
+	gl_FragColor = vec4(ll * hl * rocktex, 1.0);
 }
 
 </script>

@@ -7,9 +7,7 @@
 
 EASY.chamber = {
 
-	CANVAS_SIZE: 64,
-
-	RADIUS: 32,
+	LENGTH: 64,
 	MAX_HEIGHT: 4,
 	SEPARATION: 3,
 
@@ -27,129 +25,128 @@ EASY.chamber = {
 			SOAR.textOf("fs-cave-texture") + SOAR.textOf("fs-cave"),
 			["position", "texturec"],
 			["projector", "modelview"],
-			["noise", "leaf"]
+			["noise"]
 		);
-
-		var s = this.CANVAS_SIZE;
-		var map = EASY.canvasser.create(this.MAX_HEIGHT, s, s / (this.RADIUS * 2));
+		
+		this.map = EASY.canvasser.create(
+			this.MAX_HEIGHT, 
+			this.LENGTH, 
+			1
+		);
+		
+		this.rng = SOAR.random.create();
 	
-		map.context.fillStyle = "rgb(0, 0, 0)";
-		map.context.fillRect(0, 0, s, s);
-		
-		var i;
-		var hs = s / 2;
-		var rng = SOAR.random.create();
-		map.context.fillStyle = "rgba(255, 255, 0, 0.5)";
-		for (i = 0; i < 100; i++) {
-			map.context.fillRect(hs + rng.getm(hs - 16), hs + rng.getm(hs - 16), 4, 4);
-		}
-		map.context.fillStyle = "rgba(255, 0, 0, 0.5)";
-		for (i = 0; i < 100; i++) {
-			map.context.fillRect(hs + rng.getm(hs - 16), hs + rng.getm(hs - 16), 4, 4);
-		}
-		map.context.fillStyle = "rgba(255, 0, 0, 0.5)";
-		for (i = 0; i < 50; i++) {
-			map.context.fillRect(rng.getn(20), hs + rng.getm(2), 4, 4);
-		}
-		for (i = 0; i < 50; i++) {
-			map.context.fillRect(hs + rng.getm(2), rng.getn(20), 4, 4);
-		}
-		
-		map.map();
-		
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 
-		var that = this;
-		var gap = this.SEPARATION + this.MAX_HEIGHT;
-		this.getFloorHeight = function(x, z) {
-			return -map.get(0, x, z);
-		};
-		this.getCeilingHeight = function(x, z) {
-			return map.get(0, x, z) + map.get(1, x, z) - that.SEPARATION;
-		}
-
-		this.generateDisc(7, function(x0, z0, x1, z1, x2, z2) {
-			var mx0, my0, mz0;
-			var mx1, my1, mz1;
-			var mx2, my2, mz2;
-			
-			mx0 = that.RADIUS * (x0 + 1);
-			mz0 = that.RADIUS * (z0 + 1);
-			my0 = that.getFloorHeight(mx0, mz0);
-			mx1 = that.RADIUS * (x1 + 1);
-			mz1 = that.RADIUS * (z1 + 1);
-			my1 = that.getFloorHeight(mx1, mz1);
-			mx2 = that.RADIUS * (x2 + 1);
-			mz2 = that.RADIUS * (z2 + 1);
-			my2 = that.getFloorHeight(mx2, mz2);
-			
-			if (!(my0 === 0 && my1 === 0 && my2 === 0)) {
-
-				that.mesh.set(mx0, my0, mz0, mx0, mz0);
-				that.mesh.set(mx2, my2, mz2, mx2, mz2);
-				that.mesh.set(mx1, my1, mz1, mx1, mz1);
-
-				my0 = that.getCeilingHeight(mx0, mz0);
-				my1 = that.getCeilingHeight(mx1, mz1);
-				my2 = that.getCeilingHeight(mx2, mz2);
-
-				that.mesh.set(mx0, my0, mz0, mx0, mz0);
-				that.mesh.set(mx1, my1, mz1, mx1, mz1);
-				that.mesh.set(mx2, my2, mz2, mx2, mz2);
-			}
-		});
-		
-		this.mesh.build();
 	},
 	
 	/**
-		generates a mesh of triangles within a 2D unit circle.
+		(re)generate cave mesh and texture
 		
-		useful for generating heightmaps.
-		
-		@method generateDisc
-		@param detail number of triangle subdivisions to generate
-		@param callback function to call for each vertex
+		@method generate
 	**/
 	
-	generateDisc: function(detail, callback) {
+	generate: function() {
+		var map = this.map;
+		var rng = this.rng;
+		var l = this.LENGTH;
+		var hl = l * 0.5;
+		var ql = hl * 0.5;
+	
+		// wipe the canvas
+		map.context.fillStyle = "rgb(0, 0, 0)";
+		map.context.fillRect(0, 0, this.LENGTH, this.LENGTH);
 		
-		// TODO: needs to be optimized so we don't recurse
-		// into every triangle. also, need unit square version
-		
-		function recurse(level, x0, y0, x1, y1, x2, y2) {
-		
-			var x3, y3;
-			var x4, y4;
-			var x5, y5;
-			var xc, yc;
-			
-			if (0 === level) {
-				xc = (x0 + x1 + x2) / 3;
-				yc = (y0 + y1 + y2) / 3;
-				if (xc * xc + yc * yc <= 1) {
-					callback(x0, y0, x1, y1, x2, y2);
-				}
-			} else {
-				x3 = (x0 + x1) * 0.5;
-				y3 = (y0 + y1) * 0.5;
-				x4 = (x2 + x1) * 0.5;
-				y4 = (y2 + y1) * 0.5;
-				x5 = (x0 + x2) * 0.5;
-				y5 = (y0 + y2) * 0.5;
-				level--;
-				recurse(level, x0, y0, x3, y3, x5, y5);
-				recurse(level, x3, y3, x1, y1, x4, y4);
-				recurse(level, x5, y5, x4, y4, x2, y2);
-				recurse(level, x4, y4, x5, y5, x3, y3);
+		// closure function for drawing a meandering path
+		function drawPath(sx, sy, tx, ty) {
+			var x, y, dx, dy, d, i;
+			for (i = 0; i < 2; i++) {
+				x = sx;
+				y = sy;
+				do {
+
+					dx = rng.get() - rng.get();
+					dy = rng.get() - rng.get();
+					d = Math.sqrt(dx * dx + dy * dy);
+					x += 0.5 * dx / d;
+					y += 0.5 * dy / d;
+
+					dx = tx - x;
+					dy = ty - y;
+					d = Math.sqrt(dx * dx + dy * dy);
+					x += 0.05 * dx / d;
+					y += 0.05 * dy / d;
+					map.context.fillRect(x - 2, y - 2, 4, 4);
+				} while (Math.abs(dx) > 1 || Math.abs(dy) > 1);
 			}
 		}
 		
-		recurse(detail, 2, 0, -1, 1.732, -1, -1.732);
+		// generate two paths and construct the map object
+		map.context.fillStyle = "rgba(255, 0, 0, 0.05)";
+		drawPath(hl, l, hl - ql, 0);
+		drawPath(hl, l, hl + ql, 0);
+		map.build();
+
+		// generate the triangle mesh
+		this.mesh.reset();
+		var that = this;
+		SOAR.subdivide(6, 0, 0, this.LENGTH, this.LENGTH,
+		function(x0, z0, x1, z1, x2, z2) {
+			var y0 = that.getFloorHeight(x0, z0);
+			var y1 = that.getFloorHeight(x1, z1);
+			var y2 = that.getFloorHeight(x2, z2);
+	
+			if (!(y0 === 0 && y1 === 0 && y2 === 0)) {
+
+				that.mesh.set(x0, y0, z0, x0, z0);
+				that.mesh.set(x1, y1, z1, x1, z1);
+				that.mesh.set(x2, y2, z2, x2, z2);
+
+				y0 = that.getCeilingHeight(x0, z0);
+				y1 = that.getCeilingHeight(x1, z1);
+				y2 = that.getCeilingHeight(x2, z2);
+
+				that.mesh.set(x0, y0, z0, x0, z0);
+				that.mesh.set(x2, y2, z2, x2, z2);
+				that.mesh.set(x1, y1, z1, x1, z1);
+			}
+		});
+		
+		// build the GL object (retrain memory buffer for next generation)
+		this.mesh.build(true);
+		
+		// place the player at the entrance
+		EASY.player.footPosition.set(hl, 0, l - 1);
 	},
 	
+	/**
+		return the y-coordinate of the lower heightmap
+		
+		@method getFloorHeight
+		@param x number representing x-coordinate
+		@param z number representing z-coordinate
+		@return number representing y-coordinate
+	**/
+	
+	getFloorHeight: function(x, z) {
+		return -this.map.get(0, x, z);
+	},
+	
+	/**
+		return the y-coordinate of the upper heightmap
+		
+		@method getCeilingHeight
+		@param x number representing x-coordinate
+		@param z number representing z-coordinate
+		@return number representing y-coordinate
+	**/
+	
+	getCeilingHeight: function(x, z) {
+		return this.map.get(0, x, z) + this.map.get(1, x, z) - this.SEPARATION;
+	},
+
 	/**
 		process loaded resources and perform any remaining initialization
 		
@@ -165,8 +162,6 @@ EASY.chamber = {
 			SOAR.texture.create(display, resources["noise1"].data);
 		this.noise2Texture = 
 			SOAR.texture.create(display, resources["noise2"].data);
-		this.leafTexture = 
-			SOAR.texture.create(display, resources["leaf"].data);
 	},
 	
 	/**
@@ -186,7 +181,6 @@ EASY.chamber = {
 		gl.uniformMatrix4fv(this.shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(this.shader.modelview, false, camera.modelview());
 		this.noise1Texture.bind(0, this.shader.noise);
-		this.leafTexture.bind(1, this.shader.leaf);
 		this.mesh.draw();
 
 		gl.disable(gl.CULL_FACE);
@@ -202,7 +196,6 @@ EASY.chamber = {
 		this.mesh.release();
 		this.noise1Texture.release();
 		this.noise2Texture.release();
-		this.leafTexture.release();
 	}
 
 };

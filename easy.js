@@ -40,19 +40,17 @@ var EASY = {
 		gl.enable(gl.DEPTH_TEST);
 		
 		// while waiting for resource load, initialize game objects
-//		EASY.cave.init();
 		EASY.chamber.init();
 		EASY.player.init();
 		EASY.models.init();
 		EASY.paddler.init();
-		EASY.bush.init();
-		EASY.pile.init();
+
+		EASY.chamber.generate();
 
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.world.resources, function() {
 		
 			// allow game objects to process loaded resources
-//			EASY.cave.process();
 			EASY.chamber.process();
 			
 			// generate the initial active model list
@@ -70,18 +68,19 @@ var EASY = {
 				// always draw if the canvas dimensions are changed
 				EASY.draw();
 			}, false);
-			
+/*			
+			TODO: fix this, seems to be causing crashes at pageload
+
 			// always release GL resources if page is refreshed
 			window.addEventListener("beforeunload", function() {
 				EASY.chamber.release();
 				EASY.bush.release();
 			}, false);
-			
+*/			
 			SOAR.run();
 		});
 		
 		// while waiting for resource load, initialize game objects
-//		EASY.cave.init();
 //		EASY.player.init();
 	},
 	
@@ -110,14 +109,12 @@ var EASY = {
 	draw: function() {
 		var gl = EASY.display.gl;
 	
-		gl.clearColor(0.5, 0.5, 0.5, 1.0);
+		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-//		if (!EASY.world.hideCave)
-//			EASY.cave.draw();
-		EASY.chamber.draw();
+		if (!EASY.world.hideCave)
+			EASY.chamber.draw();
 		EASY.models.draw();
-		EASY.bush.draw();
 	},
 
 	/**

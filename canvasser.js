@@ -53,14 +53,14 @@ EASY.canvasser = {
 		you must call this function before using any of the
 		get functions, but AFTER drawing on the canvas.
 		
-		@method map
+		@method build
 		@x left of area to map (defaults to 0)
 		@y top of area to map (defaults to 0)
 		@w width of area to map (defaults to canvas width)
 		@h height of area to map (defaults to canvas height)
 	**/
 	
-	map: function(x, y, w, h) {
+	build: function(x, y, w, h) {
 		this.map = this.context.getImageData(
 			x || 0,
 			y || 0,
