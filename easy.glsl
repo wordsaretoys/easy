@@ -105,10 +105,10 @@ varying vec2 uv;
 varying vec3 object;
 
 void main(void) {
-	// create wing-flapping motions
+	// create paddling motions
 	vec3 pos = position;
-	pos.y += 25.0 * pow(0.4 * texturec.y, 4.0) * sin(time);
-	pos.z += 25.0 * pow(0.4 * texturec.y, 4.0) * cos(time);
+	pos.y += 25.0 * pow(0.5 * abs(pos.x), 4.0) * sin(time);
+	pos.z += 25.0 * pow(0.5 * abs(pos.x), 4.0) * cos(time);
 	
 	// transform the vertex
 	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);

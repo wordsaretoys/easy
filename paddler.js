@@ -13,8 +13,7 @@
 
 EASY.paddler = {
 
-	MAX_ACTIVE: 20,
-	EXTRUDE_STEPS: 24,
+	MAX_ACTIVE: 4,
 
 	list: [],
 
@@ -50,7 +49,7 @@ EASY.paddler = {
 
 		for (i = 0, il = this.MAX_ACTIVE; i < il; i++) {
 			this.list[i] = {
-				mesh: SOAR.mesh.create(EASY.display, EASY.display.gl.TRIANGLE_STRIP),
+				mesh: SOAR.mesh.create(EASY.display),
 				center: SOAR.vector.create(),
 				rotor: SOAR.boundRotor.create(),
 				speed: 1,
@@ -83,7 +82,7 @@ EASY.paddler = {
 				x = this.rng.getn(l);
 				z = this.rng.getn(l);
 				y = EASY.chamber.getFloorHeight(x, z);
-			} while(y > -0.5)
+			} while(y > -2)
 			
 			this.makeModel(pdlr.mesh);
 			if (pdlr.skin) {
@@ -91,7 +90,7 @@ EASY.paddler = {
 			}
 			pdlr.skin = this.makeSkin();
 			
-			pdlr.center.set(x, y, z);
+			pdlr.center.set(x, -2, z);
 			pdlr.speed = 1;
 			pdlr.active = true;
 		}
@@ -118,16 +117,17 @@ EASY.paddler = {
 		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
 		ctx.fillRect(0, 0, w, h);
 		
-		// create a mouth and eye spots
+		// draw mouth
 		ctx.fillStyle = "rgba(0, 0, 0, 1)";
-		ctx.fillRect(0, 0, 5, h);
+		ctx.fillRect(0, h - 10, w, 10);
+		// draw eye spot (duplicated by mirroring)
 		ctx.fillStyle = "rgba(255, 255, 255, 1)";
 		ctx.beginPath();
-		ctx.arc(12, h - 24, 5, 0, SOAR.PIMUL2, false);
+		ctx.arc(20, h - 20, 5, 0, SOAR.PIMUL2, false);
 		ctx.fill();
 		ctx.fillStyle = "rgba(0, 0, 0, 1)";
 		ctx.beginPath();
-		ctx.arc(12, h - 24, 4, 0, SOAR.PIMUL2, false);
+		ctx.arc(20, h - 20, 4, 0, SOAR.PIMUL2, false);
 		ctx.fill();
 	
 		this.faceTexture = SOAR.texture.create(
@@ -137,60 +137,59 @@ EASY.paddler = {
 	},
 	
 	/**
-		generate a model mesh using a cylindrical base
+		generate a paddler model mesh
 		
 		@method makeModel
 		@param mesh the mesh object to use
 	**/
-	
-	makeModel: function(mesh) {
-		var stepZ = 1 / this.EXTRUDE_STEPS;
-		var stepAngle = SOAR.PIMUL2 / this.EXTRUDE_STEPS;
-		var offset = 1 / EASY.texture.canvas.height;
-		var mesh;
-		var xa, xb, ya, yb, za, zb;
-		var txa, txb, tya, tyb;
-		var angle, s, c;
-		var ra, rb, e;
-		var i;
 
+	makeModel: function(mesh) {
+	
+		var that = this;
+		var r;
+	
 		mesh.reset();
 		
 		for (i = 2; i < 8; i++) {
-			this.shaper.map[i] = this.rng.get();
+			r = this.rng.get();
+			r = r < 0.1 ? 0.1 + r : r;
+			this.shaper.map[i] = r;
 		}
+	
+		SOAR.subdivide(5, -0.5, -0.5, 0.5, 0.5, 
+			function(x0, z0, x1, z1, x2, z2) {
+				var y0, y1, y2;
+				var tz0, tz1, tz2;
+				var r0, r1, r2;
+			
+				tz0 = z0 + 0.5;
+				tz1 = z1 + 0.5;
+				tz2 = z2 + 0.5;
+				
+				r0 = Math.sqrt(that.shaper.get(tz0));
+				r1 = Math.sqrt(that.shaper.get(tz1));
+				r2 = Math.sqrt(that.shaper.get(tz2));
+				
+				y0 = 0.25 * r0 * Math.pow(Math.cos(x0 * Math.PI), 4);
+				y1 = 0.25 * r1 * Math.pow(Math.cos(x1 * Math.PI), 4);
+				y2 = 0.25 * r2 * Math.pow(Math.cos(x2 * Math.PI), 4);
+				
+				x0 = 1.5 * x0 * r0;
+				x1 = 1.5 * x1 * r1;
+				x2 = 1.5 * x2 * r2;
+				
+				mesh.set(x0, y0, z0, Math.abs(x0), tz0);
+				mesh.set(x1, y1, z1, Math.abs(x1), tz1);
+				mesh.set(x2, y2, z2, Math.abs(x2), tz2);
 
-		for (za = -0.5; za <= 0.5; za += stepZ) {
-			zb = za + stepZ;
-			txa = za + 0.5;
-			txb = zb + 0.5;
-			// ra and rb modulate the radius of the cylinder
-			// square root provides a nice rounding effect
-			// without sanding off all of the straight edges
-			ra = Math.sqrt(this.shaper.get(txa));
-			rb = Math.sqrt(this.shaper.get(txb));
-			for (angle = SOAR.PIMUL2; angle >= 0; angle -= stepAngle) {
-				s = Math.sin(angle);
-				c = Math.cos(angle);
-				// e modulates the cylinder to flatten it in the y direction
-				e = 0.25 * Math.pow(s, 4);
-				// xa|b, ya|b are modulated circle coordinates
-				xa = ra * c;
-				ya = e * ra * s;
-				xb = rb * c;
-				yb = e * rb * s;
-				// absolute value of cosine provides {1..0..1} coverage
-				// across y, and we multiply by the radius to avoid the
-				// effect of "squeezing" many vertexes into small areas;
-				// apply 1-pixel offset to prevent an artifact when the
-				// texture is mirrored across the model
-				tya = Math.abs(ra * c) + offset;
-				tyb = Math.abs(rb * c) + offset;
-				mesh.set(xa, ya, za, txa, tya);
-				mesh.set(xb, yb, zb, txb, tyb);
+				mesh.set(x0, -y0, z0, Math.abs(x0), tz0);
+				mesh.set(x2, -y2, z2, Math.abs(x2), tz2);
+				mesh.set(x1, -y1, z1, Math.abs(x1), tz1);
 			}
-		}
+		);
+	
 		mesh.build(true);
+	
 	},
 	
 	/**
@@ -204,11 +203,11 @@ EASY.paddler = {
 		var ctx = EASY.texture.context;
 		var w = EASY.texture.canvas.width;
 		var h = EASY.texture.canvas.height;
-		var ww = w / 2;
-		var hh = h / 2;
+		var hw = w * 0.5;
+		var hh = h * 0.5;
 		var rng = this.rng;
 		var r, g, b, base, coat;
-		var i, x, y, s;
+		var i, x, y, s, hs;
 
 		ctx.clearRect(0, 0, w, h);
 		r = Math.floor(rng.getn(256));
@@ -221,16 +220,12 @@ EASY.paddler = {
 		ctx.fillRect(0, 0, w, h);
 		
 		ctx.fillStyle = coat;
-		for (i = 0; i < 100; i++) {
-			x = rng.getn(ww);
-			y = rng.getn(h);
+		for (i = 0; i < 150; i++) {
 			s = rng.getn(8) + 8;
-			ctx.beginPath();
+			x = rng.getn(hw);
+			y = rng.getn(h);
 			ctx.fillRect(x, y, s, s);
 			ctx.strokeRect(x, y, s, s);
-			x = w - x;
-			ctx.fillRect(x - s, y, s, s);
-			ctx.strokeRect(x - s, y, s, s);
 		}
 
 		return SOAR.texture.create(
@@ -248,11 +243,10 @@ EASY.paddler = {
 	update: function() {
 		var scr = this.scratch;
 		var dt = SOAR.interval * 0.001;
-		var hf, hr, hl;
+		var hf, hr, hl, hc;
 		var pdlr, c, o;
-		var h, fy;
 		var i, il;
-		
+
 		for (i = 0, il = this.list.length; i < il; i++) {
 		
 			pdlr = this.list[i];
@@ -262,27 +256,23 @@ EASY.paddler = {
 			hf = EASY.chamber.getFloorHeight(c.x + o.front.x, c.z + o.front.z);
 			hr = EASY.chamber.getFloorHeight(c.x + o.right.x, c.z + o.right.z);
 			hl = EASY.chamber.getFloorHeight(c.x - o.right.x, c.z - o.right.z);
+			hc = EASY.chamber.getCeilingHeight(c.x + o.front.x, c.z + o.front.z);
 
 			pdlr.pathTimeout -= SOAR.interval;
 			if (pdlr.pathTimeout <= 0) {
 				pdlr.pathTimeout = 5000 + this.rng.getl() % 5000;
 				pdlr.targetPitch = this.rng.get() - this.rng.get();
 			}
-	/*
-			if (c.y - hf < 0.5) {
-				pdlr.targetPitch = 0.5;
-			}
-			if (EASY.chamber.SEPARATION - hf - c.y < 0.5) {
-				pdlr.targetPitch = -0.5;
-			}
-	*/	
 	
-	/*
-			h = EASY.chamber.getFloorHeight(c.x, c.z);
-			fy = -Math.pow((c.y - EASY.chamber.MAX_HEIGHT) / (EASY.chamber.MAX_HEIGHT - h), 3);
-
-			this.rotor.turn(0, (o.front.y - fy - pdlr.targetPitch) * 0.01);
-	*/
+			if (c.y + o.front.y >= hc) {
+				pdlr.targetPitch -= 0.1;
+			}
+			if (c.y + o.front.y <= hf) {
+				pdlr.targetPitch += 0.1;
+			}
+	
+			pdlr.rotor.turn(0, (o.front.y - pdlr.targetPitch) * 0.01);
+	
 			if (hr < hf) {
 				pdlr.rotor.turn(hf - hr, 0);
 			}
