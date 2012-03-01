@@ -189,7 +189,7 @@ EASY.player = {
 		// if we've gone past the exit, signal that it's
 		// time to go to a new cave chamber
 		if (p.z <= 0) {
-			EASY.chamber.generate();
+			EASY.generate();
 		}
 	},
 	

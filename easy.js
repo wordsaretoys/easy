@@ -50,8 +50,8 @@ var EASY = {
 		EASY.chamber.init();
 		EASY.player.init();
 		EASY.paddler.init();
-
-		EASY.chamber.generate();
+		
+		this.generate();
 
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.world.resources, function() {
@@ -88,6 +88,17 @@ var EASY = {
 	},
 	
 	/**
+		generate all necessary game objects on chamber exit
+		
+		@method generate
+	**/
+	
+	generate: function() {
+		EASY.chamber.generate();
+		EASY.paddler.generate();
+	},
+	
+	/**
 		update all game objects that require it
 		
 		@method update
@@ -95,6 +106,7 @@ var EASY = {
 	
 	update: function() {
 		EASY.player.update();
+		EASY.paddler.update();
 	},
 	
 	/**
@@ -116,6 +128,7 @@ var EASY = {
 		
 		if (!EASY.world.hideCave)
 			EASY.chamber.draw();
+		EASY.paddler.draw();
 	},
 
 	/**
