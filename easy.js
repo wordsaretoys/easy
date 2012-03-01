@@ -49,7 +49,6 @@ var EASY = {
 		// while waiting for resource load, initialize game objects
 		EASY.chamber.init();
 		EASY.player.init();
-		EASY.models.init();
 		EASY.paddler.init();
 
 		EASY.chamber.generate();
@@ -60,9 +59,6 @@ var EASY = {
 			// allow game objects to process loaded resources
 			EASY.chamber.process();
 			
-			// generate the initial active model list
-			EASY.models.updateActiveList();
-		
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
 			SOAR.schedule(EASY.draw, 0, true);
@@ -99,7 +95,6 @@ var EASY = {
 	
 	update: function() {
 		EASY.player.update();
-		EASY.models.update();
 	},
 	
 	/**
@@ -121,7 +116,6 @@ var EASY = {
 		
 		if (!EASY.world.hideCave)
 			EASY.chamber.draw();
-		EASY.models.draw();
 	},
 
 	/**
