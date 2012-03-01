@@ -63,6 +63,7 @@ void main(void) {
 
 	float hl = (4.5 - abs(object.y)) / 4.5;
 	float ll = 1.0 - pow(abs(32.0 - object.z) / 32.0, 2.0);
+//	float ll = 1.0;
 	vec3 rocktex = 	texture2D(rock, uv * 0.005).r * color0 +
 					texture2D(rock, uv * 0.05).r * color1 +
 					texture2D(rock, uv * 0.5).r  * color2;

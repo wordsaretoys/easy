@@ -112,7 +112,7 @@ EASY.player = {
 		this.velocity.x = scratch.direction.x * speed;
 		this.velocity.y = this.debug ? scratch.direction.y * speed : this.velocity.y - 9.81 * dt;
 		this.velocity.z = scratch.direction.z * speed;
-//		this.constrainVelocity(this.footPosition, this.velocity);
+		this.constrainVelocity(this.footPosition, this.velocity);
 
 		scratch.velocity.copy(this.velocity).mul(dt);
 		this.footPosition.add(scratch.velocity);
@@ -190,6 +190,11 @@ EASY.player = {
 		// time to go to a new cave chamber
 		if (p.z <= 0) {
 			EASY.generate();
+		}
+		
+		// don't allow player to go past the entrance
+		if (p.z >= EASY.chamber.LENGTH) {
+			p.z = EASY.chamber.LENGTH;
 		}
 	},
 	

@@ -89,10 +89,10 @@ EASY.canvasser = {
 		var yi = Math.floor(yf);
 		var muy = yf - yi;
 
-		var xi0 = xi % this.map.width;
-		var yi0 = yi % this.map.height;
-		var xi1 = (xi + 1) % this.map.width;
-		var yi1 = (yi + 1) % this.map.height;
+		var xi0 = SOAR.clamp(xi, 0, this.map.width);
+		var yi0 = SOAR.clamp(yi, 0, this.map.height);
+		var xi1 = SOAR.clamp((xi + 1), 0, this.map.width);
+		var yi1 = SOAR.clamp((yi + 1), 0, this.map.height);
 
 		var v1, v2, v3, v4;
 		var i1, i2;

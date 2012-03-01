@@ -9,7 +9,7 @@ EASY.chamber = {
 
 	LENGTH: 64,
 	MAX_HEIGHT: 4,
-	SEPARATION: 3,
+	SEPARATION: 1,
 
 	/**
 		create data objects, meshes, and shader programs
@@ -29,7 +29,7 @@ EASY.chamber = {
 		
 		this.map = EASY.canvasser.create(
 			this.MAX_HEIGHT, 
-			this.LENGTH, 
+			this.LENGTH + 2, // extra insures buffer zone
 			1
 		);
 		
@@ -79,30 +79,42 @@ EASY.chamber = {
 				d = Math.sqrt(dx * dx + dy * dy);
 				x += 0.05 * dx / d;
 				y += 0.05 * dy / d;
+				
+				x = SOAR.clamp(x, 0, l);
+				y = SOAR.clamp(y, 0, l);
+				
 				map.context.fillRect(x - 2, y - 2, 4, 4);
 			} while (Math.abs(dx) > 1 || Math.abs(dy) > 1);
 		}
 		
-		// generate two paths and construct the map object
+		// generate paths
 		map.context.fillStyle = "rgba(255, 0, 0, 0.05)";
 		drawPath(hl, l, hl, hl);
-		drawPath(hl, l, hl, hl);
-		drawPath(hl, hl, hl - ql, 0);
 		drawPath(hl, hl, hl - ql, 0);
 		drawPath(hl, hl, hl + ql, 0);
-		drawPath(hl, hl, hl + ql, 0);
-		map.build();
 
+		// insure integrity of entrance and exit
+		map.context.fillStyle = "rgba(255, 0, 0, 1)";
+		map.context.beginPath();
+		map.context.arc(hl, l, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(hl - ql, 0, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(hl + ql, 0, 4, 0, SOAR.PIMUL2, false);
+		map.context.fill();
+
+		// construct map
+		map.build();
+		
 		// generate the triangle mesh
 		this.mesh.reset();
 		var that = this;
+		var zero = that.SEPARATION;
 		SOAR.subdivide(7, 0, 0, this.LENGTH, this.LENGTH,
 		function(x0, z0, x1, z1, x2, z2) {
 			var y0 = that.getFloorHeight(x0, z0);
 			var y1 = that.getFloorHeight(x1, z1);
 			var y2 = that.getFloorHeight(x2, z2);
 	
-			if (!(y0 === 0 && y1 === 0 && y2 === 0)) {
+			if (!(y0 === zero && y1 === zero && y2 === zero)) {
 
 				that.mesh.set(x0, y0, z0, x0, z0);
 				that.mesh.set(x1, y1, z1, x1, z1);
@@ -122,7 +134,7 @@ EASY.chamber = {
 		this.mesh.build(true);
 		
 		// place the player at the entrance
-		EASY.player.footPosition.set(hl, this.getFloorHeight(hl, l - 1), l - 1);
+		EASY.player.footPosition.set(hl, this.getFloorHeight(hl, l - 2), l - 2);
 /*
 		// update the palette
 		(function() {
@@ -146,7 +158,7 @@ EASY.chamber = {
 	**/
 	
 	getFloorHeight: function(x, z) {
-		return -this.map.get(0, x, z);
+		return -this.map.get(0, x, z) + this.SEPARATION;
 	},
 	
 	/**
@@ -159,7 +171,7 @@ EASY.chamber = {
 	**/
 	
 	getCeilingHeight: function(x, z) {
-		return this.map.get(0, x, z) + this.map.get(1, x, z) - this.SEPARATION;
+		return this.map.get(0, x, z) - this.SEPARATION;
 	},
 
 	/**

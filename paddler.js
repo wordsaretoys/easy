@@ -13,7 +13,7 @@
 
 EASY.paddler = {
 
-	MAX_ACTIVE: 4,
+	MAX_ACTIVE: 3,
 
 	list: [],
 
@@ -82,7 +82,7 @@ EASY.paddler = {
 				x = this.rng.getn(l);
 				z = this.rng.getn(l);
 				y = EASY.chamber.getFloorHeight(x, z);
-			} while(y > -2)
+			} while(y > 0)
 			
 			this.makeModel(pdlr.mesh);
 			if (pdlr.skin) {
