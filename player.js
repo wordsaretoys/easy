@@ -68,12 +68,26 @@ EASY.player = {
 		dom.mouseTracker.bind("mouseup", this.onMouseUp);
 		dom.mouseTracker.bind("mousemove", this.onMouseMove);
 
-		// create a yaw/pitch constrained camera
-		this.camera = SOAR.camera.create(
+		// create a yaw/pitch constrained camera for player view
+		this.eyeview = SOAR.camera.create(
 			EASY.display, 
 			SOAR.camera.BOUND_ROTATION);
-		this.camera.nearLimit = 0.01;
-		this.camera.farLimit = 1024;
+		this.eyeview.nearLimit = 0.01;
+		this.eyeview.farLimit = 100;
+
+		// create a free camera for overhead views
+		this.overhead = SOAR.camera.create(
+			EASY.display,
+			SOAR.camera.FREE_ROTATION);
+		this.overhead.nearLimit = 1;
+		this.overhead.farLimit = 500;
+		this.overhead.position.set(
+			EASY.chamber.LENGTH * 0.5, 75, EASY.chamber.LENGTH * 0.5);
+		this.overhead.turn(SOAR.PIDIV2, 0, 0);
+		
+		// default camera to player view
+		this.camera = this.eyeview;
+
 	},
 	
 	/**
@@ -91,6 +105,9 @@ EASY.player = {
 		var scratch = this.scratch;
 		var motion = this.motion;
 		var camera = this.camera;
+		
+		if (camera === this.overhead)
+			return;
 		
 		scratch.direction.set();
 		if (motion.movefore) {
@@ -231,6 +248,9 @@ EASY.player = {
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;
 				break;
+			case SOAR.KEY.M:
+				that.camera = that.overhead;
+				break;
 				
 // debugging keys -- remove in production release
 
@@ -240,12 +260,8 @@ EASY.player = {
 			case SOAR.KEY.N:
 				EASY.world.stopModels = !EASY.world.stopModels;
 				break;
-			case SOAR.KEY.G:
-				EASY.player.footPosition.y = 100;
-				EASY.player.velocity.y = 0;
-				break;
 			case SOAR.KEY.T:
-				EASY.chamber.generate();
+				EASY.generate();
 				break;
 		}
 	},
@@ -279,6 +295,9 @@ EASY.player = {
 				break;
 			case SOAR.KEY.SHIFT:
 				that.sprint = false;
+				break;
+			case SOAR.KEY.M:
+				that.camera = that.eyeview;
 				break;
 		}
 	},
@@ -321,6 +340,9 @@ EASY.player = {
 		var that = EASY.player;
 		var dx, dy;
 
+		if (that.camera === that.overhead)
+			return;
+
 		if (that.mouse.down) {
 			dx = that.SPIN_RATE * (event.pageX - that.mouse.x);
 			dy = that.SPIN_RATE * (event.pageY - that.mouse.y);
@@ -329,7 +351,7 @@ EASY.player = {
 		that.mouse.x = event.pageX;
 		that.mouse.y = event.pageY;
 		return false;
-	},
-	
+	}
+
 };
 
