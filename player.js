@@ -122,7 +122,7 @@ EASY.player = {
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
 		
-		EASY.debug(this.footPosition.x + "<br>" + this.footPosition.z);
+//		EASY.debug(this.footPosition.x + "<br>" + this.footPosition.z);
 	},
 	
 	/**

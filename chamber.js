@@ -87,18 +87,41 @@ EASY.chamber = {
 			} while (Math.abs(dx) > 1 || Math.abs(dy) > 1);
 		}
 		
+		// generate AOIs
+		this.area = [];
+		var i, il, a;
+		for (i = 0; i < 7; i++) {
+			this.area[i] = {
+				x: 5 + (l - 10) * rng.get(),
+				y: 5 + (l - 10) * rng.get()
+			}
+		}
+		this.area[0].y = l;
+		this.area[6].y = 0;
+		
 		// generate paths
 		map.context.fillStyle = "rgba(255, 0, 0, 0.05)";
-		drawPath(hl, l, hl, hl);
-		drawPath(hl, hl, hl - ql, 0);
-		drawPath(hl, hl, hl + ql, 0);
+		for	(i = 1, il = this.area.length; i < il; i++) {
+			drawPath(this.area[i - 1].x, this.area[i - 1].y, 
+				this.area[i].x, this.area[i].y);
+		}
+
+		// insure integrity of border
+		map.context.strokeStyle = "rgba(0, 0, 0, 1)";
+		map.context.lineWidth = 3;
+		map.context.beginPath();
+		map.context.moveTo(0, 0);
+		map.context.lineTo(0, l);
+		map.context.lineTo(l, l);
+		map.context.lineTo(l, 0);
+		map.context.lineTo(0, 0);
+		map.context.stroke();
 
 		// insure integrity of entrance and exit
 		map.context.fillStyle = "rgba(255, 0, 0, 1)";
 		map.context.beginPath();
-		map.context.arc(hl, l, 4, 0, SOAR.PIMUL2, false);
-		map.context.arc(hl - ql, 0, 4, 0, SOAR.PIMUL2, false);
-		map.context.arc(hl + ql, 0, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[0].x, this.area[0].y, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[6].x, this.area[6].y, 4, 0, SOAR.PIMUL2, false);
 		map.context.fill();
 
 		// construct map
@@ -134,7 +157,9 @@ EASY.chamber = {
 		this.mesh.build(true);
 		
 		// place the player at the entrance
-		EASY.player.footPosition.set(hl, this.getFloorHeight(hl, l - 2), l - 2);
+		EASY.player.footPosition.set(this.area[0].x, 
+			this.getFloorHeight(this.area[0].x, this.area[0].y), 
+			this.area[0].y);
 /*
 		// update the palette
 		(function() {

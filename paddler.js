@@ -247,6 +247,9 @@ EASY.paddler = {
 		var pdlr, c, o;
 		var i, il;
 
+		if (EASY.world.stopModels)
+			return;
+
 		for (i = 0, il = this.list.length; i < il; i++) {
 		
 			pdlr = this.list[i];
