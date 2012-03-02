@@ -189,7 +189,11 @@ EASY.player = {
 		// if we've gone past the exit, signal that it's
 		// time to go to a new cave chamber
 		if (p.z <= 0) {
-			EASY.generate();
+			EASY.hud.showCurtain(EASY.hud.waitMsg);
+			SOAR.schedule(function() {
+				EASY.generate();
+				EASY.hud.hideCurtain();
+			}, 1, false);
 		}
 		
 		// don't allow player to go past the entrance

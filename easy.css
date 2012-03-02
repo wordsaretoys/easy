@@ -60,3 +60,30 @@ div {
 	cursor: default;
 }
 
+/* pause curtain */
+
+#curtain {
+
+	position: absolute;
+
+	top: 0px;
+	left: 0px;
+	
+	background: rgba(0, 0, 0, 0.75);
+	
+	z-index: 20;
+	
+	cursor: default;
+	
+	display: none;
+}
+
+#curtain div {
+
+	position: absolute;
+	color: white;
+	text-align: center;
+	font-size: 32px;
+	font-variant: small-caps;
+
+}

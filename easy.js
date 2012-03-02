@@ -50,11 +50,14 @@ var EASY = {
 		EASY.chamber.init();
 		EASY.player.init();
 		EASY.paddler.init();
+		EASY.hud.init();
 		
-		this.generate();
-
+		EASY.hud.showCurtain(EASY.hud.waitMsg);
+		
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.world.resources, function() {
+
+			EASY.generate();
 		
 			// allow game objects to process loaded resources
 			EASY.chamber.process();
@@ -81,6 +84,8 @@ var EASY = {
 			}, false);
 */			
 			SOAR.run();
+			
+			EASY.hud.hideCurtain();
 		});
 		
 		// while waiting for resource load, initialize game objects
