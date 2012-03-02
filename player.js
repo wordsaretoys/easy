@@ -214,8 +214,8 @@ EASY.player = {
 		}
 		
 		// don't allow player to go past the entrance
-		if (p.z >= EASY.chamber.LENGTH) {
-			p.z = EASY.chamber.LENGTH;
+		if (p.z >= EASY.chamber.LENGTH - 1) {
+			p.z = EASY.chamber.LENGTH - 1;
 		}
 	},
 	

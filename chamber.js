@@ -65,8 +65,24 @@ EASY.chamber = {
 		
 		// closure function for drawing a meandering path
 		function drawPath(x, y, tx, ty) {
-			var dx, dy, d;
+			var dx, dy, d, lx, ly, f;
+			lx = tx;
+			ly = ty;
 			do {
+
+				dx = lx - x;
+				dy = ly - y;
+				d = Math.sqrt(dx * dx + dy * dy);
+				if (d > 1) {
+					f = map.context.fillStyle;
+					map.context.fillStyle = "rgba(255, 0, 0, 0.25)";
+					map.context.beginPath();
+					map.context.arc(x, y, 2, 0, SOAR.PIMUL2, false);
+					map.context.fill();
+					map.context.fillStyle = f;
+					lx = x;
+					ly = y;
+				}
 
 				dx = rng.get() - rng.get();
 				dy = rng.get() - rng.get();
@@ -80,10 +96,13 @@ EASY.chamber = {
 				x += 0.05 * dx / d;
 				y += 0.05 * dy / d;
 				
-				x = SOAR.clamp(x, 0, l);
-				y = SOAR.clamp(y, 0, l);
+				x = SOAR.clamp(x, 4, l - 4);
+				y = SOAR.clamp(y, 4, l - 4);
 				
 				map.context.fillRect(x - 2, y - 2, 4, 4);
+				map.context.beginPath();
+				map.context.arc(x, y, 2, 0, SOAR.PIMUL2, false);
+				map.context.fill();
 			} while (Math.abs(dx) > 1 || Math.abs(dy) > 1);
 		}
 		
@@ -96,34 +115,29 @@ EASY.chamber = {
 				y: 5 + (l - 10) * rng.get()
 			}
 		}
-		this.area[0].y = l;
-		this.area[6].y = 0;
+		// entrance and exit are special cases
+		this.area[0].y = l - 5;
+		this.area[6].y = 5;
 		
 		// generate paths
-		map.context.fillStyle = "rgba(255, 0, 0, 0.05)";
+		map.context.fillStyle = "rgba(255, 0, 0, 0.01)";
 		for	(i = 1, il = this.area.length; i < il; i++) {
 			drawPath(this.area[i - 1].x, this.area[i - 1].y, 
 				this.area[i].x, this.area[i].y);
 		}
-
-		// insure integrity of border
-		map.context.strokeStyle = "rgba(0, 0, 0, 1)";
-		map.context.lineWidth = 3;
+		
+		// force entrance and exit tunnels
+		map.context.strokeStyle = "rgba(255, 0, 0, 0.75)";
+		map.context.lineWidth = 4;
 		map.context.beginPath();
-		map.context.moveTo(0, 0);
-		map.context.lineTo(0, l);
-		map.context.lineTo(l, l);
-		map.context.lineTo(l, 0);
-		map.context.lineTo(0, 0);
+		map.context.moveTo(this.area[0].x, l + 1);
+		map.context.lineTo(this.area[0].x, l - 5);
 		map.context.stroke();
-
-		// insure integrity of entrance and exit
-		map.context.fillStyle = "rgba(255, 0, 0, 1)";
 		map.context.beginPath();
-		map.context.arc(this.area[0].x, this.area[0].y, 4, 0, SOAR.PIMUL2, false);
-		map.context.arc(this.area[6].x, this.area[6].y, 4, 0, SOAR.PIMUL2, false);
-		map.context.fill();
-
+		map.context.moveTo(this.area[6].x, -1);
+		map.context.lineTo(this.area[6].x, 6);
+		map.context.stroke();
+		
 		// construct map
 		map.build();
 		
@@ -153,7 +167,7 @@ EASY.chamber = {
 			}
 		});
 		
-		// build the GL object (retrain memory buffer for next generation)
+		// build the GL object (retain memory buffer for next generation)
 		this.mesh.build(true);
 		
 		// place the player at the entrance

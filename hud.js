@@ -8,7 +8,7 @@
 EASY.hud = {
 
 	pauseMsg: "Press Esc To Resume",
-	waitMsg: "Please Wait",
+	waitMsg: "Loading",
 
 	/**
 		establish jQuery shells around UI DOM objects &
