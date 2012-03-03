@@ -25,12 +25,13 @@ uniform mat4 modelview;
 
 varying vec2 uv;
 varying vec4 object;
+varying vec4 relobj;
 
 void main(void) {
 	object = vec4(position, 1.0);
-	gl_Position = projector * modelview * object;
+	relobj = modelview * object;
+	gl_Position = projector * relobj;
 	uv = texturec;
-	
 }
 </script>
 
@@ -46,6 +47,7 @@ void main(void) {
 
 	@param uv		texture coordinates of fragment
 	@param object	position in object coordinates
+	@param relobj	position in modelview coordinates
 	
 **/
 
@@ -58,16 +60,20 @@ uniform vec3 color2;
 
 varying vec2 uv;
 varying vec4 object;
+varying vec4 relobj;
 
 void main(void) {
 
-	float hl = (4.5 - abs(object.y)) / 4.5;
+	float hl = (4.0 - abs(object.y)) / 4.0;
 	float ll = 1.0 - pow(abs(32.0 - object.z) / 32.0, 2.0);
-//	float ll = 1.0;
+	float fl = 1.0;
+	if (length(relobj) < 64.0) {
+		fl = clamp((32.0 - length(relobj)) / 32.0, 0.0, 1.0) + 0.1;
+	}
 	vec3 rocktex = 	texture2D(rock, uv * 0.005).r * color0 +
 					texture2D(rock, uv * 0.05).r * color1 +
 					texture2D(rock, uv * 0.5).r  * color2;
-	gl_FragColor = vec4(ll * hl * rocktex, 1.0);
+	gl_FragColor = vec4(fl * ll * hl * rocktex, 1.0);
 }
 
 </script>
