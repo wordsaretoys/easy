@@ -248,7 +248,7 @@ EASY.player = {
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;
 				break;
-			case SOAR.KEY.M:
+			case SOAR.KEY.Q:
 				that.camera = that.overhead;
 				break;
 				
@@ -296,7 +296,7 @@ EASY.player = {
 			case SOAR.KEY.SHIFT:
 				that.sprint = false;
 				break;
-			case SOAR.KEY.M:
+			case SOAR.KEY.Q:
 				that.camera = that.eyeview;
 				break;
 		}
