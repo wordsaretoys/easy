@@ -82,7 +82,7 @@ EASY.player = {
 		this.overhead.nearLimit = 1;
 		this.overhead.farLimit = 500;
 		this.overhead.position.set(
-			EASY.chamber.LENGTH * 0.5, 75, EASY.chamber.LENGTH * 0.5);
+			EASY.cave.LENGTH * 0.5, 75, EASY.cave.LENGTH * 0.5);
 		this.overhead.turn(SOAR.PIDIV2, 0, 0);
 		
 		// default camera to player view
@@ -152,8 +152,8 @@ EASY.player = {
 	
 	constrainVelocity: function(p, v) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.chamber.getFloorHeight(p.x, p.z);
-		var uh = EASY.chamber.getCeilingHeight(p.x, p.z);
+		var lh = EASY.cave.getFloorHeight(p.x, p.z);
+		var uh = EASY.cave.getCeilingHeight(p.x, p.z);
 		var down = this.scratch.direction;
 	
 		// on the ground, v can't be negative
@@ -164,9 +164,9 @@ EASY.player = {
 		// generate a vector that points to "down" and whose 
 		// magnitude increases geometrically with the slope
 		down.set(
-			EASY.chamber.getFloorHeight(p.x - 1, p.z) - EASY.chamber.getFloorHeight(p.x + 1, p.z),
+			EASY.cave.getFloorHeight(p.x - 1, p.z) - EASY.cave.getFloorHeight(p.x + 1, p.z),
 			0, 
-			EASY.chamber.getFloorHeight(p.x, p.z - 1) - EASY.chamber.getFloorHeight(p.x, p.z + 1)
+			EASY.cave.getFloorHeight(p.x, p.z - 1) - EASY.cave.getFloorHeight(p.x, p.z + 1)
 		).set(
 			Math.pow(down.x, 2) * SOAR.sign(down.x),
 			0,
@@ -190,8 +190,8 @@ EASY.player = {
 	
 	constrainPosition: function(p) {
 		var bound = EASY.world.boundary;
-		var lh = EASY.chamber.getFloorHeight(p.x, p.z);
-		var uh = EASY.chamber.getCeilingHeight(p.x, p.z);
+		var lh = EASY.cave.getFloorHeight(p.x, p.z);
+		var uh = EASY.cave.getCeilingHeight(p.x, p.z);
 	
 		// p isn't allowed to be below ground
 		if (p.y < lh) {
@@ -204,7 +204,7 @@ EASY.player = {
 //		}
 
 		// if we've gone past the exit, signal that it's
-		// time to go to a new cave chamber
+		// time to go to a new cave
 		if (p.z <= 0) {
 			EASY.hud.showCurtain(EASY.hud.waitMsg);
 			SOAR.schedule(function() {
@@ -214,8 +214,8 @@ EASY.player = {
 		}
 		
 		// don't allow player to go past the entrance
-		if (p.z >= EASY.chamber.LENGTH - 1) {
-			p.z = EASY.chamber.LENGTH - 1;
+		if (p.z >= EASY.cave.LENGTH - 1) {
+			p.z = EASY.cave.LENGTH - 1;
 		}
 	},
 	

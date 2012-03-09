@@ -47,7 +47,7 @@ var EASY = {
 		EASY.texture.context = EASY.texture.canvas.getContext("2d");
 		
 		// while waiting for resource load, initialize game objects
-		EASY.chamber.init();
+		EASY.cave.init();
 		EASY.player.init();
 		EASY.paddler.init();
 		EASY.hud.init();
@@ -60,7 +60,7 @@ var EASY = {
 			EASY.generate();
 		
 			// allow game objects to process loaded resources
-			EASY.chamber.process();
+			EASY.cave.process();
 			
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
@@ -99,7 +99,7 @@ var EASY = {
 	**/
 	
 	generate: function() {
-		EASY.chamber.generate();
+		EASY.cave.generate();
 		EASY.paddler.generate();
 	},
 	
@@ -132,7 +132,7 @@ var EASY = {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
 		if (!EASY.world.hideCave)
-			EASY.chamber.draw();
+			EASY.cave.draw();
 		EASY.paddler.draw();
 	},
 

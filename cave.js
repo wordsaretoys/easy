@@ -1,11 +1,11 @@
 /**
-	generates and displays a cave chamber 
+	generates and displays a cave
 	
 	@namespace EASY
-	@class chamber
+	@class cave
 **/
 
-EASY.chamber = {
+EASY.cave = {
 
 	LENGTH: 64,
 	MAX_HEIGHT: 4,
@@ -124,6 +124,14 @@ EASY.chamber = {
 		for	(i = 1, il = this.area.length; i < il; i++) {
 			drawPath(this.area[i - 1].x, this.area[i - 1].y, 
 				this.area[i].x, this.area[i].y);
+		}
+		
+		// generate explicit "rooms"
+		map.context.fillStyle = "rgba(255, 0, 0, 1)";
+		for	(i = 0, il = this.area.length; i < il; i++) {
+			map.context.beginPath();
+			map.context.arc(this.area[i].x, this.area[i].y, 4, 0, SOAR.PIMUL2, false);
+			map.context.fill();
 		}
 		
 		// force entrance and exit tunnels

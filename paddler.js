@@ -70,7 +70,7 @@ EASY.paddler = {
 	**/
 	
 	generate: function() {
-		var l = EASY.chamber.LENGTH;
+		var l = EASY.cave.LENGTH;
 		var pdlr;
 		var x, y, z;
 		var i, il;
@@ -81,7 +81,7 @@ EASY.paddler = {
 			do {
 				x = this.rng.getn(l);
 				z = this.rng.getn(l);
-				y = EASY.chamber.getFloorHeight(x, z);
+				y = EASY.cave.getFloorHeight(x, z);
 			} while(y > 0)
 			
 			this.makeModel(pdlr.mesh);
@@ -256,10 +256,10 @@ EASY.paddler = {
 		
 			c = pdlr.center;
 			o = pdlr.rotor.orientation;
-			hf = EASY.chamber.getFloorHeight(c.x + o.front.x, c.z + o.front.z);
-			hr = EASY.chamber.getFloorHeight(c.x + o.right.x, c.z + o.right.z);
-			hl = EASY.chamber.getFloorHeight(c.x - o.right.x, c.z - o.right.z);
-			hc = EASY.chamber.getCeilingHeight(c.x + o.front.x, c.z + o.front.z);
+			hf = EASY.cave.getFloorHeight(c.x + o.front.x, c.z + o.front.z);
+			hr = EASY.cave.getFloorHeight(c.x + o.right.x, c.z + o.right.z);
+			hl = EASY.cave.getFloorHeight(c.x - o.right.x, c.z - o.right.z);
+			hc = EASY.cave.getCeilingHeight(c.x + o.front.x, c.z + o.front.z);
 
 			pdlr.pathTimeout -= SOAR.interval;
 			if (pdlr.pathTimeout <= 0) {
