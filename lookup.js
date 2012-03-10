@@ -32,6 +32,195 @@ EASY.lookup = {
 			type: "image",
 			path: "res/dirt.jpg"
 		}
-	}
+	},
 	
+	tribe: [
+
+		{
+			name: "Boothrede"
+		},
+		
+		{
+			name: "Clanmorgan"
+		},
+		
+		{
+			name: "Cowlberth"
+		},
+		
+		{
+			name: "Monkshockey"
+		},
+		
+		{
+			name: "Throckton"
+		},
+		
+		{
+			name: "Treblerath"
+		}
+		
+	},
+	
+	reason: [
+	
+		{
+			name: "Afflicted"
+		},
+		
+		{
+			name: "Disgraced"
+		},
+		
+		{
+			name: "Disillusioned"
+		},
+		
+		{
+			name: "Fanatical"
+		},
+		
+		{
+			name: "Introverted"
+		}
+	],
+	
+	title: [
+		"Monk", "Dogsbody", "Illusionist", "Deacon", "Squire", "Conjurer",
+		"Priest", "Knight", "Enchanter", "Bishop", "Clanlord", "Mage", "Scholar"
+	],
+	
+	ghost: [
+
+		{
+			name: "Shade"
+		},
+		
+		{
+			name: "Phantom"
+		},
+		
+		{
+			name: "Spectre"
+		},
+		
+		{
+			name: "Wraith"
+		},
+		
+		{
+			name: "Revenant"
+		}
+
+	],
+	
+	trash: [
+	
+		{
+			name: "Dregs of a Healing Potion",
+			glass: 1,
+			oil: 1,
+			chance: 0.8
+		},
+		
+		{
+			name: "Dregs of a Strength Potion",
+			glass: 1,
+			oil: 2,
+			chance: 0.4
+		},
+		
+		{
+			name: "Dregs of Torch Oil",
+			glass: 1,
+			oil: 2,
+			chance: 0.3
+		},
+		
+		
+		{
+			name: "Exhausted Magical Amulet",
+			wood: 1,
+			metal: 1,
+			cord: 1,
+			chance: 0.1
+		},
+
+		{
+			name: "Exhausted Magical Ring",
+			metal: 1,
+			chance: 0.2
+		},
+		
+		{
+			name: "Exhausted Magical Belt",
+			metal: 1,
+			cord: 2,
+			chance: 0.1
+		},
+		
+		{
+			name: "Exhausted Magical Shirt",
+			cord: 2,
+			cloth: 5,
+			chance: 0.2
+		},
+		
+		
+		{
+			name: "Shard of Armor",
+			metal: 3,
+			chance: 0.3
+		},
+		
+
+		{
+			name: "Hilt of Broken Sword",
+			metal: 2,
+			wood: 1,
+			cord: 1
+			chance: 0.1
+		},
+		
+		{
+			name: "Blade of Broken Sword",
+			metal: 5,
+			chance: 0.08
+		},
+		
+		
+		{
+			name: "Splintered Shield",
+			wood: 2,
+			metal: 2,
+			cord: 1,
+			chance: 0.08
+		},
+		
+		
+		{
+			name: "Tatters of a Magical Scroll",
+			cloth: 1,
+			chance: 0.3
+		},
+		
+		
+		{
+			name: "Unappreciated Tapestry",
+			cloth: 4,
+			chance: 0.1
+		},
+		
+		{
+			name: "Unread Parchment",
+			cloth: 2,
+			chance: 0.2
+		},
+		
+		{
+			name: "Unused Cologne",
+			oil: 2,
+			glass: 1
+		}
+	]
 };
