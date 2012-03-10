@@ -1,5 +1,5 @@
 /**
-	generates and displays a cave
+	generates and displays a part of a cave
 	
 	@namespace EASY
 	@class cave
@@ -10,7 +10,9 @@ EASY.cave = {
 	LENGTH: 64,
 	MAX_HEIGHT: 4,
 	SEPARATION: 1,
-
+	
+	MAX_AREAS: 7,
+	
 	/**
 		create data objects, meshes, and shader programs
 		
@@ -65,7 +67,7 @@ EASY.cave = {
 		
 		// closure function for drawing a meandering path
 		function drawPath(x, y, tx, ty) {
-			var dx, dy, d, lx, ly, f;
+			var dx, dy, d, lx, ly;
 			lx = tx;
 			ly = ty;
 			do {
@@ -74,14 +76,13 @@ EASY.cave = {
 				dy = ly - y;
 				d = Math.sqrt(dx * dx + dy * dy);
 				if (d > 1) {
-					f = map.context.fillStyle;
 					map.context.fillStyle = "rgba(255, 0, 0, 0.25)";
 					map.context.beginPath();
 					map.context.arc(x, y, 2, 0, SOAR.PIMUL2, false);
 					map.context.fill();
-					map.context.fillStyle = f;
 					lx = x;
 					ly = y;
+					map.context.fillStyle = "rgba(255, 0, 0, 0.01)";
 				}
 
 				dx = rng.get() - rng.get();
@@ -99,14 +100,13 @@ EASY.cave = {
 				x = SOAR.clamp(x, 4, l - 4);
 				y = SOAR.clamp(y, 4, l - 4);
 				
-				map.context.fillRect(x - 2, y - 2, 4, 4);
 				map.context.beginPath();
 				map.context.arc(x, y, 2, 0, SOAR.PIMUL2, false);
 				map.context.fill();
 			} while (Math.abs(dx) > 1 || Math.abs(dy) > 1);
 		}
 		
-		// generate AOIs
+		// generate areas of interest
 		this.area = [];
 		var i, il, a;
 		for (i = 0; i < 7; i++) {
@@ -115,23 +115,14 @@ EASY.cave = {
 				y: 5 + (l - 10) * rng.get()
 			}
 		}
-		// entrance and exit are special cases
+		// areas near entrance and exit are special cases
 		this.area[0].y = l - 5;
 		this.area[6].y = 5;
 		
-		// generate paths
-		map.context.fillStyle = "rgba(255, 0, 0, 0.01)";
+		// generate paths between areas
 		for	(i = 1, il = this.area.length; i < il; i++) {
 			drawPath(this.area[i - 1].x, this.area[i - 1].y, 
 				this.area[i].x, this.area[i].y);
-		}
-		
-		// generate explicit "rooms"
-		map.context.fillStyle = "rgba(255, 0, 0, 1)";
-		for	(i = 0, il = this.area.length; i < il; i++) {
-			map.context.beginPath();
-			map.context.arc(this.area[i].x, this.area[i].y, 4, 0, SOAR.PIMUL2, false);
-			map.context.fill();
 		}
 		
 		// force entrance and exit tunnels
@@ -229,8 +220,7 @@ EASY.cave = {
 	
 	process: function() {
 		var display = EASY.display;
-		var resources = EASY.world.resources;
-		var bound = EASY.world.boundary;
+		var resources = EASY.lookup.resources;
 		
 		this.noise1Texture = 
 			SOAR.texture.create(display, resources["noise1"].data);

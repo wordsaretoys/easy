@@ -49,13 +49,12 @@ var EASY = {
 		// while waiting for resource load, initialize game objects
 		EASY.cave.init();
 		EASY.player.init();
-		EASY.paddler.init();
 		EASY.hud.init();
 		
 		EASY.hud.showCurtain(EASY.hud.waitMsg);
 		
 		// begin async loading of resources from the server
-		SOAR.loadResources(EASY.world.resources, function() {
+		SOAR.loadResources(EASY.lookup.resources, function() {
 
 			EASY.generate();
 		
@@ -100,7 +99,6 @@ var EASY = {
 	
 	generate: function() {
 		EASY.cave.generate();
-		EASY.paddler.generate();
 	},
 	
 	/**
@@ -111,7 +109,6 @@ var EASY = {
 	
 	update: function() {
 		EASY.player.update();
-		EASY.paddler.update();
 	},
 	
 	/**
@@ -131,9 +128,8 @@ var EASY = {
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		if (!EASY.world.hideCave)
+		if (!EASY.lookup.hideCave)
 			EASY.cave.draw();
-		EASY.paddler.draw();
 	},
 
 	/**
@@ -144,4 +140,3 @@ var EASY = {
 		document.getElementById("debug").innerHTML = s;
 	}
 };
-

@@ -151,7 +151,6 @@ EASY.player = {
 	**/
 	
 	constrainVelocity: function(p, v) {
-		var bound = EASY.world.boundary;
 		var lh = EASY.cave.getFloorHeight(p.x, p.z);
 		var uh = EASY.cave.getCeilingHeight(p.x, p.z);
 		var down = this.scratch.direction;
@@ -189,7 +188,6 @@ EASY.player = {
 	**/
 	
 	constrainPosition: function(p) {
-		var bound = EASY.world.boundary;
 		var lh = EASY.cave.getFloorHeight(p.x, p.z);
 		var uh = EASY.cave.getCeilingHeight(p.x, p.z);
 	
@@ -255,10 +253,10 @@ EASY.player = {
 // debugging keys -- remove in production release
 
 			case SOAR.KEY.H:
-				EASY.world.hideCave = !EASY.world.hideCave;
+				EASY.lookup.hideCave = !EASY.lookup.hideCave;
 				break;
 			case SOAR.KEY.N:
-				EASY.world.stopModels = !EASY.world.stopModels;
+				EASY.lookup.stopModels = !EASY.lookup.stopModels;
 				break;
 			case SOAR.KEY.T:
 				EASY.generate();

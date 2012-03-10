@@ -1,11 +1,11 @@
 /**
-	maintain initial game world data
+	provide lookup objects for game data
 	
 	@namespace EASY
-	@class world
+	@class lookup
 **/
 
-EASY.world = {
+EASY.lookup = {
 
 	resources: {
 		panel: {
