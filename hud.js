@@ -7,6 +7,9 @@
 
 EASY.hud = {
 
+	MESSAGE_FADE_TIME: 500,
+	MESSAGE_DELAY: 5000,
+
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
 
@@ -22,7 +25,8 @@ EASY.hud = {
 		this.dom = {
 			window: jQuery(window),
 			curtain: jQuery("#curtain"),
-			curtainMsg: jQuery("#curtain > div")
+			curtainMsg: jQuery("#curtain > div"),
+			messages: jQuery("#messages")
 		};
 
 		this.dom.window.bind("resize", this.resize);			
@@ -113,6 +117,43 @@ EASY.hud = {
 	
 	hideCurtain: function() {
 		this.dom.curtain.css("display", "none");
+	},
+	
+	/**
+		adds a simple message to the HUD
+		
+		messages are stacked at the top of the screen, fading after
+		a constant timeout, then removed from the DOM
+		
+		@method addMessage
+		@param msg string containing message to display
+	**/
+
+	addMessage: function(msg) {
+		var div = jQuery(document.createElement("div"));
+		div.html(msg);
+		div.css("display", "none");
+		this.dom.messages.append(div);
+		div.fadeIn(this.MESSAGE_FADE_TIME)
+			.delay(this.MESSAGE_DELAY)
+			.fadeOut(this.MESSAGE_FADE_TIME, function() {
+				div.remove();
+		});
+	},
+	
+	/**
+		determines which indefinite article applies to a noun
+		
+		not 100%, but hopefully good enough
+		
+		@method getArticle
+		@param noun the noun or phrase to check
+		@return the proper atricle to prepend
+	**/
+	
+	getArticle: function(noun) {
+		var ch = noun.charAt(0).toLowerCase();
+		return "aeiou".indexOf(ch) != -1 ? "an" : "a";
 	}
 
 };

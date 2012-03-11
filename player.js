@@ -349,6 +349,20 @@ EASY.player = {
 		that.mouse.x = event.pageX;
 		that.mouse.y = event.pageY;
 		return false;
+	},
+	
+	/**
+		accept a trash object the player has picked up
+		
+		@method collect
+		@param item the item of trash picked up
+	**/
+	
+	collect: function(item) {
+		var hud = EASY.hud;
+	
+		hud.addMessage("Collected: " + item.name);
+	
 	}
 
 };

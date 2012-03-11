@@ -111,6 +111,7 @@ var EASY = {
 	
 	update: function() {
 		EASY.player.update();
+		EASY.trash.update();
 	},
 
 	/**

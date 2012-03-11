@@ -9,9 +9,13 @@ EASY.trash = {
 
 	MIN_ITEMS: 5,
 	MAX_ITEMS: 15,
+	
+	GRAB_DISTANCE: 1.5,
 
 	pool: {},
 	list: [],
+	
+	rotor: SOAR.freeRotor.create(),
 
 	/**
 		create and init required objects
@@ -49,7 +53,6 @@ EASY.trash = {
 		
 			t = {
 				mesh: SOAR.mesh.create(EASY.display),
-				rotor: SOAR.freeRotor.create(),
 				sign: SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h))
 			};
 
@@ -93,7 +96,7 @@ EASY.trash = {
 		var i, il, n, t;
 
 		n = this.MIN_ITEMS + Math.floor(this.rng.getn(this.MAX_ITEMS - this.MIN_ITEMS));
-		
+
 		for (i = 0, il = this.MAX_ITEMS; i < il; i++) {
 			t = this.list[i];
 			if (i < n) {
@@ -102,9 +105,14 @@ EASY.trash = {
 					x = this.rng.getn(l);
 					z = this.rng.getn(l);
 					y = EASY.cave.getFloorHeight(x, z);
-				} while(y > -2)
+				} while(y > -2.5)
 			
 				t.center.set(x, y + 1, z);
+
+				//
+				//TODO: select trash items by chance rating
+				//
+		
 				t.object = trtab[ Math.floor(this.rng.getn(trtab.length)) ];
 				t.active = true;
 				
@@ -112,6 +120,30 @@ EASY.trash = {
 			
 				t.active = false;
 
+			}
+		}
+	},
+	
+	/**
+		check for collection
+		
+		@method update
+	**/
+	
+	update: function() {
+		var i, il, tr, pp, d;
+		
+		this.rotor.turn(0, 0.05, 0);
+		pp = EASY.player.footPosition;
+		
+		for (i = 0, il = this.list.length; i < il; i++) {
+			tr = this.list[i];
+			if (tr.active) {
+				d = pp.distance(tr.center);
+				if (d < this.GRAB_DISTANCE) {
+					tr.active = false;
+					EASY.player.collect(tr.object);
+				}
 			}
 		}
 	},
@@ -129,30 +161,27 @@ EASY.trash = {
 		var center;
 		var i, il, tr, pl;
 
-//		gl.enable(gl.CULL_FACE);
-//		gl.cullFace(gl.BACK);
-
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+		gl.uniformMatrix4fv(shader.rotations, false, this.rotor.matrix.transpose);
 
 		for (i = 0, il = this.list.length; i < il; i++) {
 			tr = this.list[i];
 			if (tr.active) {
+
 				center = tr.center;
-				pl = this.pool[ tr.object.type ];
-				pl.rotor.turn(0, 0.01, 0);
-				gl.uniformMatrix4fv(shader.rotations, false, pl.rotor.matrix.transpose);
 				gl.uniform3f(shader.center, center.x, center.y, center.z);
+
+				pl = this.pool[ tr.object.type ];
 				pl.sign.bind(1, shader.sign);
 				pl.mesh.draw();
 			}
 		}
 		
-//		gl.disable(gl.CULL_FACE);
 		gl.disable(gl.BLEND);
 		
 	}

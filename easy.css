@@ -46,6 +46,27 @@ div {
 	cursor: default;
 }
 
+/* HUD messages */
+
+#messages {
+	position: absolute;
+	bottom: 20px;
+	left: 20px;
+	
+	width: 300px;
+	
+	background: transparent;
+	color: white;
+	text-shadow: black 0.1em 0.1em 0.2em;
+	
+	overflow: hidden;
+
+	font-size: 12pt;
+	text-align: left;
+
+	z-index: 5;
+}
+
 /* mouse tracking surface */
 
 #mouse-tracker {

@@ -135,7 +135,7 @@ EASY.lookup = {
 		},
 		
 		{
-			name: "Dregs of Torch Oil",
+			name: "Dregs of a Bottle of Torch Oil",
 			glass: 1,
 			oil: 2,
 			type: "potion",
@@ -194,7 +194,7 @@ EASY.lookup = {
 		
 
 		{
-			name: "Hilt of Broken Sword",
+			name: "Hilt of a Broken Sword",
 			metal: 2,
 			wood: 1,
 			cord: 1,
@@ -203,7 +203,7 @@ EASY.lookup = {
 		},
 		
 		{
-			name: "Blade of Broken Sword",
+			name: "Blade of a Broken Sword",
 			metal: 5,
 			type: "weapon",
 			chance: 0.08
@@ -225,7 +225,7 @@ EASY.lookup = {
 		},
 		
 		{
-			name: "Unused Cologne",
+			name: "Unused Bottle of Cologne",
 			oil: 2,
 			type: "art",
 			glass: 1
