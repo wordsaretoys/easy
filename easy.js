@@ -50,6 +50,7 @@ var EASY = {
 		EASY.cave.init();
 		EASY.player.init();
 		EASY.hud.init();
+		EASY.trash.init();
 		
 		EASY.hud.showCurtain(EASY.hud.waitMsg);
 		
@@ -99,6 +100,7 @@ var EASY = {
 	
 	generate: function() {
 		EASY.cave.generate();
+		EASY.trash.generate();
 	},
 	
 	/**
@@ -110,7 +112,7 @@ var EASY = {
 	update: function() {
 		EASY.player.update();
 	},
-	
+
 	/**
 		draw all game objects that require it
 		
@@ -130,6 +132,7 @@ var EASY = {
 		
 		if (!EASY.lookup.hideCave)
 			EASY.cave.draw();
+		EASY.trash.draw();
 	},
 
 	/**

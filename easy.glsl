@@ -78,10 +78,10 @@ void main(void) {
 
 </script>
 
-<script id="vs-paddler" type="x-shader/x-vertex">
+<script id="vs-trash" type="x-shader/x-vertex">
 
 /**
-	paddler vertex shader
+	trash vertex shader
 	O' = P * V * (M * O + c) transformation, plus texture coordinates
 	
 	@param position vertex array of positions
@@ -91,7 +91,6 @@ void main(void) {
 	@param modelview modelview matrix
 	@param rotations rotations matrix
 	@param center model center vector
-	@param time time base for vertex animations
 	
 	(passed to fragment shader for each vertex)
 	@param uv		texture coordinates of fragment
@@ -106,57 +105,38 @@ uniform mat4 projector;
 uniform mat4 modelview;
 uniform mat4 rotations;
 uniform vec3 center;
-uniform float time;
 
 varying vec2 uv;
-varying vec3 object;
 
 void main(void) {
-	// create paddling motions
-	vec3 pos = position;
-	pos.y += 25.0 * pow(0.5 * abs(pos.x), 4.0) * sin(time);
-	pos.z += 25.0 * pow(0.5 * abs(pos.x), 4.0) * cos(time);
-	
 	// transform the vertex
-	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
+	vec4 rotpos = rotations * vec4(position, 1.0) + vec4(center, 0.0);
 	vec4 mvpos = modelview * rotpos;
 	gl_Position = projector * mvpos;
 	uv = texturec;
-	object = position;
 }
 
 </script>
 
-<script id="fs-paddler" type="x-shader/x-fragment">
+<script id="fs-trash" type="x-shader/x-fragment">
 
 /**
-	paddler fragment shader
+	trash fragment shader
 	
-	@param face		standard face texture
-	@param skin		specific skin texture
-	@param light	light value for entire body
+	@param sign		sign texture
 
 	@param uv		texture coordinates of fragment
-	@param object	fragment position in object space
 	
 **/
 
 precision mediump float;
 
-uniform sampler2D face;
-uniform sampler2D skin;
+uniform sampler2D sign;
 
 varying vec2 uv;
-varying vec3 object;
 
 void main(void) {
-	vec4 skinColor = texture2D(skin, uv);
-	vec4 faceColor = texture2D(face, uv);
-	// apply face to top half only
-	if (object.y >= 0.0) {
-		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
-	}
-	gl_FragColor = vec4(skinColor.rgb, 1.0);
+	gl_FragColor = texture2D(sign, uv);
 }
 
 </script>

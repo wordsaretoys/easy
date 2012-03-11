@@ -60,7 +60,7 @@ EASY.lookup = {
 			name: "Treblerath"
 		}
 		
-	},
+	],
 	
 	reason: [
 	
@@ -114,12 +114,15 @@ EASY.lookup = {
 
 	],
 	
+	trashType: ["potion", "clothing", "armor", "weapon", "art"],
+	
 	trash: [
 	
 		{
 			name: "Dregs of a Healing Potion",
 			glass: 1,
 			oil: 1,
+			type: "potion",
 			chance: 0.8
 		},
 		
@@ -127,6 +130,7 @@ EASY.lookup = {
 			name: "Dregs of a Strength Potion",
 			glass: 1,
 			oil: 2,
+			type: "potion",
 			chance: 0.4
 		},
 		
@@ -134,6 +138,7 @@ EASY.lookup = {
 			name: "Dregs of Torch Oil",
 			glass: 1,
 			oil: 2,
+			type: "potion",
 			chance: 0.3
 		},
 		
@@ -143,12 +148,14 @@ EASY.lookup = {
 			wood: 1,
 			metal: 1,
 			cord: 1,
+			type: "clothing",
 			chance: 0.1
 		},
 
 		{
 			name: "Exhausted Magical Ring",
 			metal: 1,
+			type: "clothing",
 			chance: 0.2
 		},
 		
@@ -156,6 +163,7 @@ EASY.lookup = {
 			name: "Exhausted Magical Belt",
 			metal: 1,
 			cord: 2,
+			type: "clothing",
 			chance: 0.1
 		},
 		
@@ -163,14 +171,25 @@ EASY.lookup = {
 			name: "Exhausted Magical Shirt",
 			cord: 2,
 			cloth: 5,
+			type: "clothing",
 			chance: 0.2
 		},
-		
+ 		
 		
 		{
 			name: "Shard of Armor",
 			metal: 3,
+			type: "armor",
 			chance: 0.3
+		},
+
+		{
+			name: "Splintered Shield",
+			wood: 2,
+			metal: 2,
+			cord: 1,
+			type: "armor",
+			chance: 0.08
 		},
 		
 
@@ -178,48 +197,37 @@ EASY.lookup = {
 			name: "Hilt of Broken Sword",
 			metal: 2,
 			wood: 1,
-			cord: 1
+			cord: 1,
+			type: "weapon",
 			chance: 0.1
 		},
 		
 		{
 			name: "Blade of Broken Sword",
 			metal: 5,
+			type: "weapon",
 			chance: 0.08
-		},
-		
-		
-		{
-			name: "Splintered Shield",
-			wood: 2,
-			metal: 2,
-			cord: 1,
-			chance: 0.08
-		},
-		
-		
-		{
-			name: "Tatters of a Magical Scroll",
-			cloth: 1,
-			chance: 0.3
 		},
 		
 		
 		{
 			name: "Unappreciated Tapestry",
 			cloth: 4,
+			type: "art",
 			chance: 0.1
 		},
 		
 		{
 			name: "Unread Parchment",
 			cloth: 2,
+			type: "art",
 			chance: 0.2
 		},
 		
 		{
 			name: "Unused Cologne",
 			oil: 2,
+			type: "art",
 			glass: 1
 		}
 	]

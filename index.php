@@ -24,6 +24,7 @@
 		<script type="text/javascript" src="/debug/easy/hud.js"></script>
 		<script type="text/javascript" src="/debug/easy/player.js"></script>
 		<script type="text/javascript" src="/debug/easy/cave.js"></script>
+		<script type="text/javascript" src="/debug/easy/trash.js"></script>
 		
 <?php
 include("easy.glsl");
