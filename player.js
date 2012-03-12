@@ -258,6 +258,21 @@ EASY.player = {
 			case SOAR.KEY.SPACE:
 				that.camera = that.overhead;
 				break;
+			case SOAR.KEY.ONE:
+				that.defend("excuse");
+				break;
+			case SOAR.KEY.TWO:
+				that.defend("appease");
+				break;
+			case SOAR.KEY.THREE:
+				that.defend("flatter");
+				break;
+			case SOAR.KEY.FOUR:
+				that.defend("blame");
+				break;
+			case SOAR.KEY.FIVE:
+				that.defend("confuse");
+				break;
 				
 // debugging keys -- remove in production release
 
@@ -368,29 +383,38 @@ EASY.player = {
 	**/
 	
 	collect: function(item) {
-		var hud = EASY.hud;
 		var str = "";
 		var that = this;
+		var i, il, type;
 	
-		hud.addMessage("Collected: " + item.text);
+		EASY.hud.addMessage("Collected: " + item.text);
 
-		// closure function to collect specific trash type
-		function addTrash(type) {
+		for (i = 0, il = EASY.lookup.material.length; i < il; i++) {
+			type = EASY.lookup.material[i];
 			if (item[type]) {
 				that.trash[type] += item[type];
 				str += "+" + item[type] + "&nbsp;" + type + "&nbsp;&nbsp;";
 			}
 		}
 		
-		addTrash("cloth");
-		addTrash("cord");
-		addTrash("glass");
-		addTrash("metal");
-		addTrash("oil");
-		addTrash("wood");
+		EASY.hud.addMessage(str);
+	},
+	
+	/**
+		activate a defense of specified type
 		
-		hud.addMessage(str);
+		recognized types: excuse, appease, flatter, blame, confuse
+		
+		@method defend
+		@param type string representing type of defense
+	**/
+
+	defend: function(type) {
+	
+		EASY.hud.addMessage("Defended: " + type);
+	
 	}
+	
 
 };
 

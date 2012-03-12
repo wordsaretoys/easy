@@ -28,12 +28,7 @@ EASY.hud = {
 			curtain: jQuery("#curtain"),
 			curtainMsg: jQuery("#curtain > div"),
 			
-			messages: jQuery("#messages"),
-			
-			defense: jQuery("#defense"),
-			defenseCount: jQuery("#defense-count"),
-			defenseWords: jQuery("#defense-words"),
-			defenseSelectWord: jQuery(".defense-select-word")
+			messages: jQuery("#messages")
 		};
 
 		this.dom.window.bind("resize", this.resize);			
@@ -50,14 +45,6 @@ EASY.hud = {
 			return false;
 		});
 
-		this.dom.defense.resize = function() {
-			var dd = EASY.hud.dom.defense;
-			dd.offset({
-				top: (EASY.display.height - dd.height()) * 0.5,
-				left: (EASY.display.width - dd.width()) * 0.5
-			});
-		};
-		
 		this.resize();
 	},
 
@@ -77,7 +64,6 @@ EASY.hud = {
 		dom.curtain.height(EASY.display.height);
 		
 		dom.curtainMsg.resize();
-		dom.defense.resize();
 	},
 	
 	/**
@@ -105,9 +91,6 @@ EASY.hud = {
 		case SOAR.KEY.TAB:
 			// prevent accidental TAB keypress from changing focus
 			return false;
-			break;
-		case SOAR.KEY.Q:
-			EASY.hud.showDefense();
 			break;
 		default:
 			//console.log(event.keyCode);
@@ -174,41 +157,6 @@ EASY.hud = {
 	getArticle: function(noun) {
 		var ch = noun.charAt(0).toLowerCase();
 		return "aeiou".indexOf(ch) != -1 ? "an" : "a";
-	},
-	
-	/**
-		displays defense dialog
-		
-		@method showDefense
-	**/
-	
-	showDefense: function() {
-		var f, id, count = 5;
-		if (!this.defending) {
-			this.defending = true;
-			f = function() {
-				count = count - 0.1;
-				EASY.hud.dom.defenseCount.html("0:0" + count.toFixed(1));
-				if (count < 0) {
-					SOAR.unschedule(id);
-					EASY.hud.hideDefense();
-				}
-			};
-			f();
-			this.dom.defense.css("display", "block");
-			id = SOAR.schedule(f, 100, true);
-		}
-	},
-
-	/**
-		hides defense dialog
-		
-		@method hideDefense
-	**/
-	
-	hideDefense: function() {
-		this.dom.defense.css("display", "none");
-		this.defending = false;
 	}
 
 };

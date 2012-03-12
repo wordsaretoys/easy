@@ -22,6 +22,9 @@ canvas {
 div {
 	cursor: default;
 }
+
+/* helpful general classes */
+
 .left {
 	float: left;
 }
@@ -32,12 +35,24 @@ div {
 	clear: both;
 }
 
+.key {
+	border: solid 1px white;
+	border-radius: 5px;
+	background: black;
+	padding: 0px 5px 0px 5px;
+	width: 10px;
+}
+
+.center {
+	text-align: center;
+}
+
 /* debug information */
 
 #debug {
 	position: absolute;
-	top: 20px;
-	left: 20px;
+	top: 100px;
+	right: 20px;
 	
 	background: rgba(0, 0, 0, 0.1);
 	color: rgb(0, 255, 0);
@@ -50,12 +65,12 @@ div {
 
 #messages {
 	position: absolute;
-	bottom: 20px;
+	top: 20px;
 	left: 20px;
 	
-	width: 300px;
+	width: 450px;
 	
-	background: rgba(0, 0, 0, 0.1);
+	background: rgba(0, 0, 0, 0.5);
 	color: white;
 	text-shadow: black 0.1em 0.1em 0.2em;
 	
@@ -68,51 +83,38 @@ div {
 	z-index: 5;
 }
 
-/* defense dialog */
+/* HUD legend */
 
-#defense {
+#legend {
 	position: absolute;
+	bottom: 20px;
+	left: 20px;
 
-	background: rgba(0, 0, 0, 0.75);
+	background: rgba(0, 0, 0, 0.5);
 	color: white;
+	text-shadow: black 0.1em 0.1em 0.2em;
 	
-	width: 12em;
+	width: 450px;
+	height: 74px;
 	
-	border: double 5px white;
-
-	font-size: 20pt;
+	font-size: 12pt;
 	font-variant: small-caps;
 
-	display: none;
 	z-index: 5;
 }
 
-#defense-count {
-	border-bottom: solid 1px white;
-	padding: 5px;
+#legend .space5 {
+	margin-right: 5px;
 }
 
-#defense-words {
-	border-top: solid 1px white;
-	padding: 5px;
-}
-
-#defense-frame {
-	padding: 5px;
-}
-
-.defense-select {
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
-
-.defense-select-key {
-	border: solid 1px white;
-	border-radius: 5px;
-	background: black;
-	padding: 0px 0.5em 0px 0.5em;
+#legend .space10 {
 	margin-right: 10px;
 }
+
+#legend div {
+	margin-bottom: 8px;
+}
+
 
 /* mouse tracking surface */
 

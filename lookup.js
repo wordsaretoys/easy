@@ -151,6 +151,7 @@ EASY.lookup = {
 	*/
 	
 	trashType: ["potion", "clothing", "armor", "weapon", "art"],
+	material: ["cloth", "cord", "glass", "metal", "oil", "wood" ],
 	
 	/*
 	
@@ -274,41 +275,4 @@ EASY.lookup = {
 		}
 	],
 	
-	/*
-	
-		list of defense types
-		
-	*/
-	
-	defenseType: [ "excuse", "appease", "flatter", "blame", "confuse" ],
-	
-	/*
-	
-		table of defenses
-		
-	*/
-	
-	defense: [
-	
-		{
-			text: "Easy's had a rough life. He tends to lash out.",
-			type: "excuse",
-			keys: [ "life", "anger", "past", "regret" ]
-		}
-	],
-	
-	/*
-	
-		table of ghostly attacks
-		
-	*/
-	
-	attack: [
-	
-		{
-			text: "Insinuation of Personal Mortality",
-			damage: 1
-		}
-	]
-			
 };

@@ -7,13 +7,9 @@
 
 EASY.trash = {
 
-	MIN_ITEMS: 5,
-	MAX_ITEMS: 15,
-	
 	GRAB_DISTANCE: 1.5,
 
 	pool: {},
-	list: [],
 	
 	rotor: SOAR.freeRotor.create(),
 
@@ -24,6 +20,7 @@ EASY.trash = {
 	**/
 
 	init: function() {
+		var trash = EASY.lookup.trash;
 		var type = EASY.lookup.trashType;
 		var cntx = EASY.texture.context;
 		var w = EASY.texture.canvas.width;
@@ -72,14 +69,11 @@ EASY.trash = {
 			this.pool[type[i]] = t;
 		}
 		
-		for (i = 0, il = this.MAX_ITEMS; i < il; i++) {
+		// augment the trash table with positions and active flags
 		
-			this.list.push( {
-				object: null,
-				center: SOAR.vector.create(),
-				active: false
-			} );
-
+		for (i = 0, il = trash.length; i < il; i++) {
+			trash[i].center = SOAR.vector.create();
+			trash[i].active = false;
 		}
 	},
 	
@@ -90,35 +84,27 @@ EASY.trash = {
 	**/
 	
 	generate: function() {
-		var trtab = EASY.lookup.trash;
+		var trash = EASY.lookup.trash;
 		var l = EASY.cave.LENGTH;
 		var x, y, z;
-		var i, il, n, t;
+		var i, il;
 
-		n = this.MIN_ITEMS + Math.floor(this.rng.getn(this.MAX_ITEMS - this.MIN_ITEMS));
+		for (i = 0, il = trash.length; i < il; i++) {
+		
+			if (this.rng.get() <= trash[i].chance) {
 
-		for (i = 0, il = this.MAX_ITEMS; i < il; i++) {
-			t = this.list[i];
-			if (i < n) {
-			
 				do {
 					x = this.rng.getn(l);
 					z = this.rng.getn(l);
 					y = EASY.cave.getFloorHeight(x, z);
 				} while(y > -2.5)
 			
-				t.center.set(x, y + 1, z);
-
-				//
-				//TODO: select trash items by chance rating
-				//
-		
-				t.object = trtab[ Math.floor(this.rng.getn(trtab.length)) ];
-				t.active = true;
+				trash[i].center.set(x, y + 1, z);
+				trash[i].active = true;
 				
 			} else {
 			
-				t.active = false;
+				trash[i].active = false;
 
 			}
 		}
@@ -131,18 +117,18 @@ EASY.trash = {
 	**/
 	
 	update: function() {
-		var i, il, tr, pp, d;
+		var trash = EASY.lookup.trash;
+		var i, il, pp, d;
 		
 		this.rotor.turn(0, 0.05, 0);
 		pp = EASY.player.footPosition;
 		
-		for (i = 0, il = this.list.length; i < il; i++) {
-			tr = this.list[i];
-			if (tr.active) {
-				d = pp.distance(tr.center);
+		for (i = 0, il = trash.length; i < il; i++) {
+			if (trash[i].active) {
+				d = pp.distance(trash[i].center);
 				if (d < this.GRAB_DISTANCE) {
-					tr.active = false;
-					EASY.player.collect(tr.object);
+					trash[i].active = false;
+					EASY.player.collect(trash[i]);
 				}
 			}
 		}
@@ -158,8 +144,9 @@ EASY.trash = {
 		var gl = EASY.display.gl;
 		var shader = this.shader;
 		var camera = EASY.player.camera;
+		var trash = EASY.lookup.trash;
 		var center;
-		var i, il, tr, pl;
+		var i, il, pl;
 
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -169,14 +156,13 @@ EASY.trash = {
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
 		gl.uniformMatrix4fv(shader.rotations, false, this.rotor.matrix.transpose);
 
-		for (i = 0, il = this.list.length; i < il; i++) {
-			tr = this.list[i];
-			if (tr.active) {
+		for (i = 0, il = trash.length; i < il; i++) {
+			if (trash[i].active) {
 
-				center = tr.center;
+				center = trash[i].center;
 				gl.uniform3f(shader.center, center.x, center.y, center.z);
 
-				pl = this.pool[ tr.object.type ];
+				pl = this.pool[ trash[i].type ];
 				pl.sign.bind(1, shader.sign);
 				pl.mesh.draw();
 			}
