@@ -68,6 +68,52 @@ div {
 	z-index: 5;
 }
 
+/* defense dialog */
+
+#defense {
+	position: absolute;
+
+	background: rgba(0, 0, 0, 0.75);
+	color: white;
+	
+	width: 12em;
+	
+	border: double 5px white;
+
+	font-size: 20pt;
+	font-variant: small-caps;
+
+	display: none;
+	z-index: 5;
+}
+
+#defense-count {
+	border-bottom: solid 1px white;
+	padding: 5px;
+}
+
+#defense-words {
+	border-top: solid 1px white;
+	padding: 5px;
+}
+
+#defense-frame {
+	padding: 5px;
+}
+
+.defense-select {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.defense-select-key {
+	border: solid 1px white;
+	border-radius: 5px;
+	background: black;
+	padding: 0px 0.5em 0px 0.5em;
+	margin-right: 10px;
+}
+
 /* mouse tracking surface */
 
 #mouse-tracker {

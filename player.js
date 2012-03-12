@@ -255,7 +255,7 @@ EASY.player = {
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;
 				break;
-			case SOAR.KEY.Q:
+			case SOAR.KEY.SPACE:
 				that.camera = that.overhead;
 				break;
 				
@@ -303,7 +303,7 @@ EASY.player = {
 			case SOAR.KEY.SHIFT:
 				that.sprint = false;
 				break;
-			case SOAR.KEY.Q:
+			case SOAR.KEY.SPACE:
 				that.camera = that.eyeview;
 				break;
 		}
@@ -372,7 +372,7 @@ EASY.player = {
 		var str = "";
 		var that = this;
 	
-		hud.addMessage("Collected: " + item.name);
+		hud.addMessage("Collected: " + item.text);
 
 		// closure function to collect specific trash type
 		function addTrash(type) {

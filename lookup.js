@@ -49,27 +49,27 @@ EASY.lookup = {
 	tribe: [
 
 		{
-			name: "Boothrede"
+			text: "Boothrede"
 		},
 		
 		{
-			name: "Clanmorgan"
+			text: "Clanmorgan"
 		},
 		
 		{
-			name: "Cowlberth"
+			text: "Cowlberth"
 		},
 		
 		{
-			name: "Monkshockey"
+			text: "Monkshockey"
 		},
 		
 		{
-			name: "Throckton"
+			text: "Throckton"
 		},
 		
 		{
-			name: "Treblerath"
+			text: "Treblerath"
 		}
 		
 	],
@@ -83,23 +83,23 @@ EASY.lookup = {
 	reason: [
 	
 		{
-			name: "Afflicted"
+			text: "Afflicted"
 		},
 		
 		{
-			name: "Disgraced"
+			text: "Disgraced"
 		},
 		
 		{
-			name: "Disillusioned"
+			text: "Disillusioned"
 		},
 		
 		{
-			name: "Fanatical"
+			text: "Fanatical"
 		},
 		
 		{
-			name: "Introverted"
+			text: "Introverted"
 		}
 	],
 	
@@ -123,23 +123,23 @@ EASY.lookup = {
 	ghost: [
 
 		{
-			name: "Shade"
+			text: "Shade"
 		},
 		
 		{
-			name: "Phantom"
+			text: "Phantom"
 		},
 		
 		{
-			name: "Spectre"
+			text: "Spectre"
 		},
 		
 		{
-			name: "Wraith"
+			text: "Wraith"
 		},
 		
 		{
-			name: "Revenant"
+			text: "Revenant"
 		}
 
 	],
@@ -161,7 +161,7 @@ EASY.lookup = {
 	trash: [
 	
 		{
-			name: "Dregs of a Healing Potion",
+			text: "Dregs of a Healing Potion",
 			glass: 1,
 			oil: 1,
 			type: "potion",
@@ -169,7 +169,7 @@ EASY.lookup = {
 		},
 		
 		{
-			name: "Dregs of a Strength Potion",
+			text: "Dregs of a Strength Potion",
 			glass: 1,
 			oil: 2,
 			type: "potion",
@@ -177,7 +177,7 @@ EASY.lookup = {
 		},
 		
 		{
-			name: "Dregs of a Bottle of Torch Oil",
+			text: "Dregs of a Bottle of Torch Oil",
 			glass: 1,
 			oil: 2,
 			type: "potion",
@@ -186,7 +186,7 @@ EASY.lookup = {
 		
 		
 		{
-			name: "Exhausted Magical Amulet",
+			text: "Exhausted Magical Amulet",
 			wood: 1,
 			metal: 1,
 			cord: 1,
@@ -195,14 +195,14 @@ EASY.lookup = {
 		},
 
 		{
-			name: "Exhausted Magical Ring",
+			text: "Exhausted Magical Ring",
 			metal: 1,
 			type: "clothing",
 			chance: 0.2
 		},
 		
 		{
-			name: "Exhausted Magical Belt",
+			text: "Exhausted Magical Belt",
 			metal: 1,
 			cord: 2,
 			type: "clothing",
@@ -210,7 +210,7 @@ EASY.lookup = {
 		},
 		
 		{
-			name: "Exhausted Magical Shirt",
+			text: "Exhausted Magical Shirt",
 			cord: 2,
 			cloth: 5,
 			type: "clothing",
@@ -219,14 +219,14 @@ EASY.lookup = {
  		
 		
 		{
-			name: "Shard of Armor",
+			text: "Shard of Armor",
 			metal: 3,
 			type: "armor",
 			chance: 0.3
 		},
 
 		{
-			name: "Splintered Shield",
+			text: "Splintered Shield",
 			wood: 2,
 			metal: 2,
 			cord: 1,
@@ -236,7 +236,7 @@ EASY.lookup = {
 		
 
 		{
-			name: "Hilt of a Broken Sword",
+			text: "Hilt of a Broken Sword",
 			metal: 2,
 			wood: 1,
 			cord: 1,
@@ -245,7 +245,7 @@ EASY.lookup = {
 		},
 		
 		{
-			name: "Blade of a Broken Sword",
+			text: "Blade of a Broken Sword",
 			metal: 5,
 			type: "weapon",
 			chance: 0.08
@@ -253,21 +253,21 @@ EASY.lookup = {
 		
 		
 		{
-			name: "Unappreciated Tapestry",
+			text: "Unappreciated Tapestry",
 			cloth: 4,
 			type: "art",
 			chance: 0.1
 		},
 		
 		{
-			name: "Unread Parchment",
+			text: "Unread Parchment",
 			cloth: 2,
 			type: "art",
 			chance: 0.2
 		},
 		
 		{
-			name: "Unused Bottle of Cologne",
+			text: "Unused Bottle of Cologne",
 			oil: 2,
 			type: "art",
 			glass: 1
@@ -295,5 +295,20 @@ EASY.lookup = {
 			type: "excuse",
 			keys: [ "life", "anger", "past", "regret" ]
 		}
+	],
+	
+	/*
+	
+		table of ghostly attacks
+		
+	*/
+	
+	attack: [
+	
+		{
+			text: "Insinuation of Personal Mortality",
+			damage: 1
+		}
 	]
+			
 };
