@@ -17,6 +17,15 @@ EASY.player = {
 	footPosition: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 
+	trash: {
+		cloth: 0,
+		cord: 0,
+		glass: 0,
+		metal: 0,
+		oil: 0,
+		wood: 0
+	},
+	
 	motion: {
 		moveleft: false, moveright: false,
 		movefore: false, moveback: false
@@ -360,9 +369,27 @@ EASY.player = {
 	
 	collect: function(item) {
 		var hud = EASY.hud;
+		var str = "";
+		var that = this;
 	
 		hud.addMessage("Collected: " + item.name);
-	
+
+		// closure function to collect specific trash type
+		function addTrash(type) {
+			if (item[type]) {
+				that.trash[type] += item[type];
+				str += "+" + item[type] + "&nbsp;" + type + "&nbsp;&nbsp;";
+			}
+		}
+		
+		addTrash("cloth");
+		addTrash("cord");
+		addTrash("glass");
+		addTrash("metal");
+		addTrash("oil");
+		addTrash("wood");
+		
+		hud.addMessage(str);
 	}
 
 };

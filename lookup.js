@@ -7,6 +7,12 @@
 
 EASY.lookup = {
 
+	/*
+	
+		table of binary resources
+		
+	*/
+
 	resources: {
 		panel: {
 			type: "image",
@@ -33,6 +39,12 @@ EASY.lookup = {
 			path: "res/dirt.jpg"
 		}
 	},
+	
+	/*
+	
+		table of antagonist tribes
+		
+	*/
 	
 	tribe: [
 
@@ -62,6 +74,12 @@ EASY.lookup = {
 		
 	],
 	
+	/*
+		
+		table of antagonist reasons
+		
+	*/
+	
 	reason: [
 	
 		{
@@ -85,10 +103,22 @@ EASY.lookup = {
 		}
 	],
 	
+	/*
+	
+		list of antagonist titles
+		
+	*/
+	
 	title: [
 		"Monk", "Dogsbody", "Illusionist", "Deacon", "Squire", "Conjurer",
 		"Priest", "Knight", "Enchanter", "Bishop", "Clanlord", "Mage", "Scholar"
 	],
+	
+	/*
+	
+		table of ghost catagories
+		
+	*/
 	
 	ghost: [
 
@@ -114,7 +144,19 @@ EASY.lookup = {
 
 	],
 	
+	/*
+	
+		list of trash types
+		
+	*/
+	
 	trashType: ["potion", "clothing", "armor", "weapon", "art"],
+	
+	/*
+	
+		table of collectable trash
+		
+	*/
 	
 	trash: [
 	
@@ -229,6 +271,29 @@ EASY.lookup = {
 			oil: 2,
 			type: "art",
 			glass: 1
+		}
+	],
+	
+	/*
+	
+		list of defense types
+		
+	*/
+	
+	defenseType: [ "excuse", "appease", "flatter", "blame", "confuse" ],
+	
+	/*
+	
+		table of defenses
+		
+	*/
+	
+	defense: [
+	
+		{
+			text: "Easy's had a rough life. He tends to lash out.",
+			type: "excuse",
+			keys: [ "life", "anger", "past", "regret" ]
 		}
 	]
 };

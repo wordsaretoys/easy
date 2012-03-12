@@ -55,7 +55,7 @@ div {
 	
 	width: 300px;
 	
-	background: transparent;
+	background: rgba(0, 0, 0, 0.1);
 	color: white;
 	text-shadow: black 0.1em 0.1em 0.2em;
 	
@@ -63,6 +63,7 @@ div {
 
 	font-size: 12pt;
 	text-align: left;
+	font-variant: small-caps;
 
 	z-index: 5;
 }
