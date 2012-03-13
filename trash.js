@@ -91,22 +91,21 @@ EASY.trash = {
 
 		for (i = 0, il = trash.length; i < il; i++) {
 		
-			if (this.rng.get() <= trash[i].chance) {
+//			if (this.rng.get() <= trash[i].chance) {
 
 				do {
 					x = this.rng.getn(l);
 					z = this.rng.getn(l);
-					y = EASY.cave.getFloorHeight(x, z);
-				} while(y > -2.5)
+				} while(!EASY.cave.isFloorFree(x, z, 0.5, 0.1));
 			
-				trash[i].center.set(x, y + 1, z);
+				trash[i].center.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 				trash[i].active = true;
-				
+/*
 			} else {
 			
 				trash[i].active = false;
 
-			}
+			} */
 		}
 	},
 	
@@ -163,7 +162,7 @@ EASY.trash = {
 				gl.uniform3f(shader.center, center.x, center.y, center.z);
 
 				pl = this.pool[ trash[i].type ];
-				pl.sign.bind(1, shader.sign);
+				pl.sign.bind(0, shader.sign);
 				pl.mesh.draw();
 			}
 		}

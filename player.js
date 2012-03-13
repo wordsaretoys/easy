@@ -259,19 +259,19 @@ EASY.player = {
 				that.camera = that.overhead;
 				break;
 			case SOAR.KEY.ONE:
-				that.defend("excuse");
+				that.attack("excuse");
 				break;
 			case SOAR.KEY.TWO:
-				that.defend("appease");
+				that.attack("appease");
 				break;
 			case SOAR.KEY.THREE:
-				that.defend("flatter");
+				that.attack("flatter");
 				break;
 			case SOAR.KEY.FOUR:
-				that.defend("blame");
+				that.attack("blame");
 				break;
 			case SOAR.KEY.FIVE:
-				that.defend("confuse");
+				that.attack("confuse");
 				break;
 				
 // debugging keys -- remove in production release
@@ -401,17 +401,17 @@ EASY.player = {
 	},
 	
 	/**
-		activate a defense of specified type
+		activate an attack of specified type
 		
-		recognized types: excuse, appease, flatter, blame, confuse
+		recognized attacks: excuse, appease, flatter, blame, confuse
 		
-		@method defend
-		@param type string representing type of defense
+		@method attack
+		@param type string representing type of attack
 	**/
 
-	defend: function(type) {
+	attack: function(type) {
 	
-		EASY.hud.addMessage("Defended: " + type);
+		EASY.hud.addMessage("Attacked with " + type);
 	
 	}
 	

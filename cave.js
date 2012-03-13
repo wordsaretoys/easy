@@ -213,6 +213,38 @@ EASY.cave = {
 	},
 
 	/**
+		returns whether the floor at a particular point is
+		a good place to situate something (item, antagonist)
+		
+		@method isFloorFree
+		@param x number representing x-coordinate
+		@param z number representing z-coordinate
+		@param r number representing test radius
+		@param t number representing test tolerance
+		@return boolean, true if floor is free and level
+	**/
+	
+	isFloorFree: function(x, z, r, t) {
+		var c = this.getFloorHeight(x, z);
+		if (c > -2 * r) {
+			return false;
+		}
+		if (Math.abs(this.getFloorHeight(x + r, z) - c) > t) {
+			return false;
+		}
+		if (Math.abs(this.getFloorHeight(x - r, z) - c) > t) {
+			return false;
+		}
+		if (Math.abs(this.getFloorHeight(x, z + r) - c) > t) {
+			return false;
+		}
+		if (Math.abs(this.getFloorHeight(x, z - r) - c) > t) {
+			return false;
+		}
+		return true;
+	},
+	
+	/**
 		process loaded resources and perform any remaining initialization
 		
 		@method process

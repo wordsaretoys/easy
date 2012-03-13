@@ -51,6 +51,7 @@ var EASY = {
 		EASY.player.init();
 		EASY.hud.init();
 		EASY.trash.init();
+		EASY.ghost.init();
 		
 		EASY.hud.showCurtain(EASY.hud.waitMsg);
 		
@@ -101,6 +102,7 @@ var EASY = {
 	generate: function() {
 		EASY.cave.generate();
 		EASY.trash.generate();
+		EASY.ghost.generate();
 	},
 	
 	/**
@@ -112,6 +114,7 @@ var EASY = {
 	update: function() {
 		EASY.player.update();
 		EASY.trash.update();
+		EASY.ghost.update();
 	},
 
 	/**
@@ -134,6 +137,7 @@ var EASY = {
 		if (!EASY.lookup.hideCave)
 			EASY.cave.draw();
 		EASY.trash.draw();
+		EASY.ghost.draw();
 	},
 
 	/**
