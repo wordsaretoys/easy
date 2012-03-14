@@ -91,7 +91,7 @@ EASY.trash = {
 
 		for (i = 0, il = trash.length; i < il; i++) {
 		
-//			if (this.rng.get() <= trash[i].chance) {
+			if (this.rng.get() <= trash[i].chance) {
 
 				do {
 					x = this.rng.getn(l);
@@ -100,12 +100,12 @@ EASY.trash = {
 			
 				trash[i].center.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 				trash[i].active = true;
-/*
+
 			} else {
 			
 				trash[i].active = false;
 
-			} */
+			}
 		}
 	},
 	

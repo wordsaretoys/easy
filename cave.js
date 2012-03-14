@@ -42,9 +42,9 @@ EASY.cave = {
 		this.mesh.add(this.shader.texturec, 2);
 
 		this.palette = [
-			{ r: 0.8, g: 0.4, b: 0.2 },
-			{ r: 0.5, g: 0.7, b: 0.8 },
-			{ r: 0.2, g: 0.9, b: 0.5 }
+			{ r: 0, g: 0, b: 0 },
+			{ r: 0, g: 0, b: 0 },
+			{ r: 0, g: 0, b: 0 }
 		];
 	},
 	
@@ -174,17 +174,17 @@ EASY.cave = {
 		EASY.player.footPosition.set(this.area[0].x, 
 			this.getFloorHeight(this.area[0].x, this.area[0].y), 
 			this.area[0].y);
-/*
+
 		// update the palette
 		(function() {
 			var i, il;
 			for (i = 0, il = that.palette.length; i < il; i++) {
-				that.palette[i].r += 0.1 * (rng.get() - rng.get());
-				that.palette[i].g += 0.1 * (rng.get() - rng.get());
-				that.palette[i].r += 0.1 * (rng.get() - rng.get());
+				that.palette[i].r = 0.5 + 0.5 * rng.get();
+				that.palette[i].g = 0.5 + 0.5 * rng.get();
+				that.palette[i].b = 0.5 + 0.5 * rng.get();
 			}
 		})();
-*/
+
 	},
 	
 	/**
