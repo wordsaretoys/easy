@@ -136,7 +136,7 @@ EASY.hud = {
 		var div = jQuery(document.createElement("div"));
 		div.html(msg);
 		div.css("display", "none");
-		this.dom.messages.append(div);
+		this.dom.messages.prepend(div);
 		div.fadeIn(this.MESSAGE_FADE_TIME)
 			.delay(this.MESSAGE_DELAY)
 			.fadeOut(this.MESSAGE_FADE_TIME, function() {

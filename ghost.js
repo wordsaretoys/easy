@@ -7,13 +7,19 @@
 
 EASY.ghost = {
 
-	NOMINAL_SPEED: 2,
+	NOMINAL_SPEED: 2.5,
+
+	position: SOAR.vector.create(),
+	velocity: SOAR.vector.create(),
 
 	rotor: SOAR.freeRotor.create(),
-	center: SOAR.vector.create(),
-	seeking: SOAR.vector.create(),
-	down: SOAR.vector.create(),
+	target: SOAR.vector.create(),
 
+	scratch: {
+		pos: SOAR.vector.create(),
+		dir: SOAR.vector.create()
+	},
+	
 	/**
 		create and init required objects
 		
@@ -82,8 +88,36 @@ EASY.ghost = {
 			z = this.rng.getn(l);
 		} while(!EASY.cave.isFlat(x, z, 0.5));
 	
-		this.center.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
-		this.seeking.copy(this.center);
+		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
+		this.target.copy(this.position);
+	},
+	
+	/**
+		determine if player in ghost's line of sight
+		if so, set target to player's last position
+		
+		@method lookForPlayer
+	**/
+	
+	lookForPlayer: function() {
+		var pos = this.scratch.pos;
+		var dir = this.scratch.dir;
+		var pp = EASY.player.footPosition;
+		var blocked = false;
+
+		pos.copy(this.position);
+		dir.copy(pp).sub(pos).norm().mul(0.5);
+		while (!blocked && (Math.abs(pos.x - pp.x) > 0.5 || Math.abs(pos.z - pp.z) > 0.5) ) {
+			pos.add(dir);
+			blocked = !EASY.cave.isOpen(pos.x, pos.z, 0.5);
+		}
+		
+		if (!blocked) {
+			this.target.copy(pos);
+			EASY.debug("i see you");
+		} else {
+			EASY.debug("");
+		}
 	},
 	
 	/**
@@ -93,52 +127,32 @@ EASY.ghost = {
 	**/
 	
 	update: function() {
-		var pp = EASY.player.footPosition;
+		var dir = this.scratch.dir;
 		var dt = SOAR.interval * 0.001;
-		var hit = false;
-		var x, z, dx, dz, d;
-		
+
 		this.rotor.turn(0, 0.05, 0);
+		this.lookForPlayer();
 		
-		x = this.center.x;
-		z = this.center.z;
-		
-		while (!hit && (Math.abs(x - pp.x) > 1 || Math.abs(z - pp.z) > 1) ) {
-		
-			dx = pp.x - x;
-			dz = pp.z - z;
-			d = Math.sqrt(dx * dx + dz * dz);
-			x += 0.1 * dx / d;
-			z += 0.1 * dz / d;
-			
-			if (!EASY.cave.isOpen(x, z, 0.5)) {
-				hit = true;
-			}
-		}
-		
-		if (!hit) {
-			this.seeking.set(x, 0, z);
-//			EASY.debug("i see you");
+		dir.copy(this.target).sub(this.position);
+		if (dir.length() > 0) {
+			dir.norm();
+			this.velocity.x = this.NOMINAL_SPEED * dir.x;
+			this.velocity.z = this.NOMINAL_SPEED * dir.z;
 		} else {
-//			EASY.debug("");
+			this.velocity.set();
 		}
 		
-		dx = this.seeking.x - this.center.x;
-		dz = this.seeking.z - this.center.z;
-		d = Math.sqrt(dx * dx + dz * dz);
-		if (d > 0) {
-			this.center.x += this.NOMINAL_SPEED * dt * dx / d;
-			this.center.z += this.NOMINAL_SPEED * dt * dz / d;
-			this.center.y = EASY.cave.getFloorHeight(this.center.x, this.center.z) + 1;
-		}
-		
-		// generate a vector that points to "down"
-		this.down.set(
-			EASY.cave.getFloorHeight(this.center.x - 1, this.center.z) - EASY.cave.getFloorHeight(this.center.x + 1, this.center.z),
+		// generate a vector that points away from the walls
+		dir.set(
+			EASY.cave.getFloorHeight(this.position.x - 1, this.position.z) - EASY.cave.getFloorHeight(this.position.x + 1, this.position.z),
 			0, 
-			EASY.cave.getFloorHeight(this.center.x, this.center.z - 1) - EASY.cave.getFloorHeight(this.center.x, this.center.z + 1)
-		).mul(dt);
-		this.center.add(this.down);
+			EASY.cave.getFloorHeight(this.position.x, this.position.z - 1) - EASY.cave.getFloorHeight(this.position.x, this.position.z + 1)
+		);
+		this.velocity.add(dir);
+
+		// update the position, maintaining distance from cave floor
+		this.position.add(this.velocity.mul(dt));
+		this.position.y = EASY.cave.getFloorHeight(this.position.x, this.position.z) + 1;
 		
 	},
 	
@@ -161,7 +175,7 @@ EASY.ghost = {
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
 		gl.uniformMatrix4fv(shader.rotations, false, this.rotor.matrix.transpose);
 
-		gl.uniform3f(shader.center, this.center.x, this.center.y, this.center.z);
+		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 
 		this.sign.bind(0, shader.sign);
 		this.mesh.draw();
