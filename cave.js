@@ -144,7 +144,7 @@ EASY.cave = {
 		this.mesh.reset();
 		var that = this;
 		var zero = this.WALL_HEIGHT - this.SEPARATION;
-		var ceil = (this.WALL_HEIGHT - this.SEPARATION) * 2;
+		var ceil = zero * 2;
 		SOAR.subdivide(7, 0, 0, this.LENGTH, this.LENGTH,
 		function(x0, z0, x1, z1, x2, z2) {
 			var y0 = that.getFloorHeight(x0, z0);
@@ -202,36 +202,65 @@ EASY.cave = {
 	
 	/**
 		returns whether the floor at a particular point is
-		a good place to situate something (item, antagonist)
+		level enough (for situating an item or antagonist)
 		
-		@method isFloorFree
+		@method isFlat
 		@param x number representing x-coordinate
 		@param z number representing z-coordinate
 		@param r number representing test radius
-		@param t number representing test tolerance
 		@return boolean, true if floor is free and level
 	**/
 	
-	isFloorFree: function(x, z, r, t) {
-		var c = this.getFloorHeight(x, z);
-		if (c > this.WALL_HEIGHT - this.SEPARATION - r) {
+	isFlat: function(x, z, r) {
+		if (this.getFloorHeight(x, z) > 0) {
 			return false;
 		}
-		if (Math.abs(this.getFloorHeight(x + r, z) - c) > t) {
+		if (this.getFloorHeight(x + r, z) > 0) {
 			return false;
 		}
-		if (Math.abs(this.getFloorHeight(x - r, z) - c) > t) {
+		if (this.getFloorHeight(x - r, z) > 0) {
 			return false;
 		}
-		if (Math.abs(this.getFloorHeight(x, z + r) - c) > t) {
+		if (this.getFloorHeight(x, z + r) > 0) {
 			return false;
 		}
-		if (Math.abs(this.getFloorHeight(x, z - r) - c) > t) {
+		if (this.getFloorHeight(x, z - r) > 0) {
 			return false;
 		}
 		return true;
 	},
 	
+	/**
+		returns whether the floor at a particular point is
+		open enough for an antagonist to pass through
+		
+		@method isOpen
+		@param x number representing x-coordinate
+		@param z number representing z-coordinate
+		@param r number representing test radius
+		@return boolean, true if floor is open enough
+	**/
+	
+	isOpen: function(x, z, r) {
+		var h = this.WALL_HEIGHT - this.SEPARATION - r;
+		if (this.getFloorHeight(x, z) >= h) {
+			return false;
+		}
+		if (this.getFloorHeight(x + r, z) >= h) {
+			return false;
+		}
+		if (this.getFloorHeight(x - r, z) >= h) {
+			return false;
+		}
+		if (this.getFloorHeight(x, z + r) >= h) {
+			return false;
+		}
+		if (this.getFloorHeight(x, z - r) >= h) {
+			return false;
+		}
+		return true;
+	},
+
 	/**
 		process loaded resources and perform any remaining initialization
 		

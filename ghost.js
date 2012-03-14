@@ -7,9 +7,12 @@
 
 EASY.ghost = {
 
+	NOMINAL_SPEED: 2,
+
 	rotor: SOAR.freeRotor.create(),
 	center: SOAR.vector.create(),
 	seeking: SOAR.vector.create(),
+	down: SOAR.vector.create(),
 
 	/**
 		create and init required objects
@@ -77,7 +80,7 @@ EASY.ghost = {
 		do {
 			x = this.rng.getn(l);
 			z = this.rng.getn(l);
-		} while(!EASY.cave.isFloorFree(x, z, 0.5, 0.1));
+		} while(!EASY.cave.isFlat(x, z, 0.5));
 	
 		this.center.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.seeking.copy(this.center);
@@ -91,6 +94,7 @@ EASY.ghost = {
 	
 	update: function() {
 		var pp = EASY.player.footPosition;
+		var dt = SOAR.interval * 0.001;
 		var hit = false;
 		var x, z, dx, dz, d;
 		
@@ -107,25 +111,34 @@ EASY.ghost = {
 			x += 0.1 * dx / d;
 			z += 0.1 * dz / d;
 			
-			if (!EASY.cave.isFloorFree(x, z, 0.25, 0.1)) {
+			if (!EASY.cave.isOpen(x, z, 0.5)) {
 				hit = true;
 			}
 		}
 		
 		if (!hit) {
 			this.seeking.set(x, 0, z);
-			EASY.debug("i see you");
+//			EASY.debug("i see you");
 		} else {
-			EASY.debug("");
+//			EASY.debug("");
 		}
 		
 		dx = this.seeking.x - this.center.x;
 		dz = this.seeking.z - this.center.z;
 		d = Math.sqrt(dx * dx + dz * dz);
 		if (d > 0) {
-			this.center.x += 0.025 * dx / d;
-			this.center.z += 0.025 * dz / d;
+			this.center.x += this.NOMINAL_SPEED * dt * dx / d;
+			this.center.z += this.NOMINAL_SPEED * dt * dz / d;
+			this.center.y = EASY.cave.getFloorHeight(this.center.x, this.center.z) + 1;
 		}
+		
+		// generate a vector that points to "down"
+		this.down.set(
+			EASY.cave.getFloorHeight(this.center.x - 1, this.center.z) - EASY.cave.getFloorHeight(this.center.x + 1, this.center.z),
+			0, 
+			EASY.cave.getFloorHeight(this.center.x, this.center.z - 1) - EASY.cave.getFloorHeight(this.center.x, this.center.z + 1)
+		).mul(dt);
+		this.center.add(this.down);
 		
 	},
 	
