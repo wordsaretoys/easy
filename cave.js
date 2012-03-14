@@ -8,7 +8,7 @@
 EASY.cave = {
 
 	LENGTH: 64,
-	MAX_HEIGHT: 4,
+	WALL_HEIGHT: 4,
 	SEPARATION: 1,
 	
 	MAX_AREAS: 7,
@@ -30,8 +30,8 @@ EASY.cave = {
 		);
 		
 		this.map = EASY.canvasser.create(
-			this.MAX_HEIGHT, 
-			this.LENGTH + 2, // extra insures buffer zone
+			this.WALL_HEIGHT,
+			this.LENGTH,
 			1
 		);
 		
@@ -62,7 +62,7 @@ EASY.cave = {
 		var ql = hl * 0.5;
 	
 		// wipe the canvas
-		map.context.fillStyle = "rgb(0, 0, 0)";
+		map.context.fillStyle = "rgb(255, 0, 0)";
 		map.context.fillRect(0, 0, this.LENGTH, this.LENGTH);
 		
 		// closure function for drawing a meandering path
@@ -76,13 +76,13 @@ EASY.cave = {
 				dy = ly - y;
 				d = Math.sqrt(dx * dx + dy * dy);
 				if (d > 1) {
-					map.context.fillStyle = "rgba(255, 0, 0, 0.25)";
+					map.context.fillStyle = "rgba(0, 0, 0, 0.25)";
 					map.context.beginPath();
 					map.context.arc(x, y, 2, 0, SOAR.PIMUL2, false);
 					map.context.fill();
 					lx = x;
 					ly = y;
-					map.context.fillStyle = "rgba(255, 0, 0, 0.01)";
+					map.context.fillStyle = "rgba(0, 0, 0, 0.01)";
 				}
 
 				dx = rng.get() - rng.get();
@@ -126,7 +126,7 @@ EASY.cave = {
 		}
 		
 		// force entrance and exit tunnels
-		map.context.strokeStyle = "rgba(255, 0, 0, 0.75)";
+		map.context.strokeStyle = "rgba(0, 0, 0, 0.75)";
 		map.context.lineWidth = 4;
 		map.context.beginPath();
 		map.context.moveTo(this.area[0].x, l + 1);
@@ -143,22 +143,23 @@ EASY.cave = {
 		// generate the triangle mesh
 		this.mesh.reset();
 		var that = this;
-		var zero = that.SEPARATION;
+		var zero = this.WALL_HEIGHT - this.SEPARATION;
+		var ceil = (this.WALL_HEIGHT - this.SEPARATION) * 2;
 		SOAR.subdivide(7, 0, 0, this.LENGTH, this.LENGTH,
 		function(x0, z0, x1, z1, x2, z2) {
 			var y0 = that.getFloorHeight(x0, z0);
 			var y1 = that.getFloorHeight(x1, z1);
 			var y2 = that.getFloorHeight(x2, z2);
 	
-			if (!(y0 === zero && y1 === zero && y2 === zero)) {
+			if (!(y0 > zero && y1 > zero && y2 > zero)) {
 
 				that.mesh.set(x0, y0, z0, x0, z0);
 				that.mesh.set(x1, y1, z1, x1, z1);
 				that.mesh.set(x2, y2, z2, x2, z2);
 
-				y0 = that.getCeilingHeight(x0, z0);
-				y1 = that.getCeilingHeight(x1, z1);
-				y2 = that.getCeilingHeight(x2, z2);
+				y0 = ceil - y0;
+				y1 = ceil - y1;
+				y2 = ceil - y2;
 
 				that.mesh.set(x0, y0, z0, x0, z0);
 				that.mesh.set(x2, y2, z2, x2, z2);
@@ -196,22 +197,9 @@ EASY.cave = {
 	**/
 	
 	getFloorHeight: function(x, z) {
-		return -this.map.get(0, x, z) + this.SEPARATION;
+		return this.map.get(0, x, z);
 	},
 	
-	/**
-		return the y-coordinate of the upper heightmap
-		
-		@method getCeilingHeight
-		@param x number representing x-coordinate
-		@param z number representing z-coordinate
-		@return number representing y-coordinate
-	**/
-	
-	getCeilingHeight: function(x, z) {
-		return this.map.get(0, x, z) - this.SEPARATION;
-	},
-
 	/**
 		returns whether the floor at a particular point is
 		a good place to situate something (item, antagonist)
@@ -226,7 +214,7 @@ EASY.cave = {
 	
 	isFloorFree: function(x, z, r, t) {
 		var c = this.getFloorHeight(x, z);
-		if (c > -2 * r) {
+		if (c > this.WALL_HEIGHT - this.SEPARATION - r) {
 			return false;
 		}
 		if (Math.abs(this.getFloorHeight(x + r, z) - c) > t) {

@@ -147,8 +147,6 @@ EASY.player = {
 		this.headPosition.copy(this.footPosition);
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
-		
-//		EASY.debug(this.footPosition.x + "<br>" + this.footPosition.z);
 	},
 	
 	/**
@@ -160,12 +158,10 @@ EASY.player = {
 	**/
 	
 	constrainVelocity: function(p, v) {
-		var lh = EASY.cave.getFloorHeight(p.x, p.z);
-		var uh = EASY.cave.getCeilingHeight(p.x, p.z);
 		var down = this.scratch.direction;
 	
 		// on the ground, v can't be negative
-		if (p.y === lh) {
+		if (p.y === EASY.cave.getFloorHeight(p.x, p.z)) {
 			v.y = v.y > 0 ? v.y : 0;
 		}
 
@@ -182,9 +178,10 @@ EASY.player = {
 		);
 		v.add(down);
 
-		// don't let player's head go into the upper wall
-		if (p.y + this.PLAYER_HEIGHT >= uh) {
-			v.copy(down);
+		// don't let player's head go above the wall
+		if (p.y >= EASY.cave.WALL_HEIGHT - this.PLAYER_HEIGHT - 0.5) {
+			v.x = down.x;
+			v.z = down.z;
 		}
 		
 	},
@@ -198,17 +195,11 @@ EASY.player = {
 	
 	constrainPosition: function(p) {
 		var lh = EASY.cave.getFloorHeight(p.x, p.z);
-		var uh = EASY.cave.getCeilingHeight(p.x, p.z);
 	
 		// p isn't allowed to be below ground
 		if (p.y < lh) {
 			p.y = lh;
 		}
-
-		// don't let player's head go into the upper wall
-//		if (p.y + this.PLAYER_HEIGHT + 0.1 >= uh) {
-//			p.y = uh - (this.PLAYER_HEIGHT + 0.1);
-//		}
 
 		// if we've gone past the exit, signal that it's
 		// time to go to a new cave
@@ -221,8 +212,8 @@ EASY.player = {
 		}
 		
 		// don't allow player to go past the entrance
-		if (p.z >= EASY.cave.LENGTH - 1) {
-			p.z = EASY.cave.LENGTH - 1;
+		if (p.z >= EASY.cave.LENGTH - 2) {
+			p.z = EASY.cave.LENGTH - 2;
 		}
 	},
 	
