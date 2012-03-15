@@ -129,11 +129,15 @@ EASY.hud = {
 		a constant timeout, then removed from the DOM
 		
 		@method addMessage
-		@param msg string containing message to display
+		@param msg string, message to display
+		@param type string, optional message class
 	**/
 
-	addMessage: function(msg) {
+	addMessage: function(msg, type) {
 		var div = jQuery(document.createElement("div"));
+		if (type) {
+			div.addClass(type);
+		}
 		div.html(msg);
 		div.css("display", "none");
 		this.dom.messages.prepend(div);

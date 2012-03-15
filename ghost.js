@@ -8,6 +8,29 @@
 EASY.ghost = {
 
 	NOMINAL_SPEED: 2.5,
+	GHOST_RADIUS: 0.5,
+	
+	WANDERING: 0,
+	ATTACKING: 1,
+	RESTING: 2,
+	
+	rating: {
+		resolve: 0,
+		cooldown: 0,
+		excuse: 0,
+		appease: 0,
+		flatter: 0,
+		blame: 0,
+		confuse: 0
+	},
+	
+	state: {
+		motion: 0,
+		resolve: 0,
+		cooldown: 0
+	},
+	
+	identity: "",
 
 	position: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
@@ -81,43 +104,66 @@ EASY.ghost = {
 	
 	generate: function() {
 		var l = EASY.cave.LENGTH;
+		var title, tribe, reason, level, defart;
 		var x, y, z;
 
+		// pick a nice flat space for the starting point
+		// TODO: this will be moved to the corpse object
 		do {
 			x = this.rng.getn(l);
 			z = this.rng.getn(l);
-		} while(!EASY.cave.isFlat(x, z, 0.5));
+		} while(!EASY.cave.isFlat(x, z, this.GHOST_RADIUS));
 	
 		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.target.copy(this.position);
+		
+		// select title, trible, reason, and level for ghost
+		title = EASY.lookup.select("title");
+		tribe = EASY.lookup.select("tribe");
+		reason = EASY.lookup.select("reason");
+		level = EASY.lookup.select("ghost", EASY.player.level);
+		
+		// generate an identity string
+		this.identity = level.text + " of " + reason.text + " " + title + " of " + tribe.text;
+		
+		// reset ratings and modifiers
+		this.rating.resolve = level.resolve + reason.resolve + tribe.resolve;
+		this.rating.cooldown = level.cooldown + reason.cooldown + tribe.cooldown;
+		
+		this.rating.excuse = 1 + reason.excuse + tribe.excuse;
+		this.rating.appease = 1 + reason.appease + tribe.appease;
+		this.rating.flatter = 1 + reason.flatter + tribe.flatter;
+		this.rating.blame = 1 + reason.blame + tribe.blame;
+		this.rating.confuse = 1 + reason.confuse + tribe.confuse;
+		
+		// reset state
+		this.state.motion = this.WANDERING;
+		this.state.resolve = this.rating.resolve;
+		this.state.cooldown = 0;
+		this.velocity.set();
 	},
 	
 	/**
-		determine if player in ghost's line of sight
-		if so, set target to player's last position
+		determine if target is in ghost's line of sight
 		
-		@method lookForPlayer
+		@method lookFor
+		@param target object, contains x, z coordinates
+		@param size number, radial size of target
+		@return boolean, true if target spotted
 	**/
 	
-	lookForPlayer: function() {
+	lookFor: function(target, size) {
 		var pos = this.scratch.pos;
 		var dir = this.scratch.dir;
-		var pp = EASY.player.footPosition;
-		var blocked = false;
+		var clear = true;
 
 		pos.copy(this.position);
-		dir.copy(pp).sub(pos).norm().mul(0.5);
-		while (!blocked && (Math.abs(pos.x - pp.x) > 0.5 || Math.abs(pos.z - pp.z) > 0.5) ) {
+		dir.copy(target).sub(pos).norm().mul(size);
+		while (clear && (Math.abs(pos.x - target.x) > size || Math.abs(pos.z - target.z) > size) ) {
 			pos.add(dir);
-			blocked = !EASY.cave.isOpen(pos.x, pos.z, 0.5);
+			clear = EASY.cave.isOpen(pos.x, pos.z, size);
 		}
-		
-		if (!blocked) {
-			this.target.copy(pos);
-			EASY.debug("i see you");
-		} else {
-			EASY.debug("");
-		}
+		return clear;
 	},
 	
 	/**
@@ -127,22 +173,72 @@ EASY.ghost = {
 	**/
 	
 	update: function() {
+		var pp = EASY.player.footPosition;
 		var dir = this.scratch.dir;
 		var dt = SOAR.interval * 0.001;
+		var hit;
 
 		this.rotor.turn(0, 0.05, 0);
-		this.lookForPlayer();
 		
-		dir.copy(this.target).sub(this.position);
-		if (dir.length() > 0) {
+		switch(this.state.motion) {
+		
+		case this.WANDERING:
+
+			// accumlate random error into the velocity over time
+			dir.copy(this.velocity);
+			dir.x += (Math.random() - Math.random()) * dt * 0.001;
+			dir.z += (Math.random() - Math.random()) * dt * 0.001;
 			dir.norm();
-			this.velocity.x = this.NOMINAL_SPEED * dir.x;
-			this.velocity.z = this.NOMINAL_SPEED * dir.z;
-		} else {
-			this.velocity.set();
+			this.velocity.copy(dir).mul(this.NOMINAL_SPEED);
+			
+			// look for the player, and attack if spotted
+			if (this.lookFor(pp, this.GHOST_RADIUS)) {
+				EASY.hud.addMessage("Spotted By The " + this.identity, "warning");
+				this.target.copy(pp);
+				this.state.motion = this.ATTACKING;
+			}
+		
+			break;
+			
+		case this.ATTACKING:
+		
+			// update player position if visible
+			hit = this.lookFor(pp, this.GHOST_RADIUS);
+			if (hit) {
+				this.target.copy(pp);
+			}
+		
+			// if we haven't reached the target
+			// ( 1.1 instead of 1.0 because sometimes length === 1.0000ijklmn )
+			dir.copy(this.target).sub(this.position);
+			if (dir.length() > 1.1) {
+			
+				// fix velocity to point to target
+				dir.norm();
+				this.velocity.x = this.NOMINAL_SPEED * dir.x;
+				this.velocity.z = this.NOMINAL_SPEED * dir.z;
+				
+			} else {
+			
+				// reached the player's last spot and nothing's there?
+				// go back to wandering
+				if (!hit) {
+					EASY.hud.addMessage("The " + this.identity + " Has Broken Off", "success");
+					this.state.motion = this.WANDERING;
+				}
+				
+			}
+
+			break;
+			
+		case this.RESTING:
+		
+			break;
+			
 		}
 		
 		// generate a vector that points away from the walls
+		// and adjust the ghost's velocity
 		dir.set(
 			EASY.cave.getFloorHeight(this.position.x - 1, this.position.z) - EASY.cave.getFloorHeight(this.position.x + 1, this.position.z),
 			0, 
@@ -150,10 +246,9 @@ EASY.ghost = {
 		);
 		this.velocity.add(dir);
 
-		// update the position, maintaining distance from cave floor
+		// update the ghost's position, maintaining distance from cave floor
 		this.position.add(this.velocity.mul(dt));
 		this.position.y = EASY.cave.getFloorHeight(this.position.x, this.position.z) + 1;
-		
 	},
 	
 	/**

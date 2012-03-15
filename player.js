@@ -16,6 +16,8 @@ EASY.player = {
 	headPosition: SOAR.vector.create(),
 	footPosition: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
+	
+	level: 1,
 
 	trash: {
 		cloth: 0,

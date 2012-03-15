@@ -47,6 +47,14 @@ div {
 	text-align: center;
 }
 
+.warning {
+	color: rgb(255, 0, 0);
+}
+
+.success {
+	color: rgb(0, 255, 0);
+}
+
 /* debug information */
 
 #debug {

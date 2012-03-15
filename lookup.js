@@ -49,27 +49,69 @@ EASY.lookup = {
 	tribe: [
 
 		{
-			text: "Boothrede"
+			text: "Boothrede",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Clanmorgan"
+			text: "Clanmorgan",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Cowlberth"
+			text: "Cowlberth",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Monkshockey"
+			text: "Monkshockey",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Throckton"
+			text: "Throckton",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Treblerath"
+			text: "Treblerath",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		}
 		
 	],
@@ -83,23 +125,58 @@ EASY.lookup = {
 	reason: [
 	
 		{
-			text: "Afflicted"
+			text: "an Afflicted",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Disgraced"
+			text: "a Disgraced",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Disillusioned"
+			text: "a Disillusioned",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Fanatical"
+			text: "a Fanatical",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		},
 		
 		{
-			text: "Introverted"
+			text: "an Introverted",
+			excuse: 0,
+			appease: 0,
+			flatter: 0,
+			blame: 0,
+			confuse: 0,
+			resolve: 0,
+			cooldown: 0
 		}
 	],
 	
@@ -123,23 +200,38 @@ EASY.lookup = {
 	ghost: [
 
 		{
-			text: "Shade"
+			text: "Shade",
+			cooldown: 20,
+			resolve: 25,
+			damage: 5
 		},
 		
 		{
-			text: "Phantom"
+			text: "Phantom",
+			cooldown: 20,
+			resolve: 30,
+			damage: 10
 		},
 		
 		{
-			text: "Spectre"
+			text: "Spectre",
+			cooldown: 10,
+			resolve: 25,
+			damage: 15
 		},
 		
 		{
-			text: "Wraith"
+			text: "Wraith",
+			cooldown: 10,
+			resolve: 30,
+			damage: 20
 		},
 		
 		{
-			text: "Revenant"
+			text: "Revenant",
+			cooldown: 5,
+			resolve: 40,
+			damage: 25
 		}
 
 	],
@@ -274,5 +366,20 @@ EASY.lookup = {
 			glass: 1
 		}
 	],
+	
+	/**
+		pick a random entry in a table
+		
+		@method select
+		@param table string, the table to select from
+		@param top number, the max entry in the table
+		@return the randomly selected entry
+	**/
+	
+	select: function(table, top) {
+		var obj = this[table];
+		var num = Math.floor( (top || obj.length) * Math.random() );
+		return obj[num];
+	}
 	
 };
