@@ -194,7 +194,7 @@ EASY.ghost = {
 			if (this.resolve === this.rating.resolve) {
 			
 				// look for the player, and attack if spotted
-				if (this.lookFor(pp, this.RADIUS) && ) {
+				if (this.lookFor(pp, this.RADIUS)) {
 					EASY.hud.addMessage("Spotted By The " + this.identity, "warning");
 					this.target.copy(pp);
 					this.motion = this.ATTACKING;
