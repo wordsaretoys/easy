@@ -7,28 +7,26 @@
 
 EASY.ghost = {
 
-	NOMINAL_SPEED: 2.5,
-	GHOST_RADIUS: 0.5,
+	RADIUS: 0.5,
 	
 	WANDERING: 0,
 	ATTACKING: 1,
 	RESTING: 2,
 	
 	rating: {
-		resolve: 0,
-		cooldown: 0,
 		excuse: 0,
 		appease: 0,
 		flatter: 0,
 		blame: 0,
-		confuse: 0
+		confuse: 0,
+		speed: 0,
+		effect: 0,
+		resolve: 0,
+		recovery: 0
 	},
 	
-	state: {
-		motion: 0,
-		resolve: 0,
-		cooldown: 0
-	},
+	motion: 0,
+	resolve: 0,
 	
 	identity: "",
 
@@ -104,7 +102,7 @@ EASY.ghost = {
 	
 	generate: function() {
 		var l = EASY.cave.LENGTH;
-		var title, tribe, reason, level, defart;
+		var title, tribe, reason, level;
 		var x, y, z;
 
 		// pick a nice flat space for the starting point
@@ -112,7 +110,7 @@ EASY.ghost = {
 		do {
 			x = this.rng.getn(l);
 			z = this.rng.getn(l);
-		} while(!EASY.cave.isFlat(x, z, this.GHOST_RADIUS));
+		} while(!EASY.cave.isFlat(x, z, this.RADIUS));
 	
 		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.target.copy(this.position);
@@ -126,9 +124,11 @@ EASY.ghost = {
 		// generate an identity string
 		this.identity = level.text + " of " + reason.text + " " + title + " of " + tribe.text;
 		
-		// reset ratings and modifiers
+		// reset ratings and susceptibility modifiers
+		this.rating.speed = level.speed + reason.speed + tribe.speed;
+		this.rating.effect = level.effect + reason.effect + tribe.effect;
 		this.rating.resolve = level.resolve + reason.resolve + tribe.resolve;
-		this.rating.cooldown = level.cooldown + reason.cooldown + tribe.cooldown;
+		this.rating.recovery = level.recovery + reason.recovery + tribe.recovery;
 		
 		this.rating.excuse = 1 + reason.excuse + tribe.excuse;
 		this.rating.appease = 1 + reason.appease + tribe.appease;
@@ -137,9 +137,8 @@ EASY.ghost = {
 		this.rating.confuse = 1 + reason.confuse + tribe.confuse;
 		
 		// reset state
-		this.state.motion = this.WANDERING;
-		this.state.resolve = this.rating.resolve;
-		this.state.cooldown = 0;
+		this.motion = this.WANDERING;
+		this.resolve = this.rating.resolve;
 		this.velocity.set();
 	},
 	
@@ -176,11 +175,11 @@ EASY.ghost = {
 		var pp = EASY.player.footPosition;
 		var dir = this.scratch.dir;
 		var dt = SOAR.interval * 0.001;
-		var hit;
+		var hit, dam;
 
 		this.rotor.turn(0, 0.05, 0);
 		
-		switch(this.state.motion) {
+		switch(this.motion) {
 		
 		case this.WANDERING:
 
@@ -189,34 +188,57 @@ EASY.ghost = {
 			dir.x += (Math.random() - Math.random()) * dt * 0.001;
 			dir.z += (Math.random() - Math.random()) * dt * 0.001;
 			dir.norm();
-			this.velocity.copy(dir).mul(this.NOMINAL_SPEED);
+			this.velocity.copy(dir).mul(this.rating.speed);
 			
-			// look for the player, and attack if spotted
-			if (this.lookFor(pp, this.GHOST_RADIUS)) {
-				EASY.hud.addMessage("Spotted By The " + this.identity, "warning");
-				this.target.copy(pp);
-				this.state.motion = this.ATTACKING;
+			// if resolve is maxed out
+			if (this.resolve === this.rating.resolve) {
+			
+				// look for the player, and attack if spotted
+				if (this.lookFor(pp, this.RADIUS) && ) {
+					EASY.hud.addMessage("Spotted By The " + this.identity, "warning");
+					this.target.copy(pp);
+					this.motion = this.ATTACKING;
+				}
+			
+			} else {
+			
+				// otherwise, rebuild resolve
+				this.resolve = Math.min(
+					this.rating.resolve, 
+					this.resolve + this.rating.recovery * dt
+				);
+				
 			}
 		
 			break;
 			
 		case this.ATTACKING:
 		
-			// update player position if visible
-			hit = this.lookFor(pp, this.GHOST_RADIUS);
+			// update target position if visible--remember,
+			// target is LAST KNOWN GOOD position of player
+			hit = this.lookFor(pp, this.RADIUS);
 			if (hit) {
 				this.target.copy(pp);
 			}
+			
+			// weaken the player if inside area of effect
+			dam = SOAR.clamp(
+				(this.rating.effect - pp.distance(this.position)) / this.rating.effect,
+				0, 1 
+			) * dt;
+			if (dam > 0) {
+				EASY.player.weaken(dam);
+			}
 		
 			// if we haven't reached the target
-			// ( 1.1 instead of 1.0 because sometimes length === 1.0000ijklmn )
+			// ( 1.1 instead of 1.0 because sometimes length === 1.00001... )
 			dir.copy(this.target).sub(this.position);
 			if (dir.length() > 1.1) {
 			
 				// fix velocity to point to target
 				dir.norm();
-				this.velocity.x = this.NOMINAL_SPEED * dir.x;
-				this.velocity.z = this.NOMINAL_SPEED * dir.z;
+				this.velocity.x = this.rating.speed * dir.x;
+				this.velocity.z = this.rating.speed * dir.z;
 				
 			} else {
 			
@@ -224,7 +246,7 @@ EASY.ghost = {
 				// go back to wandering
 				if (!hit) {
 					EASY.hud.addMessage("The " + this.identity + " Has Broken Off", "success");
-					this.state.motion = this.WANDERING;
+					this.motion = this.WANDERING;
 				}
 				
 			}

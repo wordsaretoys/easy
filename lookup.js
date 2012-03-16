@@ -55,8 +55,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -66,8 +68,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -77,8 +81,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -88,8 +94,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -99,8 +107,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -110,8 +120,9 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		}
 		
 	],
@@ -131,8 +142,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -142,8 +155,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -153,8 +168,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -164,8 +181,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		},
 		
 		{
@@ -175,8 +194,10 @@ EASY.lookup = {
 			flatter: 0,
 			blame: 0,
 			confuse: 0,
+			speed: 0,
+			effect: 0,
 			resolve: 0,
-			cooldown: 0
+			recovery: 0
 		}
 	],
 	
@@ -201,37 +222,42 @@ EASY.lookup = {
 
 		{
 			text: "Shade",
-			cooldown: 20,
+			speed: 2.5,
+			effect: 5,
 			resolve: 25,
-			damage: 5
+			recovery: 0.1
 		},
 		
 		{
 			text: "Phantom",
-			cooldown: 20,
-			resolve: 30,
-			damage: 10
+			speed: 2.5,
+			effect: 5,
+			resolve: 25,
+			recovery: 0.1
 		},
 		
 		{
 			text: "Spectre",
-			cooldown: 10,
+			speed: 2.5,
+			effect: 5,
 			resolve: 25,
-			damage: 15
+			recovery: 0.1
 		},
 		
 		{
 			text: "Wraith",
-			cooldown: 10,
-			resolve: 30,
-			damage: 20
+			speed: 2.5,
+			effect: 5,
+			resolve: 25,
+			recovery: 0.1
 		},
 		
 		{
 			text: "Revenant",
-			cooldown: 5,
-			resolve: 40,
-			damage: 25
+			speed: 2.5,
+			effect: 5,
+			resolve: 25,
+			recovery: 0.1
 		}
 
 	],
@@ -279,7 +305,7 @@ EASY.lookup = {
 		
 		
 		{
-			text: "Exhausted Magical Amulet",
+			text: "Remains of a Magical Amulet",
 			wood: 1,
 			metal: 1,
 			cord: 1,
@@ -288,14 +314,14 @@ EASY.lookup = {
 		},
 
 		{
-			text: "Exhausted Magical Ring",
+			text: "Slivers of a Magical Ring",
 			metal: 1,
 			type: "clothing",
 			chance: 0.2
 		},
 		
 		{
-			text: "Exhausted Magical Belt",
+			text: "Strips of a Magical Belt",
 			metal: 1,
 			cord: 2,
 			type: "clothing",
@@ -303,7 +329,7 @@ EASY.lookup = {
 		},
 		
 		{
-			text: "Exhausted Magical Shirt",
+			text: "Tatters of a Magical Shirt",
 			cord: 2,
 			cloth: 5,
 			type: "clothing",
@@ -312,14 +338,14 @@ EASY.lookup = {
  		
 		
 		{
-			text: "Shard of Armor",
+			text: "Shards of Armor",
 			metal: 3,
 			type: "armor",
 			chance: 0.3
 		},
 
 		{
-			text: "Splintered Shield",
+			text: "Splinters of a Shield",
 			wood: 2,
 			metal: 2,
 			cord: 1,
@@ -346,25 +372,19 @@ EASY.lookup = {
 		
 		
 		{
-			text: "Unappreciated Tapestry",
+			text: "Threads of an Unappreciated Tapestry",
 			cloth: 4,
 			type: "art",
 			chance: 0.1
 		},
 		
 		{
-			text: "Unread Parchment",
+			text: "Strips of an Unread Parchment",
 			cloth: 2,
 			type: "art",
 			chance: 0.2
-		},
-		
-		{
-			text: "Unused Bottle of Cologne",
-			oil: 2,
-			type: "art",
-			glass: 1
 		}
+		
 	],
 	
 	/**

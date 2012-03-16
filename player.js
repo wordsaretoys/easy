@@ -12,12 +12,14 @@ EASY.player = {
 	NORMAL_SPEED: 4,
 	SPRINT_SPEED: 10,
 	PLAYER_HEIGHT: 1.5,
+	MAX_RESOLVE: 50,
 
 	headPosition: SOAR.vector.create(),
 	footPosition: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 	
 	level: 1,
+	resolve: 0,
 
 	trash: {
 		cloth: 0,
@@ -98,6 +100,9 @@ EASY.player = {
 		
 		// default camera to player view
 		this.camera = this.eyeview;
+		
+		// init player state
+		this.resolve = this.MAX_RESOLVE;
 
 	},
 	
@@ -380,8 +385,6 @@ EASY.player = {
 		var that = this;
 		var i, il, type;
 	
-		EASY.hud.addMessage("Collected: " + item.text);
-
 		for (i = 0, il = EASY.lookup.material.length; i < il; i++) {
 			type = EASY.lookup.material[i];
 			if (item[type]) {
@@ -391,6 +394,7 @@ EASY.player = {
 		}
 		
 		EASY.hud.addMessage(str);
+		EASY.hud.addMessage("Collected: " + item.text);
 	},
 	
 	/**
@@ -406,6 +410,22 @@ EASY.player = {
 	
 		EASY.hud.addMessage("Attacked with " + type);
 	
+	},
+	
+	/**
+		handle damage caused by proximity to the ghost
+		
+		@method attack
+		@param damage number, subtract this from resolve
+	**/
+	
+	weaken: function(damage) {
+	
+		this.resolve = Math.max(0, this.resolve - damage);
+		if (this.resolve === 0) {
+			EASY.hud.addMessage("You Flee The Caves In Terror", "warning");
+			SOAR.running = false;
+		}
 	}
 	
 
