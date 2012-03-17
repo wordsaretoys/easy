@@ -82,6 +82,70 @@ void main(void) {
 
 /**
 	trash vertex shader
+	O' = P * V * (O + c) transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param center model center vector
+	
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates of fragment
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform vec3 center;
+
+varying vec2 uv;
+
+void main(void) {
+	gl_Position = projector * modelview * vec4(position + center, 1.0);
+	uv = texturec;
+}
+
+</script>
+
+<script id="fs-trash" type="x-shader/x-fragment">
+
+/**
+	trash fragment shader
+	
+	@param sign		sign texture
+
+	@param uv		texture coordinates of fragment
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D sign;
+
+varying vec2 uv;
+
+void main(void) {
+	vec4 signColor = texture2D(sign, vec2(uv.x, 1.0 - uv.y));
+	
+	// generate a glow around the periphery
+	vec2 obj = 2.0 * (uv - 0.5);
+	float alpha = 0.1 - 0.1 * clamp( abs(length(obj) - 0.8) / 0.2, 0.0, 1.0);
+	vec4 ringColor = vec4(1.0, 1.0, 1.0, alpha);
+	
+	gl_FragColor = signColor;
+}
+
+</script>
+
+<script id="vs-ghost" type="x-shader/x-vertex">
+
+/**
+	ghost vertex shader
 	O' = P * V * (M * O + c) transformation, plus texture coordinates
 	
 	@param position vertex array of positions
@@ -118,7 +182,7 @@ void main(void) {
 
 </script>
 
-<script id="fs-trash" type="x-shader/x-fragment">
+<script id="fs-ghost" type="x-shader/x-fragment">
 
 /**
 	trash fragment shader

@@ -62,6 +62,7 @@ var EASY = {
 		
 			// allow game objects to process loaded resources
 			EASY.cave.process();
+			EASY.trash.process();
 			
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);

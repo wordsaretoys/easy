@@ -55,7 +55,7 @@ EASY.ghost = {
 
 		this.shader = SOAR.shader.create(
 			EASY.display,
-			SOAR.textOf("vs-trash"), SOAR.textOf("fs-trash"),
+			SOAR.textOf("vs-ghost"), SOAR.textOf("fs-ghost"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations", "center"],
 			["sign"]
@@ -189,7 +189,7 @@ EASY.ghost = {
 			dir.z += (Math.random() - Math.random()) * dt * 0.001;
 			dir.norm();
 			this.velocity.copy(dir).mul(this.rating.speed);
-			
+/*			
 			// if resolve is maxed out
 			if (this.resolve === this.rating.resolve) {
 			
@@ -209,7 +209,7 @@ EASY.ghost = {
 				);
 				
 			}
-		
+*/		
 			break;
 			
 		case this.ATTACKING:

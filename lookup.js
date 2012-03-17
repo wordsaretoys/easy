@@ -37,6 +37,10 @@ EASY.lookup = {
 		dirt: {
 			type: "image",
 			path: "res/dirt.jpg"
+		},
+		fragments: {
+			type: "image",
+			path: "res/fragments.png"
 		}
 	},
 	
@@ -262,14 +266,7 @@ EASY.lookup = {
 
 	],
 	
-	/*
-	
-		list of trash types
-		
-	*/
-	
-	trashType: ["potion", "clothing", "armor", "weapon", "art"],
-	material: ["cloth", "cord", "glass", "metal", "oil", "wood" ],
+	material: ["cloth", "oil", "wood" ],
 	
 	/*
 	
@@ -280,110 +277,41 @@ EASY.lookup = {
 	trash: [
 	
 		{
-			text: "Dregs of a Healing Potion",
-			glass: 1,
-			oil: 1,
-			type: "potion",
-			chance: 0.8
-		},
-		
-		{
-			text: "Dregs of a Strength Potion",
-			glass: 1,
-			oil: 2,
-			type: "potion",
-			chance: 0.4
-		},
-		
-		{
-			text: "Dregs of a Bottle of Torch Oil",
-			glass: 1,
-			oil: 2,
-			type: "potion",
-			chance: 0.3
-		},
-		
-		
-		{
-			text: "Remains of a Magical Amulet",
-			wood: 1,
-			metal: 1,
-			cord: 1,
-			type: "clothing",
+			text: "Remains of a Shattered Treasure Chest",
+			wood: 5,
 			chance: 0.1
 		},
 
 		{
-			text: "Slivers of a Magical Ring",
-			metal: 1,
-			type: "clothing",
-			chance: 0.2
+			text: "Pool of Discarded Torch Oil",
+			oil: 3,
+			chance: 0.1
 		},
-		
+
 		{
-			text: "Strips of a Magical Belt",
-			metal: 1,
-			cord: 2,
-			type: "clothing",
+			text: "Lump of Unidentified Flesh",
+			flesh: 1,
 			chance: 0.1
 		},
 		
 		{
-			text: "Tatters of a Magical Shirt",
-			cord: 2,
-			cloth: 5,
-			type: "clothing",
-			chance: 0.2
-		},
- 		
-		
-		{
-			text: "Shards of Armor",
-			metal: 3,
-			type: "armor",
-			chance: 0.3
-		},
-
-		{
-			text: "Splinters of a Shield",
-			wood: 2,
-			metal: 2,
-			cord: 1,
-			type: "armor",
-			chance: 0.08
-		},
-		
-
-		{
-			text: "Hilt of a Broken Sword",
-			metal: 2,
-			wood: 1,
-			cord: 1,
-			type: "weapon",
-			chance: 0.1
-		},
-		
-		{
-			text: "Blade of a Broken Sword",
-			metal: 5,
-			type: "weapon",
-			chance: 0.08
-		},
-		
-		
-		{
-			text: "Threads of an Unappreciated Tapestry",
-			cloth: 4,
-			type: "art",
+			text: "Tatters of an Unappreciated Tapestry",
+			cloth: 3,
 			chance: 0.1
 		},
 		
 		{
 			text: "Strips of an Unread Parchment",
 			cloth: 2,
-			type: "art",
-			chance: 0.2
+			chance: 0.1
+		},
+		
+		{
+			text: "Handful of Loose Change",
+			change: 1,
+			chance: 0.1
 		}
+		
 		
 	],
 	
