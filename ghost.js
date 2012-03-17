@@ -299,6 +299,23 @@ EASY.ghost = {
 		
 		gl.disable(gl.BLEND);
 		
+	},
+	
+	/**
+		handle damage caused by the word wall
+		
+		@method weaken
+		@param attack string, the attack type
+	**/
+	
+	weaken: function(attack) {
+		var damage = this.rating[attack];
+		EASY.hud.addMessage("The " + this.identity + " Weakened By " + damage);
+		this.resolve = Math.max(0, this.resolve - damage);
+		if (this.resolve === 0) {
+			EASY.hud.addMessage("The " + this.identity + " Has Been Rebuffed!");
+			this.motion = this.WANDERING;
+		}
 	}
 
 };

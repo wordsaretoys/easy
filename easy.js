@@ -115,6 +115,7 @@ var EASY = {
 		EASY.player.update();
 		EASY.trash.update();
 		EASY.ghost.update();
+		EASY.wordwall.update();
 	},
 
 	/**

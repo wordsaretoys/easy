@@ -257,19 +257,19 @@ EASY.player = {
 				that.camera = that.overhead;
 				break;
 			case SOAR.KEY.ONE:
-				that.attack("excuse");
+				EASY.wordwall.spawn("excuse");
 				break;
 			case SOAR.KEY.TWO:
-				that.attack("appease");
+				EASY.wordwall.spawn("appease");
 				break;
 			case SOAR.KEY.THREE:
-				that.attack("flatter");
+				EASY.wordwall.spawn("flatter");
 				break;
 			case SOAR.KEY.FOUR:
-				that.attack("blame");
+				EASY.wordwall.spawn("blame");
 				break;
 			case SOAR.KEY.FIVE:
-				that.attack("confuse");
+				EASY.wordwall.spawn("confuse");
 				break;
 				
 // debugging keys -- remove in production release
@@ -398,24 +398,9 @@ EASY.player = {
 	},
 	
 	/**
-		activate an attack of specified type
-		
-		recognized attacks: excuse, appease, flatter, blame, confuse
-		
-		@method attack
-		@param type string representing type of attack
-	**/
-
-	attack: function(type) {
-	
-		EASY.hud.addMessage("Attacked with " + type);
-	
-	},
-	
-	/**
 		handle damage caused by proximity to the ghost
 		
-		@method attack
+		@method weaken
 		@param damage number, subtract this from resolve
 	**/
 	
@@ -427,7 +412,5 @@ EASY.player = {
 			SOAR.running = false;
 		}
 	}
-	
-
 };
 
