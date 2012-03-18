@@ -52,6 +52,7 @@ var EASY = {
 		EASY.hud.init();
 		EASY.trash.init();
 		EASY.ghost.init();
+		EASY.wordwall.init();
 		
 		EASY.hud.showCurtain(EASY.hud.waitMsg);
 		
@@ -63,6 +64,7 @@ var EASY = {
 			// allow game objects to process loaded resources
 			EASY.cave.process();
 			EASY.trash.process();
+			EASY.wordwall.process();
 			
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
@@ -140,6 +142,7 @@ var EASY = {
 			EASY.cave.draw();
 		EASY.trash.draw();
 		EASY.ghost.draw();
+		EASY.wordwall.draw();
 	},
 
 	/**

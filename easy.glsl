@@ -205,3 +205,65 @@ void main(void) {
 
 </script>
 
+<script id="vs-wordwall" type="x-shader/x-vertex">
+
+/**
+	wordwall vertex shader
+	O' = P * V * r *O transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param rotations rotations matrix (no position)
+
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates of fragment
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+
+uniform mat4 projector;
+uniform mat4 rotations;
+uniform float radius;
+uniform float height;
+
+varying vec2 uv;
+
+void main(void) {
+	vec4 pos = vec4(position.x * radius, position.y - height, position.z * radius, 1.0);
+	gl_Position = projector * rotations * pos;
+	uv = texturec;
+}
+
+</script>
+
+<script id="fs-wordwall" type="x-shader/x-fragment">
+
+/**
+	wordwall fragment shader
+	
+	@param sign		sign texture
+	@param noise	noise texture
+
+	@param uv		texture coordinates of fragment
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D noise;
+uniform float radius;
+
+varying vec2 uv;
+
+void main(void) {
+	vec2 st = vec2(uv.x * 4.0, uv.y);
+	float alpha = pow(texture2D(noise, st * 0.1).r * (1.0 - radius / 15.0), 2.0);
+	gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
+}
+
+</script>
+
