@@ -130,8 +130,8 @@ uniform sampler2D sign;
 varying vec2 uv;
 
 void main(void) {
-	vec4 signColor = texture2D(sign, vec2(uv.x, 1.0 - uv.y));
-	
+	vec4 signColor = texture2D(sign, uv);
+
 	// generate a glow around the periphery
 	vec2 obj = 2.0 * (uv - 0.5);
 	float alpha = 0.1 - 0.1 * clamp( abs(length(obj) - 0.8) / 0.2, 0.0, 1.0);
