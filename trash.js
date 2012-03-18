@@ -65,12 +65,16 @@ EASY.trash = {
 		var display = EASY.display;
 		var resources = EASY.lookup.resources;
 		
-		this.texture["default"] = 
-			SOAR.texture.create(display, resources["fragments"].data);
+		this.texture["cloth"] = 
+			SOAR.texture.create(display, resources["cloth"].data);
 		this.texture["oil"] = 
 			SOAR.texture.create(display, resources["oil"].data);
 		this.texture["change"] = 
 			SOAR.texture.create(display, resources["change"].data);
+		this.texture["chest"] = 
+			SOAR.texture.create(display, resources["chest"].data);
+		this.texture["flesh"] = 
+			SOAR.texture.create(display, resources["flesh"].data);
 	},
 	
 	/**
@@ -83,8 +87,7 @@ EASY.trash = {
 		var trash = EASY.lookup.trash;
 		var il = trash.length;
 		var l = EASY.cave.LENGTH;
-		var x, y, z;
-		var i;
+		var i, x, z;
 
 		this.list.length = 0;
 		
@@ -166,13 +169,7 @@ EASY.trash = {
 
 				center = item.center;
 				gl.uniform3f(shader.center, center.x, center.y, center.z);
-
-				if (item.object.image) {
-					this.texture[item.object.image].bind(0, shader.sign);
-				} else {
-					this.texture["default"].bind(0, shader.sign);
-				}
-				
+				this.texture[item.object.type].bind(0, shader.sign);
 				this.mesh.draw();
 			}
 		}

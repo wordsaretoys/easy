@@ -30,9 +30,17 @@ EASY.lookup = {
 			type: "image",
 			path: "res/change.png"
 		},
-		fragments: {
+		chest: {
 			type: "image",
-			path: "res/fragments.png"
+			path: "res/chest.png"
+		},
+		flesh: {
+			type: "image",
+			path: "res/flesh.png"
+		},
+		cloth: {
+			type: "image",
+			path: "res/cloth.png"
 		}
 	},
 	
@@ -270,48 +278,33 @@ EASY.lookup = {
 	
 		{
 			text: "Remains of a Shattered Treasure Chest",
-			wood: 5,
+			type: "chest",
 			chance: 0.1
 		},
 
 		{
 			text: "Pool of Discarded Torch Oil",
-			oil: 3,
-			image: "oil",
+			type: "oil",
 			chance: 0.1
 		},
 
 		{
 			text: "Lump of Unidentified Flesh",
-			flesh: 1,
+			type: "flesh",
 			chance: 0.1
 		},
 		
 		{
 			text: "Tatters of an Unappreciated Tapestry",
-			cloth: 3,
-			chance: 0.1
-		},
-		
-		{
-			text: "Strips of an Unread Parchment",
-			cloth: 2,
+			type: "cloth",
 			chance: 0.1
 		},
 		
 		{
 			text: "Handful of Loose Change",
-			change: 1,
-			image: "change",
-			chance: 0.1
-		},
-		
-		{
-			text: "Shreds of Torn Clothing",
-			cloth: 2,
+			type: "change",
 			chance: 0.1
 		}
-		
 	],
 	
 	/**

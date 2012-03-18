@@ -20,15 +20,7 @@ EASY.player = {
 	
 	level: 1,
 	resolve: 0,
-
-	trash: {
-		cloth: 0,
-		cord: 0,
-		glass: 0,
-		metal: 0,
-		oil: 0,
-		wood: 0
-	},
+	trash: {},
 	
 	motion: {
 		moveleft: false, moveright: false,
@@ -381,20 +373,8 @@ EASY.player = {
 	**/
 	
 	collect: function(item) {
-		var str = "";
-		var that = this;
-		var i, il, type;
-	
-		for (i = 0, il = EASY.lookup.material.length; i < il; i++) {
-			type = EASY.lookup.material[i];
-			if (item[type]) {
-				that.trash[type] += item[type];
-				str += "+" + item[type] + "&nbsp;" + type + "&nbsp;&nbsp;";
-			}
-		}
-		
-		EASY.hud.addMessage(str);
 		EASY.hud.addMessage("Collected: " + item.text);
+		this.trash[item.type] = (this.trash[item.type] || 0) + 1;
 	},
 	
 	/**
