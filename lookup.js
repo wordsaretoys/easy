@@ -14,10 +14,6 @@ EASY.lookup = {
 	*/
 
 	resources: {
-		panel: {
-			type: "image",
-			path: "res/panel.png"
-		},
 		noise1: {
 			type: "image",
 			path: "res/noise1.jpg"
@@ -26,17 +22,13 @@ EASY.lookup = {
 			type: "image",
 			path: "res/noise2.jpg"
 		},
-		leaf: {
+		oil: {
 			type: "image",
-			path: "res/leaf.jpg"
+			path: "res/oil.png"
 		},
-		stones: {
+		change: {
 			type: "image",
-			path: "res/stones.jpg"
-		},
-		dirt: {
-			type: "image",
-			path: "res/dirt.jpg"
+			path: "res/change.png"
 		},
 		fragments: {
 			type: "image",
@@ -285,6 +277,7 @@ EASY.lookup = {
 		{
 			text: "Pool of Discarded Torch Oil",
 			oil: 3,
+			image: "oil",
 			chance: 0.1
 		},
 
@@ -309,9 +302,15 @@ EASY.lookup = {
 		{
 			text: "Handful of Loose Change",
 			change: 1,
+			image: "change",
+			chance: 0.1
+		},
+		
+		{
+			text: "Shreds of Torn Clothing",
+			cloth: 2,
 			chance: 0.1
 		}
-		
 		
 	],
 	

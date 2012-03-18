@@ -11,6 +11,7 @@ EASY.trash = {
 	ITEM_CHANCE: 0.1,
 	
 	list: [],
+	texture: {},
 
 	/**
 		create and init required objects
@@ -64,8 +65,12 @@ EASY.trash = {
 		var display = EASY.display;
 		var resources = EASY.lookup.resources;
 		
-		this.fragmentsTexture = 
+		this.texture["default"] = 
 			SOAR.texture.create(display, resources["fragments"].data);
+		this.texture["oil"] = 
+			SOAR.texture.create(display, resources["oil"].data);
+		this.texture["change"] = 
+			SOAR.texture.create(display, resources["change"].data);
 	},
 	
 	/**
@@ -99,7 +104,7 @@ EASY.trash = {
 							
 							// add the item to the list
 							this.list.push( {
-								center: SOAR.vector.create(x, 0.1, z),
+								center: SOAR.vector.create(x, 0.01, z),
 								active: true,
 								object: trash[i]
 							} );
@@ -162,7 +167,12 @@ EASY.trash = {
 				center = item.center;
 				gl.uniform3f(shader.center, center.x, center.y, center.z);
 
-				this.fragmentsTexture.bind(0, shader.sign);
+				if (item.object.image) {
+					this.texture[item.object.image].bind(0, shader.sign);
+				} else {
+					this.texture["default"].bind(0, shader.sign);
+				}
+				
 				this.mesh.draw();
 			}
 		}
