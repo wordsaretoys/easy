@@ -30,7 +30,7 @@ EASY.lookup = {
 			type: "image",
 			path: "res/change.png"
 		},
-		chest: {
+		wood: {
 			type: "image",
 			path: "res/chest.png"
 		},
@@ -44,229 +44,15 @@ EASY.lookup = {
 		}
 	},
 	
-	/*
+	/* ghost generator tables */
 	
-		table of antagonist tribes
-		
-	*/
-	
-	tribe: [
-
-		{
-			text: "Boothrede",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "Clanmorgan",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "Cowlberth",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "Monkshockey",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "Throckton",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "Treblerath",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		}
-		
-	],
-	
-	/*
-		
-		table of antagonist reasons
-		
-	*/
-	
-	reason: [
-	
-		{
-			text: "an Afflicted",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "a Disgraced",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "a Disillusioned",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "a Fanatical",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		},
-		
-		{
-			text: "an Introverted",
-			excuse: 0,
-			appease: 0,
-			flatter: 0,
-			blame: 0,
-			confuse: 0,
-			speed: 0,
-			effect: 0,
-			resolve: 0,
-			recovery: 0
-		}
-	],
-	
-	/*
-	
-		list of antagonist titles
-		
-	*/
-	
+	tribe: [ "Boothrede", "Clanmorgan", "Cowlberth", "Monkshockey", "Throckton", "Treblerath" ],
+	reason: [ "an Afflicted", "a Disgraced",  "a Disillusioned", "a Fanatical",  "an Introverted" ],
 	title: [
 		"Monk", "Dogsbody", "Illusionist", "Deacon", "Squire", "Conjurer",
 		"Priest", "Knight", "Enchanter", "Bishop", "Clanlord", "Mage", "Scholar"
 	],
-	
-	/*
-	
-		table of ghost catagories
-		
-	*/
-	
-	ghost: [
-
-		{
-			text: "Shade",
-			speed: 2.5,
-			effect: 5,
-			resolve: 25,
-			recovery: 0.1
-		},
-		
-		{
-			text: "Phantom",
-			speed: 2.5,
-			effect: 5,
-			resolve: 25,
-			recovery: 0.1
-		},
-		
-		{
-			text: "Spectre",
-			speed: 2.5,
-			effect: 5,
-			resolve: 25,
-			recovery: 0.1
-		},
-		
-		{
-			text: "Wraith",
-			speed: 2.5,
-			effect: 5,
-			resolve: 25,
-			recovery: 0.1
-		},
-		
-		{
-			text: "Revenant",
-			speed: 2.5,
-			effect: 5,
-			resolve: 25,
-			recovery: 0.1
-		}
-
-	],
-	
-	material: ["cloth", "oil", "wood" ],
+	style: [ "Shade", "Phantom", "Spectre", "Wraith", "Revenant" ],
 	
 	/*
 	
@@ -277,31 +63,31 @@ EASY.lookup = {
 	trash: [
 	
 		{
-			text: "Remains of a Shattered Treasure Chest",
-			type: "chest",
+			text: "the Remains of a Shattered Treasure Chest",
+			type: "wood",
 			chance: 0.1
 		},
 
 		{
-			text: "Pool of Discarded Torch Oil",
+			text: "a Pool of Discarded Torch Oil",
 			type: "oil",
 			chance: 0.1
 		},
 
 		{
-			text: "Lump of Unidentified Flesh",
+			text: "a Lump of Unidentified Flesh",
 			type: "flesh",
 			chance: 0.1
 		},
 		
 		{
-			text: "Tatters of an Unappreciated Tapestry",
+			text: "the Tatters of an Unappreciated Tapestry",
 			type: "cloth",
 			chance: 0.1
 		},
 		
 		{
-			text: "Handful of Loose Change",
+			text: "a Handful of Loose Change",
 			type: "change",
 			chance: 0.1
 		}
@@ -312,13 +98,12 @@ EASY.lookup = {
 		
 		@method select
 		@param table string, the table to select from
-		@param top number, the max entry in the table
 		@return the randomly selected entry
 	**/
 	
-	select: function(table, top) {
+	select: function(table) {
 		var obj = this[table];
-		var num = Math.floor( (top || obj.length) * Math.random() );
+		var num = Math.floor(obj.length * Math.random());
 		return obj[num];
 	}
 	

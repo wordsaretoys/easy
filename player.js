@@ -367,7 +367,7 @@ EASY.player = {
 	**/
 	
 	collect: function(item) {
-		EASY.hud.log("Collected: " + item.text);
+		EASY.hud.log("Gathered " + item.text);
 		this.trash[item.type] = (this.trash[item.type] || 0) + 1;
 	},
 	

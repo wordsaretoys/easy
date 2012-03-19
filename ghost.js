@@ -118,26 +118,26 @@ EASY.ghost = {
 		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.target.copy(this.position);
 		
-		// select title, trible, reason, and level for ghost
+		// select title, trible, reason, and style of ghost
 		title = EASY.lookup.select("title");
 		tribe = EASY.lookup.select("tribe");
 		reason = EASY.lookup.select("reason");
-		level = EASY.lookup.select("ghost", EASY.player.level);
+		style = EASY.lookup.select("style");
 		
 		// generate an identity string
-		this.identity = level.text + " of " + reason.text + " " + title + " of " + tribe.text;
+		this.identity = style + " of " + reason + " " + title + " of " + tribe;
 		
-		// reset ratings and susceptibility modifiers
-		this.rating.speed = level.speed + reason.speed + tribe.speed;
-		this.rating.effect = level.effect + reason.effect + tribe.effect;
-		this.rating.resolve = level.resolve + reason.resolve + tribe.resolve;
-		this.rating.recovery = level.recovery + reason.recovery + tribe.recovery;
+		// generate ratings and susceptibility modifiers
+		this.rating.speed = 1 + Math.floor(3 * Math.random());
+		this.rating.effect = 5 + Math.floor(10 * Math.random());
+		this.rating.resolve = 10 + Math.floor(20 * Math.random());
+		this.rating.recovery = 0.1 + Math.random();
 		
-		this.rating.excuse = 1 + reason.excuse + tribe.excuse;
-		this.rating.appease = 1 + reason.appease + tribe.appease;
-		this.rating.flatter = 1 + reason.flatter + tribe.flatter;
-		this.rating.blame = 1 + reason.blame + tribe.blame;
-		this.rating.confuse = 1 + reason.confuse + tribe.confuse;
+		this.rating.excuse = 1 + Math.floor(5 * Math.random());
+		this.rating.appease = 1 + Math.floor(5 * Math.random());
+		this.rating.flatter = 1 + Math.floor(5 * Math.random());
+		this.rating.blame = 1 + Math.floor(5 * Math.random());
+		this.rating.confuse = 1 + Math.floor(5 * Math.random());
 		
 		// reset state
 		this.motion = this.WANDERING;

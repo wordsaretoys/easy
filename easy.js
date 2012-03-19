@@ -141,7 +141,7 @@ var EASY = {
 			EASY.cave.draw();
 		EASY.trash.draw();
 		EASY.ghost.draw();
-		//gl.clear(gl.DEPTH_BUFFER_BIT);
+		gl.clear(gl.DEPTH_BUFFER_BIT);
 		EASY.wordwall.draw();
 	},
 

@@ -71,8 +71,8 @@ EASY.trash = {
 			SOAR.texture.create(display, resources["oil"].data);
 		this.texture["change"] = 
 			SOAR.texture.create(display, resources["change"].data);
-		this.texture["chest"] = 
-			SOAR.texture.create(display, resources["chest"].data);
+		this.texture["wood"] = 
+			SOAR.texture.create(display, resources["wood"].data);
 		this.texture["flesh"] = 
 			SOAR.texture.create(display, resources["flesh"].data);
 	},

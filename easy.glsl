@@ -65,7 +65,7 @@ varying vec4 relobj;
 void main(void) {
 
 	float hl = (object.y + 0.5) / 6.0;
-	float ll = 1.0 - pow(clamp( (32.0 - object.z) / 32.0, 0.0, 1.0), 2.0);
+	float ll = 1.0 - pow(clamp( abs(32.0 - object.z) / 32.0, 0.0, 1.0), 2.0);
 	float fl = 1.0;
 	if (length(relobj) < 64.0) {
 		fl = clamp((32.0 - length(relobj)) / 32.0, 0.0, 1.0);
