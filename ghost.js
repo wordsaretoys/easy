@@ -128,7 +128,7 @@ EASY.ghost = {
 		this.identity = style + " of " + reason + " " + title + " of " + tribe;
 		
 		// generate ratings and susceptibility modifiers
-		this.rating.speed = 1 + Math.floor(3 * Math.random());
+		this.rating.speed = 2.5 + Math.floor(1.5 * Math.random());
 		this.rating.effect = 5 + Math.floor(10 * Math.random());
 		this.rating.resolve = 10 + Math.floor(20 * Math.random());
 		this.rating.recovery = 0.1 + Math.random();
@@ -192,7 +192,7 @@ EASY.ghost = {
 			dir.z += (Math.random() - Math.random()) * dt * 0.001;
 			dir.norm();
 			this.velocity.copy(dir).mul(this.rating.speed);
-/*			
+			
 			// if resolve is maxed out
 			if (this.resolve === this.rating.resolve) {
 			
@@ -212,7 +212,7 @@ EASY.ghost = {
 				);
 				
 			}
-*/		
+		
 			break;
 			
 		case this.ATTACKING:
@@ -228,9 +228,10 @@ EASY.ghost = {
 			dam = SOAR.clamp(
 				(this.rating.effect - pp.distance(this.position)) / this.rating.effect,
 				0, 1 
-			) * dt;
+			);
 			if (dam > 0) {
-				EASY.player.weaken(dam);
+				EASY.hud.weaken(dam);
+				EASY.player.weaken(dam * dt);
 			}
 		
 			// if we haven't reached the target
@@ -250,6 +251,7 @@ EASY.ghost = {
 				if (!hit) {
 					EASY.hud.log("The " + this.identity + " Has Broken Off", "success");
 					this.motion = this.WANDERING;
+					EASY.hud.weaken(0);
 				}
 				
 			}
@@ -320,6 +322,7 @@ EASY.ghost = {
 			if (this.resolve === 0) {
 				EASY.hud.log("The " + this.identity + " Has Been Rebuffed!");
 				this.motion = this.WANDERING;
+				EASY.hud.weaken(0);
 			}
 		}
 	}

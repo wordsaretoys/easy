@@ -25,6 +25,7 @@ EASY.hud = {
 		this.dom = {
 			window: jQuery(window),
 			log: jQuery("#log"),
+			effects: jQuery("#effects"),
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message")
 		};
@@ -49,6 +50,9 @@ EASY.hud = {
 		dom.tracker.width(EASY.display.width);
 		dom.tracker.height(EASY.display.height);
 		
+		dom.effects.width(EASY.display.width);
+		dom.effects.height(EASY.display.height);
+
 		dom.message.offset({
 			top: (EASY.display.height - dom.message.height()) * 0.5,
 			left: (EASY.display.width - dom.message.width()) * 0.5
@@ -137,6 +141,17 @@ EASY.hud = {
 			.fadeOut(this.LOG_FADE_TIME, function() {
 				div.remove();
 		});
+	},
+
+	/**
+		sets degree of weakening effect
+		
+		@method weaken
+		@param rate number (0 - 1)
+	**/
+	
+	weaken: function(rate) {
+		this.dom.effects.css("background-color", "rgba(255, 0, 0, " + rate + ")" );
 	},
 	
 	/**

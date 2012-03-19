@@ -55,6 +55,20 @@ div {
 	color: rgb(0, 255, 0);
 }
 
+/* filter effects */
+
+#effects {
+
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	
+	background: transparent;
+	z-index: 1;
+	
+	cursor: default;
+}
+
 /* debug information */
 
 #debug {
@@ -143,6 +157,7 @@ div {
 #message {
 
 	position: absolute;
+	width: 100%;
 	color: white;
 	text-align: center;
 	font-size: 32px;
