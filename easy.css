@@ -69,9 +69,9 @@ div {
 	cursor: default;
 }
 
-/* HUD messages */
+/* HUD message log */
 
-#messages {
+#log {
 	position: absolute;
 	top: 20px;
 	left: 20px;
@@ -126,7 +126,7 @@ div {
 
 /* mouse tracking surface */
 
-#mouse-tracker {
+#tracker {
 
 	position: absolute;
 	top: 0px;
@@ -138,30 +138,16 @@ div {
 	cursor: default;
 }
 
-/* pause curtain */
+/* modal message */
 
-#curtain {
-
-	position: absolute;
-
-	top: 0px;
-	left: 0px;
-	
-	background: rgba(0, 0, 0, 0.75);
-	
-	z-index: 20;
-	
-	cursor: default;
-	
-	display: none;
-}
-
-#curtain div {
+#message {
 
 	position: absolute;
 	color: white;
 	text-align: center;
 	font-size: 32px;
 	font-variant: small-caps;
+	cursor: default;
+	z-index: 15;
 
 }

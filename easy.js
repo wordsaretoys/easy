@@ -54,7 +54,7 @@ var EASY = {
 		EASY.ghost.init();
 		EASY.wordwall.init();
 		
-		EASY.hud.showCurtain(EASY.hud.waitMsg);
+		EASY.hud.darken(EASY.hud.waitMsg);
 		
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.lookup.resources, function() {
@@ -88,7 +88,7 @@ var EASY = {
 */			
 			SOAR.run();
 			
-			EASY.hud.hideCurtain();
+			EASY.hud.lighten();
 		});
 		
 		// while waiting for resource load, initialize game objects

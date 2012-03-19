@@ -107,10 +107,13 @@ EASY.ghost = {
 
 		// pick a nice flat space for the starting point
 		// TODO: this will be moved to the corpse object
-		do {
+/*		do {
 			x = this.rng.getn(l);
 			z = this.rng.getn(l);
 		} while(!EASY.cave.isFlat(x, z, this.RADIUS));
+*/
+		x = EASY.cave.area[6].x;
+		z = EASY.cave.area[6].z;
 	
 		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.target.copy(this.position);
@@ -195,7 +198,7 @@ EASY.ghost = {
 			
 				// look for the player, and attack if spotted
 				if (this.lookFor(pp, this.RADIUS)) {
-					EASY.hud.addMessage("Spotted By The " + this.identity, "warning");
+					EASY.hud.log("Spotted By The " + this.identity, "warning");
 					this.target.copy(pp);
 					this.motion = this.ATTACKING;
 				}
@@ -245,7 +248,7 @@ EASY.ghost = {
 				// reached the player's last spot and nothing's there?
 				// go back to wandering
 				if (!hit) {
-					EASY.hud.addMessage("The " + this.identity + " Has Broken Off", "success");
+					EASY.hud.log("The " + this.identity + " Has Broken Off", "success");
 					this.motion = this.WANDERING;
 				}
 				
@@ -312,10 +315,10 @@ EASY.ghost = {
 		// can only take damge when attacking
 		if (this.motion === this.ATTACKING) {
 			var damage = this.rating[attack];
-			EASY.hud.addMessage("The " + this.identity + " Weakened By " + damage);
+			EASY.hud.log("The " + this.identity + " Weakened By " + damage);
 			this.resolve = Math.max(0, this.resolve - damage);
 			if (this.resolve === 0) {
-				EASY.hud.addMessage("The " + this.identity + " Has Been Rebuffed!");
+				EASY.hud.log("The " + this.identity + " Has Been Rebuffed!");
 				this.motion = this.WANDERING;
 			}
 		}

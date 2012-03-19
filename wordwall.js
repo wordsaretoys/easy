@@ -88,7 +88,7 @@ EASY.wordwall = {
 			this.radius = 2;
 			this.attack = type;
 			this.damage = false;
-			EASY.hud.addMessage("Attacked with " + type);
+			EASY.hud.log("Attacked with " + type);
 		}
 	},
 	

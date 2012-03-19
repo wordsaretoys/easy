@@ -7,8 +7,8 @@
 
 EASY.hud = {
 
-	MESSAGE_FADE_TIME: 500,
-	MESSAGE_DELAY: 5000,
+	LOG_FADE_TIME: 500,
+	LOG_DELAY: 5000,
 
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
@@ -24,27 +24,13 @@ EASY.hud = {
 
 		this.dom = {
 			window: jQuery(window),
-			
-			curtain: jQuery("#curtain"),
-			curtainMsg: jQuery("#curtain > div"),
-			
-			messages: jQuery("#messages")
+			log: jQuery("#log"),
+			tracker: jQuery("#tracker"),
+			message: jQuery("#message")
 		};
 
 		this.dom.window.bind("resize", this.resize);			
 		this.dom.window.bind("keydown", this.onKeyDown);
-		
-		this.dom.curtainMsg.resize = function() {
-			var cm = EASY.hud.dom.curtainMsg;
-			cm.offset({
-				top: (EASY.display.height - cm.height()) * 0.5,
-				left: (EASY.display.width - cm.width()) * 0.5
-			});
-		};
-		this.dom.curtain.bind("mousedown", function() {
-			return false;
-		});
-
 		this.resize();
 	},
 
@@ -60,10 +46,13 @@ EASY.hud = {
 	resize: function() {
 		var dom = EASY.hud.dom;
 
-		dom.curtain.width(EASY.display.width);
-		dom.curtain.height(EASY.display.height);
+		dom.tracker.width(EASY.display.width);
+		dom.tracker.height(EASY.display.height);
 		
-		dom.curtainMsg.resize();
+		dom.message.offset({
+			top: (EASY.display.height - dom.message.height()) * 0.5,
+			left: (EASY.display.width - dom.message.width()) * 0.5
+		});
 	},
 	
 	/**
@@ -81,10 +70,10 @@ EASY.hud = {
 		switch(event.keyCode) {
 		case SOAR.KEY.ESCAPE:
 			if (SOAR.running) {
-				EASY.hud.showCurtain(EASY.hud.pauseMsg);
+				EASY.hud.darken(EASY.hud.pauseMsg);
 				SOAR.running = false;
 			} else {
-				EASY.hud.hideCurtain();
+				EASY.hud.lighten();
 				SOAR.running = true;
 			}
 			break;
@@ -99,51 +88,53 @@ EASY.hud = {
 	},
 	
 	/**
-		display the curtain (a semi-transparent div) with a message
+		darken the HUD with optional message
 		
-		@method showCurtain
+		used when the UI will be temporarily unresponsive
+		
+		@method darken
 		@param msg string containing message to display
 	**/
 	
-	showCurtain: function(msg) {
-		var dom = this.dom;
-		dom.curtain.css("display", "block");
-		dom.curtainMsg.html(msg);
-		dom.curtainMsg.resize();
+	darken: function(msg) {
+		this.dom.tracker.css("background-color", "rgba(0, 0, 0, 0.5)");
+		this.dom.message.html(msg);
+		this.resize();
 	},
 	
 	/**
-		hide the curtain
+		make the HUD fully visible again
 		
 		@method hideCurtain
 	**/
 	
-	hideCurtain: function() {
-		this.dom.curtain.css("display", "none");
+	lighten: function() {
+		this.dom.tracker.css("background-color", "rgba(0, 0, 0, 0)");
+		this.dom.message.html("");
 	},
 	
 	/**
-		adds a simple message to the HUD
+		adds an entry to the HUD log
 		
-		messages are stacked at the top of the screen, fading after
-		a constant timeout, then removed from the DOM
+		entries are appended to the end of the log,
+		then fade, and are removed from the DOM
 		
-		@method addMessage
+		@method log
 		@param msg string, message to display
 		@param type string, optional message class
 	**/
 
-	addMessage: function(msg, type) {
+	log: function(msg, type) {
 		var div = jQuery(document.createElement("div"));
 		if (type) {
 			div.addClass(type);
 		}
 		div.html(msg);
 		div.css("display", "none");
-		this.dom.messages.prepend(div);
-		div.fadeIn(this.MESSAGE_FADE_TIME)
-			.delay(this.MESSAGE_DELAY)
-			.fadeOut(this.MESSAGE_FADE_TIME, function() {
+		this.dom.log.append(div);
+		div.fadeIn(this.LOG_FADE_TIME)
+			.delay(this.LOG_DELAY)
+			.fadeOut(this.LOG_FADE_TIME, function() {
 				div.remove();
 		});
 	},

@@ -46,8 +46,9 @@ EASY.player = {
 		establish jQuery shells around player DOM objects &
 		set up event handlers for player controls
 		
-		mouseTracker div lies over canvas and HUD elements to
-		prevent mouse dragging from selecting anything under it
+		tracker div lies over canvas and HUD elements, which
+		allows us to track mouse movements without issues in
+		the mouse pointer sliding over an untracked element.
 		
 		@method init
 	**/
@@ -55,23 +56,16 @@ EASY.player = {
 	init: function() {
 	
 		var dom = this.dom = {
-			mouseTracker: jQuery("#mouse-tracker"),
+			tracker: jQuery("#tracker"),
 			window: jQuery(window)
 		};
 		
-		dom.mouseTracker.resize = function() {
-			dom.mouseTracker.width(EASY.display.width);
-			dom.mouseTracker.height(EASY.display.height);
-		}
-		dom.window.bind("resize", dom.mouseTracker.resize);
-		dom.mouseTracker.resize();
-
 		dom.window.bind("keydown", this.onKeyDown);
 		dom.window.bind("keyup", this.onKeyUp);
 
-		dom.mouseTracker.bind("mousedown", this.onMouseDown);
-		dom.mouseTracker.bind("mouseup", this.onMouseUp);
-		dom.mouseTracker.bind("mousemove", this.onMouseMove);
+		dom.tracker.bind("mousedown", this.onMouseDown);
+		dom.tracker.bind("mouseup", this.onMouseUp);
+		dom.tracker.bind("mousemove", this.onMouseMove);
 
 		// create a yaw/pitch constrained camera for player view
 		this.eyeview = SOAR.camera.create(
@@ -203,10 +197,10 @@ EASY.player = {
 		// if we've gone past the exit, signal that it's
 		// time to go to a new cave
 		if (p.z <= 0) {
-			EASY.hud.showCurtain(EASY.hud.waitMsg);
+			EASY.hud.darken(EASY.hud.waitMsg);
 			SOAR.schedule(function() {
 				EASY.generate();
-				EASY.hud.hideCurtain();
+				EASY.hud.lighten();
 			}, 1, false);
 		}
 		
@@ -373,7 +367,7 @@ EASY.player = {
 	**/
 	
 	collect: function(item) {
-		EASY.hud.addMessage("Collected: " + item.text);
+		EASY.hud.log("Collected: " + item.text);
 		this.trash[item.type] = (this.trash[item.type] || 0) + 1;
 	},
 	
@@ -388,7 +382,7 @@ EASY.player = {
 	
 		this.resolve = Math.max(0, this.resolve - damage);
 		if (this.resolve === 0) {
-			EASY.hud.addMessage("You Flee The Caves In Terror", "warning");
+			EASY.hud.log("You Flee The Caves In Terror", "warning");
 			SOAR.running = false;
 		}
 	}
