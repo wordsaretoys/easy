@@ -64,7 +64,6 @@ var EASY = {
 			// allow game objects to process loaded resources
 			EASY.cave.process();
 			EASY.trash.process();
-			EASY.wordwall.process();
 			
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
@@ -142,6 +141,7 @@ var EASY = {
 			EASY.cave.draw();
 		EASY.trash.draw();
 		EASY.ghost.draw();
+		gl.clear(gl.DEPTH_BUFFER_BIT);
 		EASY.wordwall.draw();
 	},
 

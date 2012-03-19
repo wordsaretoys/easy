@@ -309,12 +309,15 @@ EASY.ghost = {
 	**/
 	
 	weaken: function(attack) {
-		var damage = this.rating[attack];
-		EASY.hud.addMessage("The " + this.identity + " Weakened By " + damage);
-		this.resolve = Math.max(0, this.resolve - damage);
-		if (this.resolve === 0) {
-			EASY.hud.addMessage("The " + this.identity + " Has Been Rebuffed!");
-			this.motion = this.WANDERING;
+		// can only take damge when attacking
+		if (this.motion === this.ATTACKING) {
+			var damage = this.rating[attack];
+			EASY.hud.addMessage("The " + this.identity + " Weakened By " + damage);
+			this.resolve = Math.max(0, this.resolve - damage);
+			if (this.resolve === 0) {
+				EASY.hud.addMessage("The " + this.identity + " Has Been Rebuffed!");
+				this.motion = this.WANDERING;
+			}
 		}
 	}
 

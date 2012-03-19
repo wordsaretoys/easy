@@ -228,12 +228,11 @@ attribute vec2 texturec;
 uniform mat4 projector;
 uniform mat4 rotations;
 uniform float radius;
-uniform float height;
 
 varying vec2 uv;
 
 void main(void) {
-	vec4 pos = vec4(position.x * radius, position.y - height, position.z * radius, 1.0);
+	vec4 pos = vec4(position.x * radius, position.y, position.z * radius, 1.0);
 	gl_Position = projector * rotations * pos;
 	uv = texturec;
 }
@@ -246,7 +245,6 @@ void main(void) {
 	wordwall fragment shader
 	
 	@param sign		sign texture
-	@param noise	noise texture
 
 	@param uv		texture coordinates of fragment
 	
@@ -254,15 +252,15 @@ void main(void) {
 
 precision mediump float;
 
-uniform sampler2D noise;
+uniform sampler2D sign;
 uniform float radius;
 
 varying vec2 uv;
 
 void main(void) {
-	vec2 st = vec2(uv.x * 4.0, uv.y);
-	float alpha = pow(texture2D(noise, st * 0.1).r * (1.0 - radius / 15.0), 2.0);
-	gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
+	vec4 signColor = texture2D(sign, uv);
+	float alpha = 1.0 - radius / 15.0;
+	gl_FragColor = vec4(signColor.rgb, alpha * signColor.a);
 }
 
 </script>

@@ -9,7 +9,7 @@
 EASY.wordwall = {
 
 	MAX_RADIUS: 15,
-	EXPAND_RATE: 2,
+	EXPAND_RATE: 25,
 	
 	active: false,
 	radius: 0,
@@ -29,16 +29,15 @@ EASY.wordwall = {
 			EASY.display,
 			SOAR.textOf("vs-wordwall"), SOAR.textOf("fs-wordwall"),
 			["position", "texturec"], 
-			["projector", "rotations", "radius", "height"],
-			["noise"]
+			["projector", "rotations", "radius"],
+			["sign"]
 		);
 		
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 
-		SOAR.subdivide(5, -0.5, 0, 0.5, 
-			(EASY.cave.WALL_HEIGHT - EASY.cave.SEPARATION) * 2, 
+		SOAR.subdivide(5, -0.5, -0.5, 0.5, 0.5, 
 			function(x0, y0, x1, y1, x2, y2) {
 				var z0, z1, z2;
 				var tx0, tx1, tx2;
@@ -48,13 +47,13 @@ EASY.wordwall = {
 				tx0 = x0 + 0.5;
 				tx1 = x1 + 0.5;
 				tx2 = x2 + 0.5;
-				ty0 = y0;
-				ty1 = y1;
-				ty2 = y2;
+				ty0 = y0 + 0.5;
+				ty1 = y1 + 0.5;
+				ty2 = y2 + 0.5;
 				
-				a0 = (x0 + 0.5) * Math.PI;
-				a1 = (x1 + 0.5) * Math.PI;
-				a2 = (x2 + 0.5) * Math.PI;
+				a0 = tx0 * Math.PI;
+				a1 = tx1 * Math.PI;
+				a2 = tx2 * Math.PI;
 				
 				x0 = Math.cos(a0);
 				x1 = Math.cos(a1);
@@ -76,17 +75,15 @@ EASY.wordwall = {
 	
 		this.mesh.build();
 		
-	},
-	
-	/**
-		process loaded resources and perform any remaining initialization
+		this.canvas = document.createElement("canvas");
+		this.canvas.height = 64;
+		this.canvas.width = 2048;
+		this.context = this.canvas.getContext("2d");
 		
-		@method process
-	**/
-	
-	process: function() {
-		this.noiseTexture = 
-			SOAR.texture.create(EASY.display, EASY.lookup.resources["noise2"].data);
+		this.context.font = "64px Arial";
+		this.context.textAlign = "center";
+		this.context.textBaseline = "middle";
+		this.context.fillStyle = "rgba(255, 255, 255, 1)";
 	},
 	
 	/**
@@ -99,9 +96,19 @@ EASY.wordwall = {
 	**/
 	
 	spawn: function(type) {
+		var cntx = this.context;
+		var w = this.canvas.width;
+		var h = this.canvas.height;
+	
 		if (!this.active) {
+		
+			cntx.clearRect(0, 0, w, h);
+			cntx.fillText("Why wrestle with your conscience? Wrestle with a python instead.", w / 2, h / 2);
+	
+			this.sign = SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h));
+		
 			this.active = true;
-			this.radius = 0;
+			this.radius = 2;
 			this.attack = type;
 			this.damage = false;
 			EASY.hud.addMessage("Attacked with " + type);
@@ -135,6 +142,7 @@ EASY.wordwall = {
 			
 			if (this.radius === this.MAX_RADIUS) {
 				this.active = false;
+				this.sign.release();
 			}
 		}
 	},
@@ -160,9 +168,8 @@ EASY.wordwall = {
 			gl.uniformMatrix4fv(shader.rotations, false, camera.rotations());
 
 			gl.uniform1f(shader.radius, this.radius);
-			gl.uniform1f(shader.height, EASY.player.PLAYER_HEIGHT);
-
-			this.noiseTexture.bind(0, shader.noise);
+			
+			this.sign.bind(0, shader.sign);
 			this.mesh.draw();
 			
 			gl.disable(gl.BLEND);
