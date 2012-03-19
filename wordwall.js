@@ -8,8 +8,9 @@
 
 EASY.wordwall = {
 
+	RING_STEPS: 20,
 	MAX_RADIUS: 15,
-	EXPAND_RATE: 25,
+	EXPAND_RATE: 20,
 	
 	active: false,
 	radius: 0,
@@ -33,48 +34,24 @@ EASY.wordwall = {
 			["sign"]
 		);
 		
-		this.mesh = SOAR.mesh.create(EASY.display);
+		this.mesh = SOAR.mesh.create(EASY.display, EASY.display.gl.TRIANGLE_STRIP);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
-
-		SOAR.subdivide(5, -0.5, -0.5, 0.5, 0.5, 
-			function(x0, y0, x1, y1, x2, y2) {
-				var z0, z1, z2;
-				var tx0, tx1, tx2;
-				var ty0, ty1, ty2;
-				var a0, a1, a2;
-			
-				tx0 = x0 + 0.5;
-				tx1 = x1 + 0.5;
-				tx2 = x2 + 0.5;
-				ty0 = y0 + 0.5;
-				ty1 = y1 + 0.5;
-				ty2 = y2 + 0.5;
-				
-				a0 = tx0 * Math.PI;
-				a1 = tx1 * Math.PI;
-				a2 = tx2 * Math.PI;
-				
-				x0 = Math.cos(a0);
-				x1 = Math.cos(a1);
-				x2 = Math.cos(a2);
-				
-				z0 = Math.sin(a0);
-				z1 = Math.sin(a1);
-				z2 = Math.sin(a2);
-				
-				that.mesh.set(x0, y0, z0, tx0, ty0);
-				that.mesh.set(x1, y1, z1, tx1, ty1);
-				that.mesh.set(x2, y2, z2, tx2, ty2);
-
-				that.mesh.set(x0, y0, -z0, tx0, ty0);
-				that.mesh.set(x2, y2, -z2, tx2, ty2);
-				that.mesh.set(x1, y1, -z1, tx1, ty1);
-			}
-		);
-	
-		this.mesh.build();
 		
+		(function() {
+			var dang = SOAR.PIMUL2 / that.RING_STEPS;
+			var ang, x, z, tx;
+			for (ang = 0; ang <= SOAR.PIMUL2; ang += dang) {
+				x = Math.cos(ang);
+				z = Math.sin(ang);
+				tx = 4 * ang / SOAR.PIMUL2;
+				that.mesh.set(x, -0.5, z, tx, 0);
+				that.mesh.set(x, 0.5, z, tx, 1);
+			}
+		})();
+		
+		this.mesh.build();
+
 		this.canvas = document.createElement("canvas");
 		this.canvas.height = 64;
 		this.canvas.width = 2048;
