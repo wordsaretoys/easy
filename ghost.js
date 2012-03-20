@@ -33,13 +33,14 @@ EASY.ghost = {
 	position: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 
-	rotor: SOAR.freeRotor.create(),
 	target: SOAR.vector.create(),
 
 	scratch: {
 		pos: SOAR.vector.create(),
 		dir: SOAR.vector.create()
 	},
+	
+	texture: {},
 	
 	/**
 		create and init required objects
@@ -57,41 +58,36 @@ EASY.ghost = {
 			EASY.display,
 			SOAR.textOf("vs-ghost"), SOAR.textOf("fs-ghost"),
 			["position", "texturec"], 
-			["projector", "modelview", "rotations", "center"],
-			["sign"]
+			["projector", "modelview", "rotations", "center", "time"],
+			["noise"]
 		);
 		
 		this.rng = SOAR.random.create();
 
-		cntx.font = "48pt Arial";
-		cntx.textAlign = "center";
-		cntx.textBaseline = "middle";
-		cntx.strokeStyle = "rgba(255, 255, 255, 1)";
-		cntx.fillStyle = "rgba(255, 255, 255, 1)";
-		cntx.lineWidth = 3;
-
-		cntx.clearRect(0, 0, w, h);
-		cntx.beginPath();
-		cntx.arc(w / 2, h / 2, 127, 0, SOAR.PIMUL2, false);
-		cntx.stroke();
-		cntx.fillText("ghost", w / 2, h / 2);
-
 		this.mesh = SOAR.mesh.create(EASY.display);
-		this.sign = SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h));
-			
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 		
 		SOAR.subdivide(0, -0.5, -0.5, 0.5, 0.5, 
 			function(x0, y0, x1, y1, x2, y2) {
-				that.mesh.set(x0, y0, 0, x0 + 0.5, y0 + 0.5);
-				that.mesh.set(x1, y1, 0, x1 + 0.5, y1 + 0.5);
-				that.mesh.set(x2, y2, 0, x2 + 0.5, y2 + 0.5);
+				that.mesh.set(x0, y0, 0, x0, y0);
+				that.mesh.set(x1, y1, 0, x1, y1);
+				that.mesh.set(x2, y2, 0, x2, y2);
 			}
 		);
 		
 		this.mesh.build();
-			
+	},
+	
+	/**
+		process loaded resources and perform any remaining initialization
+		
+		@method process
+	**/
+	
+	process: function() {
+		this.texture.noise = 
+			SOAR.texture.create(EASY.display, EASY.lookup.resources["noise2"].data);
 	},
 	
 	/**
@@ -106,14 +102,9 @@ EASY.ghost = {
 		var x, y, z;
 
 		// pick a nice flat space for the starting point
-		// TODO: this will be moved to the corpse object
-/*		do {
-			x = this.rng.getn(l);
-			z = this.rng.getn(l);
-		} while(!EASY.cave.isFlat(x, z, this.RADIUS));
-*/
+		// TODO: this will be changed
 		x = EASY.cave.area[6].x;
-		z = EASY.cave.area[6].z;
+		z = EASY.cave.area[6].y;
 	
 		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.target.copy(this.position);
@@ -180,8 +171,6 @@ EASY.ghost = {
 		var dt = SOAR.interval * 0.001;
 		var hit, dam;
 
-		this.rotor.turn(0, 0.05, 0);
-		
 		switch(this.motion) {
 		
 		case this.WANDERING:
@@ -230,7 +219,7 @@ EASY.ghost = {
 				0, 1 
 			);
 			if (dam > 0) {
-				EASY.hud.weaken(dam);
+				EASY.hud.weaken(dam * 0.75);
 				EASY.player.weaken(dam * dt);
 			}
 		
@@ -295,11 +284,12 @@ EASY.ghost = {
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		gl.uniformMatrix4fv(shader.rotations, false, this.rotor.matrix.transpose);
+		gl.uniformMatrix4fv(shader.rotations, false, camera.transpose());
 
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
+		gl.uniform1f(shader.time, SOAR.elapsedTime);
 
-		this.sign.bind(0, shader.sign);
+		this.texture.noise.bind(0, shader.noise);
 		this.mesh.draw();
 		
 		gl.disable(gl.BLEND);

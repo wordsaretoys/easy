@@ -188,19 +188,39 @@ void main(void) {
 	trash fragment shader
 	
 	@param sign		sign texture
-
+	
 	@param uv		texture coordinates of fragment
 	
 **/
 
 precision mediump float;
 
-uniform sampler2D sign;
+uniform sampler2D noise;
+uniform float time;
 
 varying vec2 uv;
 
 void main(void) {
-	gl_FragColor = texture2D(sign, uv);
+
+	// create three functions to scale the texture
+	// and put them at staggered phases
+	float t0 = mod(time, 999.0) / 999.0;
+	float a0 = (1.0 - 2.0 * abs(0.5 - t0)) * texture2D(noise, uv * t0).r;
+
+	float t1 = mod(time + 333.0, 999.0) / 999.0;
+	float a1 = (1.0 - 2.0 * abs(0.5 - t1)) * texture2D(noise, uv * t1).r;
+
+	float t2 = mod(time + 666.0, 999.0) / 999.0;
+	float a2 = (1.0 - 2.0 * abs(0.5 - t2)) * texture2D(noise, uv * t2).r;
+	
+	// average the results to produce a continous scaling effect,
+	// like a visual Shepard's tone
+	float a = (a0 + a1 + a2);
+	
+	// create a "smoke ring" mask over the first effect
+	float r = 2.0 * length(uv);
+	a = a * (1.0 - r) * r;
+	gl_FragColor = vec4(1.0, 1.0, 1.0, a);
 }
 
 </script>
@@ -209,7 +229,7 @@ void main(void) {
 
 /**
 	wordwall vertex shader
-	O' = P * V * r *O transformation, plus texture coordinates
+	O' = P * V * r * O transformation, plus texture coordinates
 	
 	@param position vertex array of positions
 	@param texturec vertex array of texture coordinates
