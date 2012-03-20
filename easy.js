@@ -52,7 +52,6 @@ var EASY = {
 		EASY.hud.init();
 		EASY.trash.init();
 		EASY.ghost.init();
-		EASY.wordwall.init();
 		
 		EASY.hud.darken(EASY.hud.waitMsg);
 		
@@ -118,7 +117,6 @@ var EASY = {
 		EASY.player.update();
 		EASY.trash.update();
 		EASY.ghost.update();
-		EASY.wordwall.update();
 	},
 
 	/**
@@ -142,8 +140,6 @@ var EASY = {
 			EASY.cave.draw();
 		EASY.trash.draw();
 		EASY.ghost.draw();
-		gl.clear(gl.DEPTH_BUFFER_BIT);
-		EASY.wordwall.draw();
 	},
 
 	/**

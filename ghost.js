@@ -124,11 +124,11 @@ EASY.ghost = {
 		this.rating.resolve = 10 + Math.floor(20 * Math.random());
 		this.rating.recovery = 0.1 + Math.random();
 		
-		this.rating.excuse = 1 + Math.floor(5 * Math.random());
-		this.rating.appease = 1 + Math.floor(5 * Math.random());
-		this.rating.flatter = 1 + Math.floor(5 * Math.random());
-		this.rating.blame = 1 + Math.floor(5 * Math.random());
-		this.rating.confuse = 1 + Math.floor(5 * Math.random());
+		this.rating.excuse = Math.floor(5 * Math.random());
+		this.rating.appease = Math.floor(5 * Math.random());
+		this.rating.flatter = Math.floor(5 * Math.random());
+		this.rating.blame = Math.floor(5 * Math.random());
+		this.rating.confuse = Math.floor(5 * Math.random());
 		
 		// reset state
 		this.motion = this.WANDERING;
@@ -214,9 +214,10 @@ EASY.ghost = {
 			}
 			
 			// weaken the player if inside area of effect
+			// cap damage using the ghost's resolve ratio
 			dam = SOAR.clamp(
 				(this.rating.effect - pp.distance(this.position)) / this.rating.effect,
-				0, 1 
+				0, this.resolve / this.rating.resolve
 			);
 			if (dam > 0) {
 				EASY.hud.weaken(dam * 0.75);

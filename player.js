@@ -243,19 +243,19 @@ EASY.player = {
 				that.camera = that.overhead;
 				break;
 			case SOAR.KEY.ONE:
-				EASY.wordwall.spawn("excuse");
+//				EASY.wordwall.spawn("excuse");
 				break;
 			case SOAR.KEY.TWO:
-				EASY.wordwall.spawn("appease");
+//				EASY.wordwall.spawn("appease");
 				break;
 			case SOAR.KEY.THREE:
-				EASY.wordwall.spawn("flatter");
+//				EASY.wordwall.spawn("flatter");
 				break;
 			case SOAR.KEY.FOUR:
-				EASY.wordwall.spawn("blame");
+//				EASY.wordwall.spawn("blame");
 				break;
 			case SOAR.KEY.FIVE:
-				EASY.wordwall.spawn("confuse");
+//				EASY.wordwall.spawn("confuse");
 				break;
 				
 // debugging keys -- remove in production release
