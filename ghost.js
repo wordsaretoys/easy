@@ -9,6 +9,7 @@ EASY.ghost = {
 
 	RADIUS: 0.5,
 	ATTACK_DISTANCE: 5,
+	ATTACK_DELAY: 2,
 	
 	WANDERING: 0,
 	ATTACKING: 1,
@@ -35,7 +36,48 @@ EASY.ghost = {
 			death: [
 				"Blood. Blood. Blood. Blood? Blood."
 			]
-		}
+		},
+		
+		spotted: [
+			"I see you, flesh."
+		],
+		
+		damage: [
+			[
+				"No. Not a thing. Sorry.",
+				"Were you talking to me?",
+				"I can't be bothered to care."
+			],
+			[
+				"You make a very small point.",
+				"There is something to that. <em>What</em>, I have no idea.",
+				"I will not argue semantics."
+			],
+			[
+				"I can see your side of it.",
+				"This line of argument may lead us somewhere.",
+				"There are possibilities in what you say."
+			],
+			[
+				"I am forced by circumstances to agree.",
+				"I can find no substantial quarrel with that.",
+				"There is little left to debate, then."
+			],
+			[
+				"I've never heard such a concise argument.",
+				"I have no disagreement worth uttering.",
+				"Astonishing, and I must agree."
+			]
+		],
+		
+		rebuff: [
+			"I must consider this further."
+		],
+		
+		travel: [
+			"I have my own troubles. Begone."
+		]
+			
 	},				
 	
 	rating: {
@@ -52,6 +94,7 @@ EASY.ghost = {
 	
 	motion: 0,
 	resolve: 0,
+	cooldown: 0,
 	
 	identity: "",
 
@@ -212,7 +255,7 @@ EASY.ghost = {
 			
 				// look for the player, and attack if spotted
 				if (this.lookFor(pp, this.RADIUS)) {
-					EASY.hud.log("Spotted By The " + this.identity, "warning");
+					EASY.hud.comment(this.COMMENTS.spotted.pick(), "ghosty");
 					this.target.copy(pp);
 					this.motion = this.ATTACKING;
 				}
@@ -242,7 +285,13 @@ EASY.ghost = {
 			if (len < this.ATTACK_DISTANCE && hit) {
 				// we're within earshot and can see the player
 				// don't move, attack if possible
-				//EASY.player.weaken(dam * dt);
+				if (this.cooldown > 0) {
+					this.cooldown = Math.max(0, this.cooldown - dt);
+				} else {
+					EASY.hud.comment(this.COMMENTS.attack.death.pick(), "ghosty");
+					EASY.player.weaken(1);
+					this.cooldown = this.ATTACK_DELAY + Math.random();
+				}
 			} else if (len < 1.1 && !hit) {
 
 				// reached target and can't see the player?
@@ -321,13 +370,15 @@ EASY.ghost = {
 		// can only take damge when attacking
 		if (this.motion === this.ATTACKING) {
 			var damage = this.rating[attack];
-			EASY.hud.log("The " + this.identity + " Weakened By " + damage);
+			EASY.hud.comment(this.COMMENTS.damage[damage].pick(), "ghosty");
 			this.resolve = Math.max(0, this.resolve - damage);
 			if (this.resolve === 0) {
-				EASY.hud.log("The " + this.identity + " Has Been Rebuffed!");
+				EASY.hud.comment(this.COMMENTS.rebuff.pick(), "ghosty");
 				this.motion = this.WANDERING;
 				EASY.hud.weaken(0);
 			}
+		} else {
+			EASY.hud.comment(this.COMMENTS.travel.pick(), "ghosty");
 		}
 	}
 

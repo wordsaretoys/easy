@@ -85,7 +85,6 @@ div {
 	width: 550px;
 	
 	background: transparent;
-	color: white;
 	text-shadow: black 0.1em 0.1em 0.2em;
 	
 	overflow: hidden;
@@ -100,11 +99,11 @@ div {
 	margin-top: 5px;
 }
 
-#comment div .player {
+.player {
 	color: rgb(255, 255, 255);
 }
 
-#comment div .ghosty {
+.ghosty {
 	font-variant: small-caps;
 	color: rgb(255, 0, 0);
 }
