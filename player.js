@@ -344,10 +344,7 @@ EASY.player = {
 // debugging keys -- remove in production release
 
 			case SOAR.KEY.H:
-				EASY.lookup.hideCave = !EASY.lookup.hideCave;
-				break;
-			case SOAR.KEY.N:
-				EASY.lookup.stopModels = !EASY.lookup.stopModels;
+				EASY.hideCave = !EASY.hideCave;
 				break;
 			case SOAR.KEY.T:
 				EASY.generate();
