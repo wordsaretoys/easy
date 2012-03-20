@@ -8,7 +8,38 @@
 **/
 
 var EASY = {
-	
+
+	resources: {
+		noise1: {
+			type: "image",
+			path: "res/noise1.jpg"
+		},
+		noise2: {
+			type: "image",
+			path: "res/noise2.jpg"
+		},
+		oil: {
+			type: "image",
+			path: "res/oil.png"
+		},
+		change: {
+			type: "image",
+			path: "res/change.png"
+		},
+		wood: {
+			type: "image",
+			path: "res/chest.png"
+		},
+		flesh: {
+			type: "image",
+			path: "res/flesh.png"
+		},
+		cloth: {
+			type: "image",
+			path: "res/cloth.png"
+		}
+	},
+
 	/**
 		create GL context, set up game objects, load resources, run main loop
 
@@ -27,6 +58,11 @@ var EASY = {
 			return;
 		}
 
+		// add any useful shims
+		Array.prototype.pick = function() {
+			return this[Math.floor(Math.random() * this.length)];
+		};
+		
 		// set initial display dimensions
 		EASY.display.setSize(
 			document.body.clientWidth, 
@@ -56,7 +92,7 @@ var EASY = {
 		EASY.hud.darken(EASY.hud.waitMsg);
 		
 		// begin async loading of resources from the server
-		SOAR.loadResources(EASY.lookup.resources, function() {
+		SOAR.loadResources(EASY.resources, function() {
 
 			EASY.generate();
 		

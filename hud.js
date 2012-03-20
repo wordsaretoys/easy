@@ -7,8 +7,8 @@
 
 EASY.hud = {
 
-	LOG_FADE_TIME: 500,
-	LOG_DELAY: 5000,
+	COMMENT_FADE_TIME: 100,
+	COMMENT_READ_TIME: 5000,
 
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
@@ -24,7 +24,7 @@ EASY.hud = {
 
 		this.dom = {
 			window: jQuery(window),
-			log: jQuery("#log"),
+			comment: jQuery("#comment"),
 			effects: jQuery("#effects"),
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message")
@@ -120,6 +120,8 @@ EASY.hud = {
 	/**
 		adds an entry to the HUD log
 		
+		*** DEPRECATED, REMOVE IN FINAL BUILD ***
+		
 		entries are appended to the end of the log,
 		then fade, and are removed from the DOM
 		
@@ -129,18 +131,34 @@ EASY.hud = {
 	**/
 
 	log: function(msg, type) {
+		console.log(msg);
+	},
+
+	/**
+		adds an entry to the HUD commentary
+
+		entries are appended to the comment box,
+		growing as they fade in, then fading out
+		after a delay. they are removed from the
+		DOM once they are no longer visible.
+		
+		@method comment
+		@param msg string, message to display
+		@param who string, classname of speaker
+	**/
+
+	comment: function(msg, who) {
 		var div = jQuery(document.createElement("div"));
-		if (type) {
-			div.addClass(type);
-		}
+		who = who || "player";
+		div.addClass(who);
 		div.html(msg);
 		div.css("display", "none");
-		this.dom.log.append(div);
-		div.fadeIn(this.LOG_FADE_TIME)
-			.delay(this.LOG_DELAY)
-			.fadeOut(this.LOG_FADE_TIME, function() {
+		this.dom.comment.append(div);
+		div.show(this.COMMENT_FADE_TIME)
+			.delay(this.COMMENT_READ_TIME)
+			.hide(this.COMMENT_FADE_TIME, function() {
 				div.remove();
-		});
+			});
 	},
 
 	/**

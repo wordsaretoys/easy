@@ -13,14 +13,92 @@ EASY.player = {
 	SPRINT_SPEED: 10,
 	PLAYER_HEIGHT: 1.5,
 	MAX_RESOLVE: 50,
+	ATTACK_DELAY: 2,
+	ATTACK_DISTANCE: 6,
+	
+	COMMENTS: {
+	
+		cave: {
+
+			entry: [
+				"Nice decor, for a cave.",
+				"These colors just don't go."
+			]
+		},
+	
+		trash: {
+		
+			wood: [
+				"Another smashed treasure chest. Easy's not the most patient man, is he?",
+				"Looks like <em>someone</em> forgot to bring his lockpicks again."
+			],
+			
+			oil: [
+				"Lamp oil. He must carry a barrel of the stuff."
+			],
+			
+			flesh: [
+				"Yeech. I hate picking up someone else's nose."
+			],
+			
+			cloth: [
+				"So, which priceless antique tapestry was this?",
+				"Art makes Easy upset. I think he never learned to appreciate it."
+			],
+			
+			change: [
+				"All right! Enough money to buy a shoe! Retirement, here I come!"
+			]
+		},
+		
+		attack: {
+		
+			excuse: [
+				"Easy's had a hard life. He was a deprived child. And a depraved teenager."
+			],
+			
+			appease: [
+				"Look, I can see that you've got valid complaints here."
+			],
+			
+			flatter: [
+				"The whole ethereal thing looks good on you."
+			],
+			
+			blame: [
+				"Hoarding gold? You were just asking for a brutal murder.",
+				"I bet you were wearing something provactive. Like a shirt.",
+				"Lurking in a dark cave? Might as well have been yelling <em>kill me</em>."
+			],
+			
+			confuse: [
+				"Look, a tiger. Wearing a hat. Indoors, even."
+			],
+			
+			notready: [
+				"...wait, it'll come to me...",
+				"...I had a good one, hold on...",
+				"...my mind's a blank right now...",
+				"...oh look, rocks...",
+				"...uh, okay, maybe not..."
+			],
+			
+			toofar: [
+				"What, am I talking to <em>myself</em> now?",
+				"I'll bet no one can hear me over here."
+			]
+
+		}
+		
+	},
 
 	headPosition: SOAR.vector.create(),
 	footPosition: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 	
-	level: 1,
 	resolve: 0,
 	trash: {},
+	cooldown: 0,
 	
 	motion: {
 		moveleft: false, moveright: false,
@@ -39,7 +117,6 @@ EASY.player = {
 		velocity: SOAR.vector.create()
 	},
 	
-	debug: false,
 	sprint: false,
 
 	/**
@@ -124,12 +201,10 @@ EASY.player = {
 		if (motion.moveright) {
 			scratch.direction.add(camera.orientation.right);
 		}
-		if (!this.debug)
-			scratch.direction.y = 0;
 		scratch.direction.norm();
 		
 		this.velocity.x = scratch.direction.x * speed;
-		this.velocity.y = this.debug ? scratch.direction.y * speed : this.velocity.y - 9.81 * dt;
+		this.velocity.y = this.velocity.y - 9.81 * dt;
 		this.velocity.z = scratch.direction.z * speed;
 		this.constrainVelocity(this.footPosition, this.velocity);
 
@@ -140,6 +215,10 @@ EASY.player = {
 		this.headPosition.copy(this.footPosition);
 		this.headPosition.y += this.PLAYER_HEIGHT;
 		camera.position.copy(this.headPosition);
+		
+		if (this.cooldown > 0) {
+			this.cooldown = Math.max(0, this.cooldown - dt);
+		}
 	},
 	
 	/**
@@ -236,6 +315,10 @@ EASY.player = {
 			case SOAR.KEY.S:
 				motion.moveback = true;
 				break;
+			case SOAR.KEY.SPACE:
+				if (that.footPosition.y === EASY.cave.getFloorHeight(that.footPosition.x, that.footPosition.z))
+					that.velocity.y += 5;
+				break;
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;
 				break;
@@ -243,19 +326,19 @@ EASY.player = {
 				that.camera = that.overhead;
 				break;
 			case SOAR.KEY.ONE:
-//				EASY.wordwall.spawn("excuse");
+				that.attack("excuse");
 				break;
 			case SOAR.KEY.TWO:
-//				EASY.wordwall.spawn("appease");
+				that.attack("appease");
 				break;
 			case SOAR.KEY.THREE:
-//				EASY.wordwall.spawn("flatter");
+				that.attack("flatter");
 				break;
 			case SOAR.KEY.FOUR:
-//				EASY.wordwall.spawn("blame");
+				that.attack("blame");
 				break;
 			case SOAR.KEY.FIVE:
-//				EASY.wordwall.spawn("confuse");
+				that.attack("confuse");
 				break;
 				
 // debugging keys -- remove in production release
@@ -367,8 +450,30 @@ EASY.player = {
 	**/
 	
 	collect: function(item) {
-		EASY.hud.log("Gathered " + item.text);
-		this.trash[item.type] = (this.trash[item.type] || 0) + 1;
+		EASY.hud.comment(this.COMMENTS.trash[item].pick());
+		this.trash[item] = (this.trash[item] || 0) + 1;
+	},
+
+	/**
+		attack the ghost if it's in earshot
+		and player isn't still cooling down
+		
+		@method attack
+		@param type string, attack type
+	**/
+	
+	attack: function(type) {
+	
+		if (this.cooldown > 0) {
+			EASY.hud.comment(this.COMMENTS.attack.notready.pick());
+		} else if (this.footPosition.distance(EASY.ghost.position) > this.ATTACK_DISTANCE) {
+			EASY.hud.comment(this.COMMENTS.attack.toofar.pick());
+		} else {
+			EASY.hud.comment(this.COMMENTS.attack[type].pick());
+			EASY.ghost.weaken(type);
+			this.cooldown = this.ATTACK_DELAY;
+		}
+	
 	},
 	
 	/**
@@ -379,7 +484,6 @@ EASY.player = {
 	**/
 	
 	weaken: function(damage) {
-	
 		this.resolve = Math.max(0, this.resolve - damage);
 		if (this.resolve === 0) {
 			EASY.hud.log("You Flee The Caves In Terror", "warning");

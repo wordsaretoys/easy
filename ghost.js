@@ -8,10 +8,35 @@
 EASY.ghost = {
 
 	RADIUS: 0.5,
+	ATTACK_DISTANCE: 5,
 	
 	WANDERING: 0,
 	ATTACKING: 1,
 	RESTING: 2,
+	
+	TRIBE: [ 
+		"Boothrede", "Clanmorgan", "Cowlberth", "Monkshockey", "Throckton", "Treblerath" 
+	],
+	REASON: [ 
+		"an Afflicted", "a Disgraced",  "a Disillusioned", "a Fanatical",  "an Introverted" 
+	],
+	TITLE: [
+		"Monk", "Dogsbody", "Illusionist", "Deacon", "Squire", "Conjurer",
+		"Priest", "Knight", "Enchanter", "Bishop", "Clanlord", "Mage", "Scholar"
+	],
+	STYLE: [ 
+		"Shade", "Phantom", "Spectre", "Wraith", "Revenant" 
+	],
+	
+	COMMENTS: {
+	
+		attack: {
+		
+			death: [
+				"Blood. Blood. Blood. Blood? Blood."
+			]
+		}
+	},				
 	
 	rating: {
 		excuse: 0,
@@ -87,7 +112,7 @@ EASY.ghost = {
 	
 	process: function() {
 		this.texture.noise = 
-			SOAR.texture.create(EASY.display, EASY.lookup.resources["noise2"].data);
+			SOAR.texture.create(EASY.display, EASY.resources["noise2"].data);
 	},
 	
 	/**
@@ -110,10 +135,10 @@ EASY.ghost = {
 		this.target.copy(this.position);
 		
 		// select title, trible, reason, and style of ghost
-		title = EASY.lookup.select("title");
-		tribe = EASY.lookup.select("tribe");
-		reason = EASY.lookup.select("reason");
-		style = EASY.lookup.select("style");
+		title = this.TITLE.pick();
+		tribe = this.TRIBE.pick();
+		reason = this.REASON.pick();
+		style = this.STYLE.pick();
 		
 		// generate an identity string
 		this.identity = style + " of " + reason + " " + title + " of " + tribe;
@@ -169,7 +194,7 @@ EASY.ghost = {
 		var pp = EASY.player.footPosition;
 		var dir = this.scratch.dir;
 		var dt = SOAR.interval * 0.001;
-		var hit, dam;
+		var hit, len;
 
 		switch(this.motion) {
 		
@@ -206,43 +231,31 @@ EASY.ghost = {
 			
 		case this.ATTACKING:
 		
-			// update target position if visible--remember,
-			// target is LAST KNOWN GOOD position of player
 			hit = this.lookFor(pp, this.RADIUS);
 			if (hit) {
+				// update target position if visible--remember,
+				// target is LAST KNOWN GOOD position of player
 				this.target.copy(pp);
 			}
+			len = dir.copy(this.target).sub(this.position).length();
 			
-			// weaken the player if inside area of effect
-			// cap damage using the ghost's resolve ratio
-			dam = SOAR.clamp(
-				(this.rating.effect - pp.distance(this.position)) / this.rating.effect,
-				0, this.resolve / this.rating.resolve
-			);
-			if (dam > 0) {
-				EASY.hud.weaken(dam * 0.75);
-				EASY.player.weaken(dam * dt);
-			}
-		
-			// if we haven't reached the target
-			// ( 1.1 instead of 1.0 because sometimes length === 1.00001... )
-			dir.copy(this.target).sub(this.position);
-			if (dir.length() > 1.1) {
+			if (len < this.ATTACK_DISTANCE && hit) {
+				// we're within earshot and can see the player
+				// don't move, attack if possible
+				//EASY.player.weaken(dam * dt);
+			} else if (len < 1.1 && !hit) {
+
+				// reached target and can't see the player?
+				// lost the bugger, so go back to wandering
+				EASY.hud.log("The " + this.identity + " Has Broken Off", "success");
+				this.motion = this.WANDERING;
 			
+			} else {
+
 				// fix velocity to point to target
 				dir.norm();
 				this.velocity.x = this.rating.speed * dir.x;
 				this.velocity.z = this.rating.speed * dir.z;
-				
-			} else {
-			
-				// reached the player's last spot and nothing's there?
-				// go back to wandering
-				if (!hit) {
-					EASY.hud.log("The " + this.identity + " Has Broken Off", "success");
-					this.motion = this.WANDERING;
-					EASY.hud.weaken(0);
-				}
 				
 			}
 

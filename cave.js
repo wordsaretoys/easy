@@ -13,6 +13,8 @@ EASY.cave = {
 	
 	MAX_AREAS: 7,
 	
+	texture: {},
+	
 	/**
 		create data objects, meshes, and shader programs
 		
@@ -46,6 +48,17 @@ EASY.cave = {
 			{ r: 0, g: 0, b: 0 },
 			{ r: 0, g: 0, b: 0 }
 		];
+	},
+	
+	/**
+		process loaded resources and perform any remaining initialization
+		
+		@method process
+	**/
+	
+	process: function() {
+		this.texture.noise = 
+			SOAR.texture.create(EASY.display, EASY.resources["noise1"].data);
 	},
 	
 	/**
@@ -262,22 +275,6 @@ EASY.cave = {
 	},
 
 	/**
-		process loaded resources and perform any remaining initialization
-		
-		@method process
-	**/
-	
-	process: function() {
-		var display = EASY.display;
-		var resources = EASY.lookup.resources;
-		
-		this.noise1Texture = 
-			SOAR.texture.create(display, resources["noise1"].data);
-		this.noise2Texture = 
-			SOAR.texture.create(display, resources["noise2"].data);
-	},
-	
-	/**
 		draw cave environment
 		
 		@method draw
@@ -298,7 +295,7 @@ EASY.cave = {
 		gl.uniform3f(shader.color0, palette[0].r, palette[0].g, palette[0].b);
 		gl.uniform3f(shader.color1, palette[1].r, palette[1].g, palette[1].b);
 		gl.uniform3f(shader.color2, palette[2].r, palette[2].g, palette[2].b);
-		this.noise1Texture.bind(0, shader.rock);
+		this.texture.noise.bind(0, shader.rock);
 		this.mesh.draw();
 
 		gl.disable(gl.CULL_FACE);
@@ -312,8 +309,7 @@ EASY.cave = {
 	
 	release: function() {
 		this.mesh.release();
-		this.noise1Texture.release();
-		this.noise2Texture.release();
+		this.texture.noise.release();
 	}
 
 };

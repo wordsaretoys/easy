@@ -10,6 +10,8 @@ EASY.trash = {
 	GRAB_DISTANCE: 1.5,
 	ITEM_CHANCE: 0.1,
 	
+	TYPE: [ "wood", "oil", "flesh", "cloth", "change" ],
+	
 	list: [],
 	texture: {},
 
@@ -20,9 +22,7 @@ EASY.trash = {
 	**/
 
 	init: function() {
-		var trash = EASY.lookup.trash;
 		var that = this;
-		var i, il, t;
 
 		this.shader = SOAR.shader.create(
 			EASY.display,
@@ -48,11 +48,6 @@ EASY.trash = {
 		);
 		
 		this.mesh.build();
-
-		// sort the trash table in order of increasing probability of discovery
-		trash.sort(function(a, b) {
-			return a.chance - b.chance;
-		});
 	},
 	
 	/**
@@ -62,19 +57,16 @@ EASY.trash = {
 	**/
 	
 	process: function() {
-		var display = EASY.display;
-		var resources = EASY.lookup.resources;
-		
-		this.texture["cloth"] = 
-			SOAR.texture.create(display, resources["cloth"].data);
-		this.texture["oil"] = 
-			SOAR.texture.create(display, resources["oil"].data);
-		this.texture["change"] = 
-			SOAR.texture.create(display, resources["change"].data);
-		this.texture["wood"] = 
-			SOAR.texture.create(display, resources["wood"].data);
-		this.texture["flesh"] = 
-			SOAR.texture.create(display, resources["flesh"].data);
+		this.texture.cloth = 
+			SOAR.texture.create(EASY.display, EASY.resources["cloth"].data);
+		this.texture.oil = 
+			SOAR.texture.create(EASY.display, EASY.resources["oil"].data);
+		this.texture.change = 
+			SOAR.texture.create(EASY.display, EASY.resources["change"].data);
+		this.texture.wood = 
+			SOAR.texture.create(EASY.display, EASY.resources["wood"].data);
+		this.texture.flesh = 
+			SOAR.texture.create(EASY.display, EASY.resources["flesh"].data);
 	},
 	
 	/**
@@ -84,8 +76,7 @@ EASY.trash = {
 	**/
 	
 	generate: function() {
-		var trash = EASY.lookup.trash;
-		var il = trash.length;
+		var il = this.TYPE.length;
 		var l = EASY.cave.LENGTH;
 		var i, x, z;
 
@@ -103,13 +94,13 @@ EASY.trash = {
 					for (i = 0; i < il; i++) {
 					
 						// if we make the roll for a particular item
-						if (Math.random() <= trash[i].chance) {
+						if (Math.random() <= this.ITEM_CHANCE) {
 							
 							// add the item to the list
 							this.list.push( {
 								center: SOAR.vector.create(x, 0.01, z),
 								active: true,
-								object: trash[i]
+								object: this.TYPE[i]
 							} );
 							
 							// that's all for this square
@@ -169,7 +160,7 @@ EASY.trash = {
 
 				center = item.center;
 				gl.uniform3f(shader.center, center.x, center.y, center.z);
-				this.texture[item.object.type].bind(0, shader.sign);
+				this.texture[item.object].bind(0, shader.sign);
 				this.mesh.draw();
 			}
 		}

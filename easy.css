@@ -47,14 +47,6 @@ div {
 	text-align: center;
 }
 
-.warning {
-	color: rgb(255, 0, 0);
-}
-
-.success {
-	color: rgb(0, 255, 0);
-}
-
 /* filter effects */
 
 #effects {
@@ -83,27 +75,40 @@ div {
 	cursor: default;
 }
 
-/* HUD message log */
+/* HUD commentary area */
 
-#log {
+#comment {
 	position: absolute;
-	top: 20px;
+	bottom: 104px;
 	left: 20px;
 	
-	width: 450px;
+	width: 550px;
 	
-	background: rgba(0, 0, 0, 0.5);
+	background: transparent;
 	color: white;
 	text-shadow: black 0.1em 0.1em 0.2em;
 	
 	overflow: hidden;
 
-	font-size: 12pt;
-	text-align: left;
-	font-variant: small-caps;
+	font-size: 20pt;
+	text-align: justified;
 
 	z-index: 5;
 }
+
+#comment div {
+	margin-top: 5px;
+}
+
+#comment div .player {
+	color: rgb(255, 255, 255);
+}
+
+#comment div .ghosty {
+	font-variant: small-caps;
+	color: rgb(255, 0, 0);
+}
+
 
 /* HUD legend */
 
@@ -116,7 +121,7 @@ div {
 	color: white;
 	text-shadow: black 0.1em 0.1em 0.2em;
 	
-	width: 450px;
+	width: 550px;
 	height: 74px;
 	
 	font-size: 12pt;
