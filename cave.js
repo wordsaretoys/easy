@@ -185,11 +185,13 @@ EASY.cave = {
 			this.getFloorHeight(this.area[0].x, this.area[0].y), 
 			this.area[0].y);
 
-		// update the palette
+		// update the palette with a random walk through color space
 		(function() {
 			var i, il;
 			for (i = 0, il = that.palette.length; i < il; i++) {
-				that.palette[i] = 0.5 + 0.5 * rng.get();
+				that.palette[i] = SOAR.clamp(
+					(that.palette[i] || 0.5 + 0.5 * Math.random()) +
+					0.1 * (Math.random() - Math.random()), 0.5, 1);
 			}
 		})();
 
