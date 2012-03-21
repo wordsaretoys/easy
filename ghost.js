@@ -121,9 +121,6 @@ EASY.ghost = {
 	**/
 
 	init: function() {
-		var cntx = EASY.texture.context;
-		var w = EASY.texture.canvas.width;
-		var h = EASY.texture.canvas.height;
 		var that = this;
 
 		this.shader = SOAR.shader.create(

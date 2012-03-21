@@ -151,8 +151,9 @@ EASY.player = {
 			SOAR.camera.BOUND_ROTATION);
 		this.eyeview.nearLimit = 0.01;
 		this.eyeview.farLimit = 100;
+		this.eyeview.mapView = false;
 
-		// create a free camera for overhead views
+		// create an overhead free camera for map viewing
 		this.overhead = SOAR.camera.create(
 			EASY.display,
 			SOAR.camera.FREE_ROTATION);
@@ -161,13 +162,13 @@ EASY.player = {
 		this.overhead.position.set(
 			EASY.cave.LENGTH * 0.5, 75, EASY.cave.LENGTH * 0.5);
 		this.overhead.turn(SOAR.PIDIV2, 0, 0);
+		this.overhead.mapView = true;
 		
 		// default camera to player view
 		this.camera = this.eyeview;
 		
 		// init player state
 		this.resolve = this.MAX_RESOLVE;
-
 	},
 	
 	/**
@@ -185,9 +186,6 @@ EASY.player = {
 		var scratch = this.scratch;
 		var motion = this.motion;
 		var camera = this.camera;
-		
-		if (camera === this.overhead)
-			return;
 		
 		scratch.direction.set();
 		if (motion.movefore) {
@@ -330,6 +328,7 @@ EASY.player = {
 				break;
 			case SOAR.KEY.Q:
 				that.camera = that.overhead;
+				EASY.updating = false;
 				break;
 			case SOAR.KEY.ONE:
 				that.attack("excuse");
@@ -390,6 +389,8 @@ EASY.player = {
 				break;
 			case SOAR.KEY.Q:
 				that.camera = that.eyeview;
+				EASY.updating = true;
+				that.mouse.invalid = true;
 				break;
 		}
 	},
@@ -432,16 +433,14 @@ EASY.player = {
 		var that = EASY.player;
 		var dx, dy;
 
-		if (that.camera === that.overhead)
-			return;
-
-		if (that.mouse.down) {
+		if (that.mouse.down && !that.camera.mapView && !that.mouse.invalid) {
 			dx = that.SPIN_RATE * (event.pageX - that.mouse.x);
 			dy = that.SPIN_RATE * (event.pageY - that.mouse.y);
 			that.camera.turn(-dx, -dy);
 		}
 		that.mouse.x = event.pageX;
 		that.mouse.y = event.pageY;
+		that.mouse.invalid = false;
 		return false;
 	},
 	

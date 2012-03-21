@@ -39,6 +39,8 @@ var EASY = {
 			path: "res/cloth.png"
 		}
 	},
+	
+	updating: true,
 
 	/**
 		create GL context, set up game objects, load resources, run main loop
@@ -150,9 +152,11 @@ var EASY = {
 	**/
 	
 	update: function() {
-		EASY.player.update();
-		EASY.trash.update();
-		EASY.ghost.update();
+		if (EASY.updating) {
+			EASY.player.update();
+			EASY.trash.update();
+			EASY.ghost.update();
+		}
 	},
 
 	/**

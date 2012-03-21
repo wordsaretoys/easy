@@ -14,6 +14,7 @@ EASY.trash = {
 	
 	list: [],
 	texture: {},
+	dummymt: new Float32Array(16),
 
 	/**
 		create and init required objects
@@ -28,7 +29,7 @@ EASY.trash = {
 			EASY.display,
 			SOAR.textOf("vs-trash"), SOAR.textOf("fs-trash"),
 			["position", "texturec"], 
-			["projector", "modelview", "center"],
+			["projector", "modelview", "rotations", "center"],
 			["sign"]
 		);
 		
@@ -48,6 +49,27 @@ EASY.trash = {
 		);
 		
 		this.mesh.build();
+		
+		// build a pointer image for the player
+		(function() {
+			var cntx = EASY.texture.context;
+			var w = EASY.texture.canvas.width;
+			var h = EASY.texture.canvas.height;
+			cntx.clearRect(0, 0, w, h);
+			cntx.fillStyle = "rgb(255, 255, 255)"
+			cntx.strokeStyle = "rgb(0, 0, 0)";
+			cntx.lineWidth = 3;
+			cntx.beginPath();
+			cntx.moveTo(w / 2, h);
+			cntx.lineTo(0, 0);
+			cntx.lineTo(w / 2, h / 4);
+			cntx.lineTo(w, 0);
+			cntx.lineTo(w / 2, h);
+			cntx.fill();
+			cntx.stroke();
+			that.texture.player = 
+				SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h));
+		})();
 	},
 	
 	/**
@@ -150,20 +172,35 @@ EASY.trash = {
 
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-		
+
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+		gl.uniformMatrix4fv(shader.rotations, true, this.dummymt);
 
 		for (i = 0, il = this.list.length; i < il; i++) {
 			item = this.list[i];
 			if (item.active) {
-
 				center = item.center;
 				gl.uniform3f(shader.center, center.x, center.y, center.z);
 				this.texture[item.object].bind(0, shader.sign);
 				this.mesh.draw();
 			}
+		}
+		
+		// a bit of a hack: display the player location in mapview
+		// this would have gone in the player object but that meant
+		// adding another shader and mesh and so on; this is simpler
+		if (camera.mapView) {
+			camera = EASY.player.eyeview;
+			camera.yaw.w = -camera.yaw.w;
+			camera.yaw.toMatrix(this.dummymt);
+			camera.yaw.w = -camera.yaw.w;
+			gl.uniformMatrix4fv(shader.rotations, false, this.dummymt);
+			center = EASY.player.headPosition;
+			gl.uniform3f(shader.center, center.x, center.y, center.z);
+			this.texture.player.bind(0, shader.sign);
+			this.mesh.draw();
 		}
 		
 		gl.disable(gl.BLEND);

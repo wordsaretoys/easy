@@ -27,7 +27,7 @@ EASY.cave = {
 			EASY.display,
 			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave"),
 			["position", "texturec"],
-			["projector", "modelview", "color0", "color1", "color2"],
+			["projector", "modelview", "color0", "color1", "color2", "torch"],
 			["rock"]
 		);
 		
@@ -48,6 +48,9 @@ EASY.cave = {
 			{ r: 0, g: 0, b: 0 },
 			{ r: 0, g: 0, b: 0 }
 		];
+		
+		this.MIDDLE = this.WALL_HEIGHT - this.SEPARATION;
+		this.CEILING = this.MIDDLE * 2;
 	},
 	
 	/**
@@ -156,23 +159,21 @@ EASY.cave = {
 		// generate the triangle mesh
 		this.mesh.reset();
 		var that = this;
-		var zero = this.WALL_HEIGHT - this.SEPARATION;
-		var ceil = zero * 2;
 		SOAR.subdivide(6, 0, 0, this.LENGTH, this.LENGTH,
 		function(x0, z0, x1, z1, x2, z2) {
 			var y0 = that.getFloorHeight(x0, z0);
 			var y1 = that.getFloorHeight(x1, z1);
 			var y2 = that.getFloorHeight(x2, z2);
 	
-			if (!(y0 > zero && y1 > zero && y2 > zero)) {
+			if (!(y0 > that.MIDDLE && y1 > that.MIDDLE && y2 > that.MIDDLE)) {
 
 				that.mesh.set(x0, y0, z0, x0, z0);
 				that.mesh.set(x1, y1, z1, x1, z1);
 				that.mesh.set(x2, y2, z2, x2, z2);
 
-				y0 = ceil - y0;
-				y1 = ceil - y1;
-				y2 = ceil - y2;
+				y0 = that.CEILING - y0;
+				y1 = that.CEILING - y1;
+				y2 = that.CEILING - y2;
 
 				that.mesh.set(x0, y0, z0, x0, z0);
 				that.mesh.set(x2, y2, z2, x2, z2);
@@ -295,6 +296,7 @@ EASY.cave = {
 		gl.uniform3f(shader.color0, palette[0].r, palette[0].g, palette[0].b);
 		gl.uniform3f(shader.color1, palette[1].r, palette[1].g, palette[1].b);
 		gl.uniform3f(shader.color2, palette[2].r, palette[2].g, palette[2].b);
+		gl.uniform1i(shader.torch, camera.mapView ? 0 : 1);
 		this.texture.noise.bind(0, shader.rock);
 		this.mesh.draw();
 

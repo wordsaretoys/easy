@@ -44,6 +44,7 @@ void main(void) {
 	@param color0 	color in RGB format 
 	@param color1 	color in RGB format 
 	@param color2 	color in RGB format 
+	@param torch	1 to activate torch
 
 	@param uv		texture coordinates of fragment
 	@param object	position in object coordinates
@@ -57,6 +58,7 @@ uniform sampler2D rock;
 uniform vec3 color0;
 uniform vec3 color1;
 uniform vec3 color2;
+uniform int torch;
 
 varying vec2 uv;
 varying vec4 object;
@@ -64,10 +66,14 @@ varying vec4 relobj;
 
 void main(void) {
 
+	// makes the cave floor dark and the ceiling bright
 	float hl = (object.y + 0.5) / 6.0;
+	// makes the entrance and exit areas fade into darkness
 	float ll = 1.0 - pow(clamp( abs(32.0 - object.z) / 32.0, 0.0, 1.0), 2.0);
+	// creates a torch effect around the player
+	// (in map display, don't want this effect)
 	float fl = 1.0;
-	if (length(relobj) < 64.0) {
+	if (torch == 1) {
 		fl = clamp((32.0 - length(relobj)) / 32.0, 0.0, 1.0);
 	}
 	vec3 rocktex = 	texture2D(rock, uv * 0.005).r * color0 +
@@ -101,12 +107,13 @@ attribute vec2 texturec;
 
 uniform mat4 projector;
 uniform mat4 modelview;
+uniform mat4 rotations;
 uniform vec3 center;
 
 varying vec2 uv;
 
 void main(void) {
-	gl_Position = projector * modelview * vec4(position + center, 1.0);
+	gl_Position = projector * modelview * (rotations * vec4(position, 1.0) + vec4(center, 0.0));
 	uv = texturec;
 }
 
@@ -130,14 +137,7 @@ uniform sampler2D sign;
 varying vec2 uv;
 
 void main(void) {
-	vec4 signColor = texture2D(sign, uv);
-
-	// generate a glow around the periphery
-	vec2 obj = 2.0 * (uv - 0.5);
-	float alpha = 0.1 - 0.1 * clamp( abs(length(obj) - 0.8) / 0.2, 0.0, 1.0);
-	vec4 ringColor = vec4(1.0, 1.0, 1.0, alpha);
-	
-	gl_FragColor = signColor;
+	gl_FragColor = texture2D(sign, uv);
 }
 
 </script>
