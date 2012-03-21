@@ -27,7 +27,7 @@ EASY.cave = {
 			EASY.display,
 			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave"),
 			["position", "texturec"],
-			["projector", "modelview", "color0", "color1", "color2", "torch"],
+			["projector", "modelview", "color", "torch"],
 			["rock"]
 		);
 		
@@ -43,11 +43,7 @@ EASY.cave = {
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 
-		this.palette = [
-			{ r: 0, g: 0, b: 0 },
-			{ r: 0, g: 0, b: 0 },
-			{ r: 0, g: 0, b: 0 }
-		];
+		this.palette = [ 0, 0, 0,  0, 0, 0,  0, 0, 0 ];
 		
 		this.MIDDLE = this.WALL_HEIGHT - this.SEPARATION;
 		this.CEILING = this.MIDDLE * 2;
@@ -193,9 +189,7 @@ EASY.cave = {
 		(function() {
 			var i, il;
 			for (i = 0, il = that.palette.length; i < il; i++) {
-				that.palette[i].r = 0.5 + 0.5 * rng.get();
-				that.palette[i].g = 0.5 + 0.5 * rng.get();
-				that.palette[i].b = 0.5 + 0.5 * rng.get();
+				that.palette[i] = 0.5 + 0.5 * rng.get();
 			}
 		})();
 
@@ -293,9 +287,7 @@ EASY.cave = {
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		gl.uniform3f(shader.color0, palette[0].r, palette[0].g, palette[0].b);
-		gl.uniform3f(shader.color1, palette[1].r, palette[1].g, palette[1].b);
-		gl.uniform3f(shader.color2, palette[2].r, palette[2].g, palette[2].b);
+		gl.uniform3fv(shader.color, palette);
 		gl.uniform1i(shader.torch, camera.mapView ? 0 : 1);
 		this.texture.noise.bind(0, shader.rock);
 		this.mesh.draw();

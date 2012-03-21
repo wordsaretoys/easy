@@ -55,9 +55,7 @@ void main(void) {
 precision mediump float;
  
 uniform sampler2D rock;
-uniform vec3 color0;
-uniform vec3 color1;
-uniform vec3 color2;
+uniform vec3 color[3];
 uniform int torch;
 
 varying vec2 uv;
@@ -76,9 +74,9 @@ void main(void) {
 	if (torch == 1) {
 		fl = clamp((32.0 - length(relobj)) / 32.0, 0.0, 1.0);
 	}
-	vec3 rocktex = 	texture2D(rock, uv * 0.005).r * color0 +
-					texture2D(rock, uv * 0.05).r * color1 +
-					texture2D(rock, uv * 0.5).r  * color2;
+	vec3 rocktex = 	texture2D(rock, uv * 0.005).r * color[0] +
+					texture2D(rock, uv * 0.05).r * color[1] +
+					texture2D(rock, uv * 0.5).r  * color[2];
 	gl_FragColor = vec4(fl * ll * hl * rocktex, 1.0);
 }
 
