@@ -11,8 +11,9 @@ EASY.player = {
 	SPIN_RATE: -0.007,
 	NORMAL_SPEED: 4,
 	SPRINT_SPEED: 10,
-	PLAYER_HEIGHT: 1.5,
+	HEIGHT: 1.5,
 	MAX_RESOLVE: 50,
+	RECOVERY_RATE: 0.5,
 	ATTACK_DELAY: 2,
 	ATTACK_DISTANCE: 6,
 	
@@ -213,11 +214,16 @@ EASY.player = {
 		this.constrainPosition(this.footPosition);
 
 		this.headPosition.copy(this.footPosition);
-		this.headPosition.y += this.PLAYER_HEIGHT;
+		this.headPosition.y += this.HEIGHT;
 		camera.position.copy(this.headPosition);
 		
 		if (this.cooldown > 0) {
 			this.cooldown = Math.max(0, this.cooldown - dt);
+		}
+		
+		if (this.resolve < this.MAX_RESOLVE && EASY.ghost.motion !== EASY.ghost.ATTACKING) {
+			this.resolve = Math.min(this.resolve + this.RECOVERY_RATE * dt, this.MAX_RESOLVE);
+			EASY.hud.setPlayerResolve(this.resolve / this.MAX_RESOLVE);
 		}
 	},
 	
@@ -251,7 +257,7 @@ EASY.player = {
 		v.add(down);
 
 		// don't let player's head go above the wall
-		if (p.y >= EASY.cave.WALL_HEIGHT - this.PLAYER_HEIGHT - 0.5) {
+		if (p.y >= EASY.cave.WALL_HEIGHT - this.HEIGHT - 0.5) {
 			v.x = down.x;
 			v.z = down.z;
 		}
@@ -447,8 +453,13 @@ EASY.player = {
 	**/
 	
 	collect: function(item) {
-		EASY.hud.comment(this.COMMENTS.trash[item].pick());
-		this.trash[item] = (this.trash[item] || 0) + 1;
+		var type = item.object;
+		var num = item.number;
+		EASY.hud.comment(this.COMMENTS.trash[type].pick());
+		this.trash[type] = (this.trash[type] || 0) + num;
+		if (type === "change") {
+			EASY.hud.setPlayerMoney(this.trash[type]);
+		}
 	},
 
 	/**
@@ -482,6 +493,7 @@ EASY.player = {
 	
 	weaken: function(damage) {
 		this.resolve = Math.max(0, this.resolve - damage);
+		EASY.hud.setPlayerResolve(this.resolve / this.MAX_RESOLVE);
 		if (this.resolve === 0) {
 			EASY.hud.log("You Flee The Caves In Terror", "warning");
 			SOAR.running = false;

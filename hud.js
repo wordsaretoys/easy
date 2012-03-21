@@ -27,7 +27,10 @@ EASY.hud = {
 			comment: jQuery("#comment"),
 			effects: jQuery("#effects"),
 			tracker: jQuery("#tracker"),
-			message: jQuery("#message")
+			message: jQuery("#message"),
+			
+			playerResolve: jQuery("#player-resolve"),
+			money: jQuery("#money")
 		};
 
 		this.dom.window.bind("resize", this.resize);			
@@ -170,6 +173,28 @@ EASY.hud = {
 	
 	weaken: function(rate) {
 		this.dom.effects.css("background-color", "rgba(255, 0, 0, " + rate + ")" );
+	},
+	
+	/**
+		sets player resolve display
+		
+		@method setPlayerResolve
+		@param pc number, resolve as fraction of total
+	**/
+	
+	setPlayerResolve: function(pc) {
+		this.dom.playerResolve.css("width", Math.floor(pc * 100) + "%");
+	},
+	
+	/**
+		sets player money display
+		
+		@method setPlayerMoney
+		@param n number, total amount of money
+	**/
+	
+	setPlayerMoney: function(n) {
+		this.dom.money.html(n);
 	},
 	
 	/**

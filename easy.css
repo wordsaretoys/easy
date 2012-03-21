@@ -118,9 +118,8 @@ div {
 
 	background: rgba(0, 0, 0, 0.5);
 	color: white;
-	text-shadow: black 0.1em 0.1em 0.2em;
 	
-	width: 550px;
+	width: 500px;
 	height: 74px;
 	
 	font-size: 12pt;
@@ -141,6 +140,46 @@ div {
 	margin-bottom: 8px;
 }
 
+/* HUD outcomes/readouts */
+
+#outcome {
+
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
+	
+	width: 200px;
+	height: 74px;
+	
+	font-size: 12pt;
+	font-variant: small-caps;
+	
+	padding: 2px;
+
+	z-index: 5;
+}
+
+#outcome .section {
+	margin-bottom: 8px;
+}
+
+#outcome .box {
+	margin-top: 4px;
+	width: 120px;
+	height: 12px;
+	float: right;
+	overflow: hidden;
+}
+
+#player-resolve {
+	background-color: rgb(255, 255, 0);
+	width: 100%;
+	height: 12px;
+	float: right;
+}
 
 /* mouse tracking surface */
 

@@ -76,6 +76,10 @@ EASY.ghost = {
 		
 		travel: [
 			"I have my own troubles. Begone."
+		],
+		
+		fled: [
+			"Gone. I feel oddly disappointed."
 		]
 			
 	},				
@@ -296,7 +300,7 @@ EASY.ghost = {
 
 				// reached target and can't see the player?
 				// lost the bugger, so go back to wandering
-				EASY.hud.log("The " + this.identity + " Has Broken Off", "success");
+				EASY.hud.comment(this.COMMENTS.fled.pick(), "ghosty");
 				this.motion = this.WANDERING;
 			
 			} else {

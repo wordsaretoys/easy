@@ -100,7 +100,8 @@ EASY.trash = {
 							this.list.push( {
 								center: SOAR.vector.create(x, 0.01, z),
 								active: true,
-								object: this.TYPE[i]
+								object: this.TYPE[i],
+								number: 1 + Math.floor(5 * Math.random())
 							} );
 							
 							// that's all for this square
@@ -128,7 +129,7 @@ EASY.trash = {
 				d = pp.distance(item.center);
 				if (d < this.GRAB_DISTANCE) {
 					item.active = false;
-					EASY.player.collect(item.object);
+					EASY.player.collect(item);
 				}
 			}
 		}
