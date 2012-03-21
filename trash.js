@@ -176,7 +176,8 @@ EASY.trash = {
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		gl.uniformMatrix4fv(shader.rotations, true, this.dummymt);
+		this.dummymt.set(EASY.idmat);
+		gl.uniformMatrix4fv(shader.rotations, false, this.dummymt);
 
 		for (i = 0, il = this.list.length; i < il; i++) {
 			item = this.list[i];
@@ -191,6 +192,7 @@ EASY.trash = {
 		// a bit of a hack: display the player location in mapview
 		// this would have gone in the player object but that meant
 		// adding another shader and mesh and so on; this is simpler
+		// the yaw.w negation implements a cheeky matrix transpose!
 		if (camera.mapView) {
 			camera = EASY.player.eyeview;
 			camera.yaw.w = -camera.yaw.w;
