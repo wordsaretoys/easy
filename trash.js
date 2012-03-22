@@ -8,10 +8,30 @@
 EASY.trash = {
 
 	GRAB_DISTANCE: 1.5,
-	ITEM_CHANCE: 0.1,
 	
-	TYPE: [ "wood", "oil", "flesh", "cloth", "change" ],
-	
+	ITEM: [ 
+		{ 
+			type: "wood",
+			pc: 0.05
+		},
+		{
+			type: "oil",
+			pc: 0.03
+		},
+		{
+			type: "flesh",
+			pc: 0.1
+		},
+		{
+			type: "cloth",
+			pc: 0.05
+		},
+		{
+			type: "change",
+			pc: 0.05
+		}
+	],
+
 	list: [],
 	texture: {},
 	dummymt: new Float32Array(16),
@@ -79,16 +99,12 @@ EASY.trash = {
 	**/
 	
 	process: function() {
-		this.texture.cloth = 
-			SOAR.texture.create(EASY.display, EASY.resources["cloth"].data);
-		this.texture.oil = 
-			SOAR.texture.create(EASY.display, EASY.resources["oil"].data);
-		this.texture.change = 
-			SOAR.texture.create(EASY.display, EASY.resources["change"].data);
-		this.texture.wood = 
-			SOAR.texture.create(EASY.display, EASY.resources["wood"].data);
-		this.texture.flesh = 
-			SOAR.texture.create(EASY.display, EASY.resources["flesh"].data);
+		var i, il, type;
+		for (i = 0, il = this.ITEM.length; i < il; i++) {
+			type = this.ITEM[i].type;
+			this.texture[type] = 
+				SOAR.texture.create(EASY.display, EASY.resources[type].data);
+		}
 	},
 	
 	/**
@@ -98,39 +114,47 @@ EASY.trash = {
 	**/
 	
 	generate: function() {
-		var il = this.TYPE.length;
 		var l = EASY.cave.LENGTH;
-		var i, x, z;
+		var flat = [];
+		var i, il, j, fl;
+		var x, z, c, p;
 
 		this.list.length = 0;
 		
-		// for each square of the map
-		for (x = 0; x < l; x++) {
-			for (z = 0; z < l; z++) {
-			
-				// if there's a nice flat 1m square area
-				// and we make the roll for an item in it
-				if (EASY.cave.isFlat(x, z, 1) && Math.random() <= this.ITEM_CHANCE) {
-				
-					// run through all possible trash items
-					for (i = 0; i < il; i++) {
-					
-						// if we make the roll for a particular item
-						if (Math.random() <= this.ITEM_CHANCE) {
-							
-							// add the item to the list
-							this.list.push( {
-								center: SOAR.vector.create(x, 0.01, z),
-								active: true,
-								object: this.TYPE[i],
-								number: 1 + Math.floor(5 * Math.random())
-							} );
-							
-							// that's all for this square
-							break;
-						}
-					}
+		// find all flat 1m square areas of the map
+		// that aren't touching each other directly
+		for (x = 0.5; x < l; x += 2) {
+			for (z = 0.5; z < l; z += 2) {
+				if (EASY.cave.isFlat(x, z, 0.5)) {
+					flat.push( {
+						x: x, 
+						z: z
+					} );
 				}
+			}
+		}
+		
+		// shuffle the flats array into random order
+		flat.sort(function(a, b) {
+			return Math.floor(3 * Math.random()) - 1;
+		});
+		fl = flat.length;
+		console.log(fl);
+		
+		// for each item type
+		for (i = 0, il = this.ITEM.length; i < il; i++) {
+		
+			// determine count and allocate that number of items
+			c = Math.ceil(fl * this.ITEM[i].pc);
+			console.log(this.ITEM[i].type + ", " + c);
+			for (j = 0; j < c && flat.length > 0; j++) {
+				p = flat.pop();
+				this.list.push( {
+					center: SOAR.vector.create(p.x, 0.01, p.z),
+					active: true,
+					object: this.ITEM[i].type,
+					number: 1 + Math.floor(5 * Math.random())
+				} );
 			}
 		}
 	},

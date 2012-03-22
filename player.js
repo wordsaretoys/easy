@@ -166,8 +166,22 @@ EASY.player = {
 		
 		// default camera to player view
 		this.camera = this.eyeview;
+	},
+	
+	/**
+		(re)generate player position and state
 		
-		// init player state
+		@method generate
+	**/
+	
+	generate: function() {
+		var x, z;
+		// place the player at the cave entrance
+		x = EASY.cave.area[0].x;
+		z = EASY.cave.area[0].y;
+		this.footPosition.set(x, EASY.cave.getFloorHeight(x, z), z);
+
+		// reset state
 		this.resolve = this.MAX_RESOLVE;
 	},
 	

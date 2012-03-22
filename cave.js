@@ -180,11 +180,6 @@ EASY.cave = {
 		// build the GL object (retain memory buffer for next generation)
 		this.mesh.build(true);
 		
-		// place the player at the entrance
-		EASY.player.footPosition.set(this.area[0].x, 
-			this.getFloorHeight(this.area[0].x, this.area[0].y), 
-			this.area[0].y);
-
 		// update the palette with a random walk through color space
 		(function() {
 			var i, il;

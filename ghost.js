@@ -170,11 +170,9 @@ EASY.ghost = {
 		var title, tribe, reason, level;
 		var x, y, z;
 
-		// pick a nice flat space for the starting point
-		// TODO: this will be changed
+		// start the ghost at the cave exit
 		x = EASY.cave.area[6].x;
 		z = EASY.cave.area[6].y;
-	
 		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.target.copy(this.position);
 		

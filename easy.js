@@ -136,7 +136,7 @@ var EASY = {
 	},
 	
 	/**
-		generate all necessary game objects on chamber exit
+		(re)generate all necessary game state for a new map
 		
 		@method generate
 	**/
@@ -145,6 +145,7 @@ var EASY = {
 		EASY.cave.generate();
 		EASY.trash.generate();
 		EASY.ghost.generate();
+		EASY.player.generate();
 	},
 	
 	/**
