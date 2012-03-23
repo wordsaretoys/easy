@@ -91,7 +91,6 @@ EASY.ghost = {
 		blame: 0,
 		confuse: 0,
 		speed: 0,
-		effect: 0,
 		resolve: 0,
 		recovery: 0
 	},
@@ -187,7 +186,6 @@ EASY.ghost = {
 		
 		// generate ratings and susceptibility modifiers
 		this.rating.speed = 2.5 + Math.floor(1.5 * Math.random());
-		this.rating.effect = 5 + Math.floor(10 * Math.random());
 		this.rating.resolve = 10 + Math.floor(20 * Math.random());
 		this.rating.recovery = 0.1 + Math.random();
 		
@@ -359,7 +357,7 @@ EASY.ghost = {
 	},
 	
 	/**
-		handle damage caused by the word wall
+		handle weakening of resolve
 		
 		@method weaken
 		@param attack string, the attack type

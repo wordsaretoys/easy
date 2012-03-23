@@ -47,20 +47,6 @@ div {
 	text-align: center;
 }
 
-/* filter effects */
-
-#effects {
-
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	
-	background: transparent;
-	z-index: 1;
-	
-	cursor: default;
-}
-
 /* debug information */
 
 #debug {
