@@ -19,10 +19,6 @@ EASY.trash = {
 			pc: 0.03
 		},
 		{
-			type: "flesh",
-			pc: 0.1
-		},
-		{
 			type: "cloth",
 			pc: 0.05
 		},
@@ -53,10 +49,7 @@ EASY.trash = {
 			["sign"]
 		);
 		
-		this.rng = SOAR.random.create();
-		
 		this.mesh = SOAR.mesh.create(EASY.display);
-
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 		
@@ -115,38 +108,17 @@ EASY.trash = {
 	
 	generate: function() {
 		var l = EASY.cave.LENGTH;
-		var flat = [];
-		var i, il, j, fl;
-		var x, z, c, p;
+		var flat = EASY.cave.flat;
+		var i, il, j, fl, c, p;
 
 		this.list.length = 0;
-		
-		// find all flat 1m square areas of the map
-		// that aren't touching each other directly
-		for (x = 0.5; x < l; x += 2) {
-			for (z = 0.5; z < l; z += 2) {
-				if (EASY.cave.isFlat(x, z, 0.5)) {
-					flat.push( {
-						x: x, 
-						z: z
-					} );
-				}
-			}
-		}
-		
-		// shuffle the flats array into random order
-		flat.sort(function(a, b) {
-			return Math.floor(3 * Math.random()) - 1;
-		});
 		fl = flat.length;
-		console.log(fl);
 		
 		// for each item type
 		for (i = 0, il = this.ITEM.length; i < il; i++) {
 		
 			// determine count and allocate that number of items
 			c = Math.ceil(fl * this.ITEM[i].pc);
-			console.log(this.ITEM[i].type + ", " + c);
 			for (j = 0; j < c && flat.length > 0; j++) {
 				p = flat.pop();
 				this.list.push( {
@@ -200,8 +172,7 @@ EASY.trash = {
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		this.dummymt.set(EASY.idmat);
-		gl.uniformMatrix4fv(shader.rotations, false, this.dummymt);
+		gl.uniformMatrix4fv(shader.rotations, false, EASY.I);
 
 		for (i = 0, il = this.list.length; i < il; i++) {
 			item = this.list[i];

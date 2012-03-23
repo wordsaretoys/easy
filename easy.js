@@ -32,7 +32,7 @@ var EASY = {
 		},
 		flesh: {
 			type: "image",
-			path: "res/flesh.png"
+			path: "res/corpse.jpg"
 		},
 		cloth: {
 			type: "image",
@@ -40,7 +40,7 @@ var EASY = {
 		}
 	},
 	
-	idmat: [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1],
+	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
 	updating: true,
 
@@ -62,7 +62,7 @@ var EASY = {
 			return;
 		}
 
-		// add any useful shims
+		// add any useful polyfills
 		Array.prototype.pick = function() {
 			return this[Math.floor(Math.random() * this.length)];
 		};
@@ -92,6 +92,7 @@ var EASY = {
 		EASY.hud.init();
 		EASY.trash.init();
 		EASY.ghost.init();
+		EASY.corpse.init();
 		
 		EASY.hud.darken(EASY.hud.waitMsg);
 		
@@ -104,6 +105,7 @@ var EASY = {
 			EASY.cave.process();
 			EASY.trash.process();
 			EASY.ghost.process();
+			EASY.corpse.process();
 			
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
@@ -117,15 +119,7 @@ var EASY = {
 				// always draw if the canvas dimensions are changed
 				EASY.draw();
 			}, false);
-/*			
-			TODO: fix this, seems to be causing crashes at pageload
 
-			// always release GL resources if page is refreshed
-			window.addEventListener("beforeunload", function() {
-				EASY.chamber.release();
-				EASY.bush.release();
-			}, false);
-*/			
 			SOAR.run();
 			
 			EASY.hud.lighten();
@@ -143,6 +137,7 @@ var EASY = {
 	
 	generate: function() {
 		EASY.cave.generate();
+		EASY.corpse.generate();
 		EASY.trash.generate();
 		EASY.ghost.generate();
 		EASY.player.generate();
@@ -182,6 +177,7 @@ var EASY = {
 		if (!EASY.hideCave)
 			EASY.cave.draw();
 		EASY.trash.draw();
+		EASY.corpse.draw();
 		EASY.ghost.draw();
 	},
 

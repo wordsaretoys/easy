@@ -508,7 +508,7 @@ EASY.player = {
 		this.resolve = Math.max(0, this.resolve - damage);
 		EASY.hud.setPlayerResolve(this.resolve / this.MAX_RESOLVE);
 		if (this.resolve === 0) {
-			EASY.hud.log("You Flee The Caves In Terror", "warning");
+			// TODO: add credit sequence?
 			SOAR.running = false;
 		}
 	}

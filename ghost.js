@@ -130,8 +130,6 @@ EASY.ghost = {
 			["noise"]
 		);
 		
-		this.rng = SOAR.random.create();
-
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);

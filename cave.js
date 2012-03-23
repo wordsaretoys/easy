@@ -14,6 +14,9 @@ EASY.cave = {
 	MAX_AREAS: 7,
 	
 	texture: {},
+
+	area: [],
+	flat: [],
 	
 	/**
 		create data objects, meshes, and shader programs
@@ -37,8 +40,6 @@ EASY.cave = {
 			1
 		);
 		
-		this.rng = SOAR.random.create();
-	
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
@@ -68,10 +69,8 @@ EASY.cave = {
 	
 	generate: function() {
 		var map = this.map;
-		var rng = this.rng;
 		var l = this.LENGTH;
-		var hl = l * 0.5;
-		var ql = hl * 0.5;
+		var that = this;
 	
 		// wipe the canvas
 		map.context.fillStyle = "rgb(255, 0, 0)";
@@ -97,8 +96,8 @@ EASY.cave = {
 					map.context.fillStyle = "rgba(0, 0, 0, 0.01)";
 				}
 
-				dx = rng.get() - rng.get();
-				dy = rng.get() - rng.get();
+				dx = Math.random() - Math.random();
+				dy = Math.random() - Math.random();
 				d = Math.sqrt(dx * dx + dy * dy);
 				x += 0.5 * dx / d;
 				y += 0.5 * dy / d;
@@ -119,23 +118,25 @@ EASY.cave = {
 		}
 		
 		// generate areas of interest
-		this.area = [];
-		var i, il, a;
-		for (i = 0; i < 7; i++) {
-			this.area[i] = {
-				x: 5 + (l - 10) * rng.get(),
-				y: 5 + (l - 10) * rng.get()
+		(function() {
+			var i, il;
+			that.area.length = 0;
+			for (i = 0; i < 7; i++) {
+				that.area[i] = {
+					x: 5 + (l - 10) * Math.random(),
+					y: 5 + (l - 10) * Math.random()
+				}
 			}
-		}
-		// areas near entrance and exit are special cases
-		this.area[0].y = l - 5;
-		this.area[6].y = 5;
-		
-		// generate paths between areas
-		for	(i = 1, il = this.area.length; i < il; i++) {
-			drawPath(this.area[i - 1].x, this.area[i - 1].y, 
-				this.area[i].x, this.area[i].y);
-		}
+			// areas near entrance and exit are special cases
+			that.area[0].y = l - 5;
+			that.area[6].y = 5;
+			
+			// generate paths between areas
+			for	(i = 1, il = that.area.length; i < il; i++) {
+				drawPath(that.area[i - 1].x, that.area[i - 1].y, 
+					that.area[i].x, that.area[i].y);
+			}
+		})();
 		
 		// force entrance and exit tunnels
 		map.context.strokeStyle = "rgba(0, 0, 0, 0.75)";
@@ -154,7 +155,6 @@ EASY.cave = {
 		
 		// generate the triangle mesh
 		this.mesh.reset();
-		var that = this;
 		SOAR.subdivide(6, 0, 0, this.LENGTH, this.LENGTH,
 		function(x0, z0, x1, z1, x2, z2) {
 			var y0 = that.getFloorHeight(x0, z0);
@@ -188,6 +188,27 @@ EASY.cave = {
 					(that.palette[i] || 0.5 + 0.5 * Math.random()) +
 					0.1 * (Math.random() - Math.random()), 0.5, 1);
 			}
+		})();
+		
+		// find all flat 1m square areas of the map
+		// that aren't touching each other directly
+		(function() {
+			var x, z;
+			that.flat.length = 0;
+			for (x = 0.5; x < l; x += 2) {
+				for (z = 0.5; z < l; z += 2) {
+					if (that.isFlat(x, z, 0.5)) {
+						that.flat.push( {
+							x: x, 
+							z: z
+						} );
+					}
+				}
+			}
+			// shuffle the flats array into random order
+			that.flat.sort(function(a, b) {
+				return Math.floor(3 * Math.random()) - 1;
+			});
 		})();
 
 	},

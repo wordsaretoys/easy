@@ -78,6 +78,7 @@ EASY.hud = {
 			} else {
 				EASY.hud.lighten();
 				SOAR.running = true;
+				EASY.player.mouse.invalid = true;
 			}
 			break;
 		case SOAR.KEY.TAB:
@@ -116,23 +117,6 @@ EASY.hud = {
 		this.dom.message.html("");
 	},
 	
-	/**
-		adds an entry to the HUD log
-		
-		*** DEPRECATED, REMOVE IN FINAL BUILD ***
-		
-		entries are appended to the end of the log,
-		then fade, and are removed from the DOM
-		
-		@method log
-		@param msg string, message to display
-		@param type string, optional message class
-	**/
-
-	log: function(msg, type) {
-		console.log(msg);
-	},
-
 	/**
 		adds an entry to the HUD commentary
 
