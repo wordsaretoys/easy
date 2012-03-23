@@ -30,13 +30,13 @@ var EASY = {
 			type: "image",
 			path: "res/chest.png"
 		},
-		flesh: {
-			type: "image",
-			path: "res/corpse.jpg"
-		},
 		cloth: {
 			type: "image",
 			path: "res/cloth.png"
+		},
+		corpse: {
+			type: "image",
+			path: "res/corpse.jpg"
 		}
 	},
 	

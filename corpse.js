@@ -30,22 +30,20 @@ EASY.corpse = {
 			["sign"]
 		);
 		
-		
-		
 		this.mesh = SOAR.mesh.create(EASY.display);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 		
-		SOAR.subdivide(4, -1, -1, 1, 1, 
+		SOAR.subdivide(4, -0.5, -1, 0.5, 1, 
 			function(x0, z0, x1, z1, x2, z2) {
 
-				var y0 = temp.set(x0, 0.5, z0).norm().y - 0.5;
-				var y1 = temp.set(x1, 0.5, z1).norm().y - 0.5;
-				var y2 = temp.set(x2, 0.5, z2).norm().y - 0.5;
-				
-				that.mesh.set(x0, y0, z0, 0.5 * (x0 + 1), 0.5 * (z0 + 1));
-				that.mesh.set(x1, y1, z1, 0.5 * (x1 + 1), 0.5 * (z1 + 1));
-				that.mesh.set(x2, y2, z2, 0.5 * (x2 + 1), 0.5 * (z2 + 1));
+				var y0 = Math.min(0.25 - x0 * x0, 1 - z0 * z0) - 0.1;
+				var y1 = Math.min(0.25 - x1 * x1, 1 - z1 * z1) - 0.1;
+				var y2 = Math.min(0.25 - x2 * x2, 1 - z2 * z2) - 0.1;
+
+				that.mesh.set(x0, y0, z0, x0 + 0.5, 0.5 * (z0 + 1));
+				that.mesh.set(x1, y1, z1, x1 + 0.5, 0.5 * (z1 + 1));
+				that.mesh.set(x2, y2, z2, x2 + 0.5, 0.5 * (z2 + 1));
 			}
 		);
 		
@@ -60,7 +58,7 @@ EASY.corpse = {
 	
 	process: function() {
 		this.texture.body = 
-			SOAR.texture.create(EASY.display, EASY.resources["flesh"].data);
+			SOAR.texture.create(EASY.display, EASY.resources["corpse"].data);
 	},
 	
 	/**
