@@ -81,6 +81,10 @@ EASY.canvasser = {
 	**/
 	
 	get: function(c, x, y) {
+		var w = this.map.width;
+		var h = this.map.height;
+		var data = this.map.data;
+	
 		var xf = this.scale.x * Math.abs(x);
 		var xi = Math.floor(xf);
 		var mux = xf - xi;
@@ -89,20 +93,20 @@ EASY.canvasser = {
 		var yi = Math.floor(yf);
 		var muy = yf - yi;
 
-		var xi0 = SOAR.clamp(xi, 0, this.map.width - 1);
-		var yi0 = SOAR.clamp(yi, 0, this.map.height - 1);
-		var xi1 = SOAR.clamp((xi + 1), 0, this.map.width - 1);
-		var yi1 = SOAR.clamp((yi + 1), 0, this.map.height - 1);
+		var xi0 = SOAR.clamp(xi, 0, w - 1);
+		var yi0 = SOAR.clamp(yi, 0, h - 1);
+		var xi1 = SOAR.clamp((xi + 1), 0, w - 1);
+		var yi1 = SOAR.clamp((yi + 1), 0, h - 1);
 
 		var v1, v2, v3, v4;
 		var i1, i2;
 		
-		v1 = this.map.data[4 * (xi0 + yi0 * this.map.width) + c] / 256;
-		v2 = this.map.data[4 * (xi0 + yi1 * this.map.width) + c] / 256;
+		v1 = data[4 * (xi0 + yi0 * w) + c] / 256;
+		v2 = data[4 * (xi0 + yi1 * w) + c] / 256;
 		i1 = this.interpolate(v1, v2, muy);
 		
-		v3 = this.map.data[4 * (xi1 + yi0 * this.map.width) + c] / 256;
-		v4 = this.map.data[4 * (xi1 + yi1 * this.map.width) + c] / 256;
+		v3 = data[4 * (xi1 + yi0 * w) + c] / 256;
+		v4 = data[4 * (xi1 + yi1 * w) + c] / 256;
 		i2 = this.interpolate(v3, v4, muy);
 
 		return this.amplitude * this.interpolate(i1, i2, mux);

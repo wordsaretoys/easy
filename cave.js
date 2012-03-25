@@ -8,6 +8,7 @@
 EASY.cave = {
 
 	LENGTH: 64,
+	ZERO_HEIGHT: 0.05,
 	WALL_HEIGHT: 4,
 	SEPARATION: 1,
 	
@@ -139,16 +140,13 @@ EASY.cave = {
 		})();
 		
 		// force entrance and exit tunnels
-		map.context.strokeStyle = "rgba(0, 0, 0, 0.75)";
-		map.context.lineWidth = 4;
+		map.context.fillStyle = "rgba(0, 0, 0, 0.75)";
 		map.context.beginPath();
-		map.context.moveTo(this.area[0].x, l + 1);
-		map.context.lineTo(this.area[0].x, l - 5);
-		map.context.stroke();
+		map.context.arc(this.area[0].x, l - 2, 4, 0, SOAR.PIMUL2, false);
+		map.context.fill();
 		map.context.beginPath();
-		map.context.moveTo(this.area[6].x, -1);
-		map.context.lineTo(this.area[6].x, 6);
-		map.context.stroke();
+		map.context.arc(this.area[6].x, 3, 4, 0, SOAR.PIMUL2, false);
+		map.context.fill();
 		
 		// construct map
 		map.build();
@@ -223,7 +221,7 @@ EASY.cave = {
 	**/
 	
 	getFloorHeight: function(x, z) {
-		return this.map.get(0, x, z);
+		return Math.max(this.ZERO_HEIGHT, this.map.get(0, x, z));
 	},
 	
 	/**
@@ -238,19 +236,19 @@ EASY.cave = {
 	**/
 	
 	isFlat: function(x, z, r) {
-		if (this.getFloorHeight(x, z) > 0) {
+		if (this.getFloorHeight(x, z) > this.ZERO_HEIGHT) {
 			return false;
 		}
-		if (this.getFloorHeight(x + r, z) > 0) {
+		if (this.getFloorHeight(x + r, z) > this.ZERO_HEIGHT) {
 			return false;
 		}
-		if (this.getFloorHeight(x - r, z) > 0) {
+		if (this.getFloorHeight(x - r, z) > this.ZERO_HEIGHT) {
 			return false;
 		}
-		if (this.getFloorHeight(x, z + r) > 0) {
+		if (this.getFloorHeight(x, z + r) > this.ZERO_HEIGHT) {
 			return false;
 		}
-		if (this.getFloorHeight(x, z - r) > 0) {
+		if (this.getFloorHeight(x, z - r) > this.ZERO_HEIGHT) {
 			return false;
 		}
 		return true;

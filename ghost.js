@@ -11,7 +11,7 @@ EASY.ghost = {
 	ATTACK_DISTANCE: 5,
 	ATTACK_DELAY: 2,
 	
-	WANDERING: 0,
+	DORMANT: 0,
 	ATTACKING: 1,
 	BECALMED: 2,
 	RESTING: 3,
@@ -152,12 +152,10 @@ EASY.ghost = {
 	generate: function() {
 		var l = EASY.cave.LENGTH;
 		var title, tribe, reason, level;
-		var x, y, z;
+		var p = EASY.corpse.position;
 
-		// start the ghost at the cave exit
-		x = EASY.cave.area[6].x;
-		z = EASY.cave.area[6].y;
-		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
+		// start the ghost just above the corpse 
+		this.position.set(p.x, 1, p.z);
 		this.target.copy(this.position);
 		
 		// generate ratings and susceptibility modifiers
@@ -172,7 +170,7 @@ EASY.ghost = {
 		this.rating.confuse = Math.floor(5 * Math.random());
 		
 		// reset state
-		this.motion = this.WANDERING;
+		this.motion = this.DORMANT;
 		this.resolve = this.rating.resolve;
 		this.velocity.set();
 	},
@@ -214,7 +212,17 @@ EASY.ghost = {
 
 		switch(this.motion) {
 		
-		case this.WANDERING:
+		case this.DORMANT:
+		
+			// look for the player, and attack if spotted
+			if (this.lookFor(pp, this.RADIUS)) {
+				EASY.hud.comment(this.COMMENTS.spotted.pick(), "ghosty");
+				this.target.copy(pp);
+				this.motion = this.ATTACKING;
+			}
+		
+			break;
+		
 		case this.BECALMED:
 
 			// accumlate random error into the velocity over time

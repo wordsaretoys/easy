@@ -12,15 +12,15 @@ EASY.trash = {
 	ITEM: [ 
 		{ 
 			type: "wood",
-			pc: 0.05
+			maxc: 3,
 		},
 		{
 			type: "oil",
-			pc: 0.03
+			maxc: 2,
 		},
 		{
 			type: "coin",
-			pc: 0.05
+			maxc: 4
 		}
 	],
 
@@ -114,11 +114,11 @@ EASY.trash = {
 		for (i = 0, il = this.ITEM.length; i < il; i++) {
 		
 			// determine count and allocate that number of items
-			c = Math.ceil(fl * this.ITEM[i].pc);
+			c = Math.ceil(Math.random() * this.ITEM[i].maxc);
 			for (j = 0; j < c && flat.length > 0; j++) {
 				p = flat.pop();
 				this.list.push( {
-					center: SOAR.vector.create(p.x, 0.01, p.z),
+					center: SOAR.vector.create(p.x, EASY.cave.ZERO_HEIGHT + 0.01, p.z),
 					active: true,
 					object: this.ITEM[i].type,
 					number: 1 + Math.floor(5 * Math.random())

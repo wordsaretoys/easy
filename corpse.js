@@ -102,8 +102,8 @@ EASY.corpse = {
 	
 	generate: function() {
 		// grab position from cave flat list
-		p = EASY.cave.flat.pop();
-		this.position.set(p.x, 0.01, p.z);
+		var p = EASY.cave.flat.pop();
+		this.position.set(p.x, EASY.cave.ZERO_HEIGHT + 0.01, p.z);
 		
 		// generate requirements for cremation
 		this.wood = Math.ceil(5 * Math.random());
