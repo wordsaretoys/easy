@@ -157,7 +157,7 @@ EASY.ghost = {
 		// generate ratings and susceptibility modifiers
 		this.rating.speed = 2.5 + Math.floor(1.5 * Math.random());
 		this.rating.resolve = 10 + Math.floor(20 * Math.random());
-		this.rating.recovery = 0.1 + Math.random();
+		this.rating.recovery = this.rating.resolve / (4 + Math.floor(4 * Math.random()));
 		
 		this.rating.excuse = Math.floor(5 * Math.random());
 		this.rating.appease = Math.floor(5 * Math.random());
@@ -309,7 +309,7 @@ EASY.ghost = {
 				// otherwise, rebuild resolve
 				this.resolve = Math.min(
 					this.rating.resolve, 
-					this.resolve + this.rating.recovery * dt
+					this.resolve + dt * this.rating.recovery
 				);
 				
 			}
@@ -318,7 +318,7 @@ EASY.ghost = {
 
 		case this.RESTING:
 		
-			// fade the ghost out if visible
+			// fade the ghost out if still visible
 			if (this.alpha > 0) {
 				this.alpha = Math.max(0, this.alpha - 0.01);
 			}

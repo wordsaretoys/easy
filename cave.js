@@ -8,7 +8,7 @@
 EASY.cave = {
 
 	LENGTH: 64,
-	ZERO_HEIGHT: 0.05,
+	ZERO_HEIGHT: 0.1,
 	WALL_HEIGHT: 4,
 	SEPARATION: 1,
 	

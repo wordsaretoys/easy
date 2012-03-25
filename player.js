@@ -516,7 +516,7 @@ EASY.player = {
 	
 	weaken: function(damage) {
 		this.resolve = Math.max(0, this.resolve - damage);
-		EASY.hud.setReadout("resolve", this.resolve + "/" + this.MAX_RESOLVE);
+		EASY.hud.setReadout("resolve", Math.floor(this.resolve) + "/" + this.MAX_RESOLVE);
 		if (this.resolve === 0) {
 			// TODO: add credit sequence?
 			SOAR.running = false;
