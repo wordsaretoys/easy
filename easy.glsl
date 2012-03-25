@@ -186,6 +186,8 @@ void main(void) {
 	trash fragment shader
 	
 	@param sign		sign texture
+	@param time		time reference for animation
+	@param alpha	master alpha 
 	
 	@param uv		texture coordinates of fragment
 	
@@ -194,6 +196,7 @@ void main(void) {
 precision mediump float;
 
 uniform sampler2D noise;
+uniform float alpha;
 uniform float time;
 
 varying vec2 uv;
@@ -218,7 +221,7 @@ void main(void) {
 	// create a "smoke ring" mask over the first effect
 	float r = 2.0 * length(uv);
 	a = a * (1.0 - r) * r;
-	gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+	gl_FragColor = vec4(1.0, 1.0, 1.0, a * alpha);
 }
 
 </script>

@@ -11,6 +11,8 @@ EASY.ghost = {
 	ATTACK_DISTANCE: 5,
 	ATTACK_DELAY: 2,
 	
+	AWAKEN_DISTANCE: 4,
+	
 	DORMANT: 0,
 	ATTACKING: 1,
 	BECALMED: 2,
@@ -82,9 +84,10 @@ EASY.ghost = {
 		recovery: 0
 	},
 	
-	motion: 0,
+	mode: 0,
 	resolve: 0,
 	cooldown: 0,
+	alpha: 0,
 	
 	identity: "",
 
@@ -113,7 +116,7 @@ EASY.ghost = {
 			EASY.display,
 			SOAR.textOf("vs-ghost"), SOAR.textOf("fs-ghost"),
 			["position", "texturec"], 
-			["projector", "modelview", "rotations", "center", "time"],
+			["projector", "modelview", "rotations", "center", "time", "alpha"],
 			["noise"]
 		);
 		
@@ -150,14 +153,7 @@ EASY.ghost = {
 	**/
 	
 	generate: function() {
-		var l = EASY.cave.LENGTH;
-		var title, tribe, reason, level;
-		var p = EASY.corpse.position;
 
-		// start the ghost just above the corpse 
-		this.position.set(p.x, 1, p.z);
-		this.target.copy(this.position);
-		
 		// generate ratings and susceptibility modifiers
 		this.rating.speed = 2.5 + Math.floor(1.5 * Math.random());
 		this.rating.resolve = 10 + Math.floor(20 * Math.random());
@@ -169,10 +165,11 @@ EASY.ghost = {
 		this.rating.blame = Math.floor(5 * Math.random());
 		this.rating.confuse = Math.floor(5 * Math.random());
 		
-		// reset state
-		this.motion = this.DORMANT;
 		this.resolve = this.rating.resolve;
 		this.velocity.set();
+
+		// start in dormat state
+		this.suspend();
 	},
 	
 	/**
@@ -199,7 +196,20 @@ EASY.ghost = {
 	},
 	
 	/**
-		implement ghost AI, detection, and motion
+		make the ghost dormant and transparent
+		and send it back to its body
+		
+		@method suspend
+	**/
+	
+	suspend: function() {
+		this.position.copy(EASY.corpse.position).y = 1;
+		this.alpha = 0;
+		this.mode = this.DORMANT;
+	},
+	
+	/**
+		implement ghost AI, detection, and mode
 		
 		@method update
 	**/
@@ -210,37 +220,89 @@ EASY.ghost = {
 		var dt = SOAR.interval * 0.001;
 		var hit, len;
 
-		switch(this.motion) {
+		switch(this.mode) {
 		
 		case this.DORMANT:
 		
-			// look for the player, and attack if spotted
-			if (this.lookFor(pp, this.RADIUS)) {
+			// wait for the player to walk up
+			if (pp.distance(this.position) < this.AWAKEN_DISTANCE) {
 				EASY.hud.comment(this.COMMENTS.spotted.pick(), "ghosty");
 				this.target.copy(pp);
-				this.motion = this.ATTACKING;
+				this.mode = this.ATTACKING;
 			}
 		
 			break;
+			
+		case this.ATTACKING:
 		
+			// fade the ghost in if not visible
+			if (this.alpha < 1) {
+				this.alpha = Math.min(1, this.alpha + 0.01);
+			}
+
+			// look for the player
+			hit = this.lookFor(pp, this.RADIUS);
+			if (hit) {
+				// update target position if visible--remember,
+				// target is LAST KNOWN GOOD position of player
+				this.target.copy(pp);
+			}
+			len = dir.copy(this.target).sub(this.position).length();
+			
+			if (len < this.ATTACK_DISTANCE && hit) {
+			
+				// we're within earshot and can see the player
+				// don't move, attack if possible
+				if (this.cooldown > 0) {
+					this.cooldown = Math.max(0, this.cooldown - dt);
+				} else {
+					EASY.hud.comment(this.COMMENTS.attack.death.pick(), "ghosty");
+					EASY.player.weaken(1);
+					this.cooldown = this.ATTACK_DELAY + Math.random();
+				}
+				
+			} else if (len < 1.1 && !hit) {
+
+				// reached target and can't see the player?
+				// lost the bugger, so go back to dormancy
+				EASY.hud.comment(this.COMMENTS.fled.pick(), "ghosty");
+				this.suspend();
+
+			} else {
+
+				// fix velocity to point to target
+				dir.norm();
+				this.velocity.x = this.rating.speed * dir.x;
+				this.velocity.z = this.rating.speed * dir.z;
+				
+				// generate a vector that points away from the walls
+				// and adjust the ghost's velocity
+				dir.set(
+					EASY.cave.getFloorHeight(this.position.x - 1, this.position.z) - EASY.cave.getFloorHeight(this.position.x + 1, this.position.z),
+					0, 
+					EASY.cave.getFloorHeight(this.position.x, this.position.z - 1) - EASY.cave.getFloorHeight(this.position.x, this.position.z + 1)
+				);
+				this.velocity.add(dir);
+
+				// update the ghost's position, maintaining distance from cave floor
+				this.position.add(this.velocity.mul(dt));
+				this.position.y = EASY.cave.getFloorHeight(this.position.x, this.position.z) + 1;
+			}
+
+			break;
+			
 		case this.BECALMED:
 
-			// accumlate random error into the velocity over time
-			dir.copy(this.velocity);
-			dir.x += (Math.random() - Math.random()) * dt * 0.001;
-			dir.z += (Math.random() - Math.random()) * dt * 0.001;
-			dir.norm();
-			this.velocity.copy(dir).mul(this.rating.speed);
-			
+			// fade the ghost out if visible
+			if (this.alpha > 0) {
+				this.alpha = Math.max(0, this.alpha - 0.01);
+			}
+
 			// if resolve is maxed out
 			if (this.resolve === this.rating.resolve) {
-			
-				// look for the player, and attack if spotted
-				if (this.lookFor(pp, this.RADIUS)) {
-					EASY.hud.comment(this.COMMENTS.spotted.pick(), "ghosty");
-					this.target.copy(pp);
-					this.motion = this.ATTACKING;
-				}
+
+				// flip to dormant mode
+				this.suspend();
 			
 			} else {
 			
@@ -253,63 +315,18 @@ EASY.ghost = {
 			}
 		
 			break;
-			
-		case this.ATTACKING:
-		
-			hit = this.lookFor(pp, this.RADIUS);
-			if (hit) {
-				// update target position if visible--remember,
-				// target is LAST KNOWN GOOD position of player
-				this.target.copy(pp);
-			}
-			len = dir.copy(this.target).sub(this.position).length();
-			
-			if (len < this.ATTACK_DISTANCE && hit) {
-				// we're within earshot and can see the player
-				// don't move, attack if possible
-				if (this.cooldown > 0) {
-					this.cooldown = Math.max(0, this.cooldown - dt);
-				} else {
-					EASY.hud.comment(this.COMMENTS.attack.death.pick(), "ghosty");
-					EASY.player.weaken(1);
-					this.cooldown = this.ATTACK_DELAY + Math.random();
-				}
-			} else if (len < 1.1 && !hit) {
 
-				// reached target and can't see the player?
-				// lost the bugger, so go back to wandering
-				EASY.hud.comment(this.COMMENTS.fled.pick(), "ghosty");
-				this.motion = this.WANDERING;
-			
-			} else {
-
-				// fix velocity to point to target
-				dir.norm();
-				this.velocity.x = this.rating.speed * dir.x;
-				this.velocity.z = this.rating.speed * dir.z;
-				
-			}
-
-			break;
-			
 		case this.RESTING:
 		
+			// fade the ghost out if visible
+			if (this.alpha > 0) {
+				this.alpha = Math.max(0, this.alpha - 0.01);
+			}
+
 			break;
 			
 		}
 		
-		// generate a vector that points away from the walls
-		// and adjust the ghost's velocity
-		dir.set(
-			EASY.cave.getFloorHeight(this.position.x - 1, this.position.z) - EASY.cave.getFloorHeight(this.position.x + 1, this.position.z),
-			0, 
-			EASY.cave.getFloorHeight(this.position.x, this.position.z - 1) - EASY.cave.getFloorHeight(this.position.x, this.position.z + 1)
-		);
-		this.velocity.add(dir);
-
-		// update the ghost's position, maintaining distance from cave floor
-		this.position.add(this.velocity.mul(dt));
-		this.position.y = EASY.cave.getFloorHeight(this.position.x, this.position.z) + 1;
 	},
 	
 	/**
@@ -333,6 +350,7 @@ EASY.ghost = {
 
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 		gl.uniform1f(shader.time, SOAR.elapsedTime);
+		gl.uniform1f(shader.alpha, this.alpha);
 
 		this.texture.noise.bind(0, shader.noise);
 		this.mesh.draw();
@@ -350,13 +368,13 @@ EASY.ghost = {
 	
 	weaken: function(attack) {
 		// can only take damge when attacking
-		if (this.motion === this.ATTACKING) {
+		if (this.mode === this.ATTACKING) {
 			var damage = this.rating[attack];
 			EASY.hud.comment(this.COMMENTS.damage[damage].pick(), "ghosty");
 			this.resolve = Math.max(0, this.resolve - damage);
 			if (this.resolve === 0) {
 				EASY.hud.comment(this.COMMENTS.rebuff.pick(), "ghosty");
-				this.motion = this.BECALMED;
+				this.mode = this.BECALMED;
 			}
 		} else {
 			EASY.hud.comment(this.COMMENTS.travel.pick(), "ghosty");

@@ -245,7 +245,7 @@ EASY.player = {
 			this.cooldown = Math.max(0, this.cooldown - dt);
 		}
 		
-		if (this.resolve < this.MAX_RESOLVE && EASY.ghost.motion !== EASY.ghost.ATTACKING) {
+		if (this.resolve < this.MAX_RESOLVE && EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			this.resolve = Math.min(this.resolve + this.RECOVERY_RATE * dt, this.MAX_RESOLVE);
 			EASY.hud.setReadout("resolve", Math.floor(this.resolve) +  "/" + this.MAX_RESOLVE);
 		}
@@ -536,7 +536,7 @@ EASY.player = {
 		var hud = EASY.hud;
 	
 		// check that the ghost is calmed down
-		if (ghost.motion !== ghost.BECALMED) {
+		if (ghost.mode !== ghost.BECALMED) {
 			hud.comment(player.COMMENTS.cremate.notcalm.pick());
 			return;
 		}

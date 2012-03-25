@@ -153,6 +153,7 @@ EASY.corpse = {
 	
 	cremate: function() {
 		this.state = this.BURNING;
+		EASY.ghost.mode = EASY.ghost.RESTING;
 	},
 	
 	/**
