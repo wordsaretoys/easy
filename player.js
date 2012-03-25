@@ -9,11 +9,15 @@
 EASY.player = {
 
 	SPIN_RATE: -0.007,
+
 	NORMAL_SPEED: 4,
 	SPRINT_SPEED: 10,
+
 	HEIGHT: 1.5,
+
 	MAX_RESOLVE: 50,
 	RECOVERY_RATE: 0.5,
+
 	ATTACK_DELAY: 2,
 	ATTACK_DISTANCE: 6,
 	
@@ -38,16 +42,7 @@ EASY.player = {
 				"Lamp oil. He must carry a barrel of the stuff."
 			],
 			
-			flesh: [
-				"Yeech. I hate picking up someone else's nose."
-			],
-			
-			cloth: [
-				"So, which priceless antique tapestry was this?",
-				"Art makes Easy upset. I think he never learned to appreciate it."
-			],
-			
-			change: [
+			coin: [
 				"All right! Enough money to buy a shoe! Retirement, here I come!"
 			]
 		},
@@ -89,6 +84,17 @@ EASY.player = {
 				"I'll bet no one can hear me over here."
 			]
 
+		},
+		
+		cremate: {
+		
+			notcalm: [
+				"I have to calm the ghost down first."
+			],
+			
+			notenough: [
+				"I don't have what I need to do that."
+			]
 		}
 		
 	},
@@ -97,8 +103,13 @@ EASY.player = {
 	footPosition: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 	
+	trash: {
+		wood: 0,
+		oil: 0,
+		coin: 0
+	},
+	
 	resolve: 0,
-	trash: {},
 	cooldown: 0,
 	
 	motion: {
@@ -183,6 +194,7 @@ EASY.player = {
 
 		// reset state
 		this.resolve = this.MAX_RESOLVE;
+		EASY.hud.setReadout("resolve", this.resolve + "/" + this.MAX_RESOLVE);
 	},
 	
 	/**
@@ -235,7 +247,7 @@ EASY.player = {
 		
 		if (this.resolve < this.MAX_RESOLVE && EASY.ghost.motion !== EASY.ghost.ATTACKING) {
 			this.resolve = Math.min(this.resolve + this.RECOVERY_RATE * dt, this.MAX_RESOLVE);
-			EASY.hud.setPlayerResolve(this.resolve / this.MAX_RESOLVE);
+			EASY.hud.setReadout("resolve", Math.floor(this.resolve) +  "/" + this.MAX_RESOLVE);
 		}
 	},
 	
@@ -470,9 +482,7 @@ EASY.player = {
 		var num = item.number;
 		EASY.hud.comment(this.COMMENTS.trash[type].pick());
 		this.trash[type] = (this.trash[type] || 0) + num;
-		if (type === "change") {
-			EASY.hud.setPlayerMoney(this.trash[type]);
-		}
+		EASY.hud.setReadout(type, this.trash[type]);
 	},
 
 	/**
@@ -506,11 +516,49 @@ EASY.player = {
 	
 	weaken: function(damage) {
 		this.resolve = Math.max(0, this.resolve - damage);
-		EASY.hud.setPlayerResolve(this.resolve / this.MAX_RESOLVE);
+		EASY.hud.setReadout("resolve", this.resolve + "/" + this.MAX_RESOLVE);
 		if (this.resolve === 0) {
 			// TODO: add credit sequence?
 			SOAR.running = false;
 		}
+	},
+	
+	/**
+		attempt a cremation
+		
+		@method cremate
+	**/
+	
+	cremate: function() {
+		var player = EASY.player
+		var corpse = EASY.corpse;
+		var ghost = EASY.ghost;
+		var hud = EASY.hud;
+	
+		// check that the ghost is calmed down
+		if (ghost.motion !== ghost.BECALMED) {
+			hud.comment(player.COMMENTS.cremate.notcalm.pick());
+			return;
+		}
+		
+		// check that player can build pyre
+		if (player.trash.wood < corpse.wood ||
+		player.trash.oil < corpse.oil ||
+		player.trash.coin <corpse.coin) {
+			hud.comment(player.COMMENTS.cremate.notenough.pick());
+			return;
+		}
+		
+		// go ahead and burn it, deducting materials for pyre
+		player.trash.wood -= corpse.wood;
+		hud.setReadout("wood", player.trash.wood);
+		player.trash.oil -= corpse.oil;
+		hud.setReadout("oil", player.trash.oil);
+		player.trash.coin -= corpse.coin;
+		hud.setReadout("coin", player.trash.coin);
+		
+		corpse.cremate();
 	}
+
 };
 

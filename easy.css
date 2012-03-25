@@ -126,9 +126,9 @@ div {
 	margin-bottom: 8px;
 }
 
-/* HUD outcomes/readouts */
+/* HUD readouts */
 
-#outcome {
+#readout {
 
 	position: absolute;
 	bottom: 20px;
@@ -137,8 +137,8 @@ div {
 	background: rgba(0, 0, 0, 0.5);
 	color: white;
 	
-	width: 200px;
-	height: 74px;
+	width: 64px;
+	height: 260px;
 	
 	font-size: 12pt;
 	font-variant: small-caps;
@@ -148,23 +148,39 @@ div {
 	z-index: 5;
 }
 
-#outcome .section {
-	margin-bottom: 8px;
+#readout .section {
+	width: 64px;
+	height: 48px;
+	border: solid 1px white;
+	padding: 1px;
 }
 
-#outcome .box {
+#readout .label {
+	text-align: left;
+}
+
+#readout .value {
+	text-align: right;
+	font-size: 150%;
+}
+
+/* HUD prompts */
+
+#prompts {
+	position: absolute;
+
+	background: transparent;
+	color: white;
+	
+	font-size: 20pt;
+	font-variant: small-caps;
+
+	z-index: 5;
+}
+
+#prompts p {
 	margin-top: 4px;
-	width: 120px;
-	height: 12px;
-	float: right;
-	overflow: hidden;
-}
-
-#player-resolve {
-	background-color: rgb(255, 255, 0);
-	width: 100%;
-	height: 12px;
-	float: right;
+	margin-bottom: 4px;
 }
 
 /* mouse tracking surface */

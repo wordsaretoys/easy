@@ -13,21 +13,8 @@ EASY.ghost = {
 	
 	WANDERING: 0,
 	ATTACKING: 1,
-	RESTING: 2,
-	
-	TRIBE: [ 
-		"Boothrede", "Clanmorgan", "Cowlberth", "Monkshockey", "Throckton", "Treblerath" 
-	],
-	REASON: [ 
-		"an Afflicted", "a Disgraced",  "a Disillusioned", "a Fanatical",  "an Introverted" 
-	],
-	TITLE: [
-		"Monk", "Dogsbody", "Illusionist", "Deacon", "Squire", "Conjurer",
-		"Priest", "Knight", "Enchanter", "Bishop", "Clanlord", "Mage", "Scholar"
-	],
-	STYLE: [ 
-		"Shade", "Phantom", "Spectre", "Wraith", "Revenant" 
-	],
+	BECALMED: 2,
+	RESTING: 3,
 	
 	COMMENTS: {
 	
@@ -173,15 +160,6 @@ EASY.ghost = {
 		this.position.set(x, EASY.cave.getFloorHeight(x, z) + 1, z);
 		this.target.copy(this.position);
 		
-		// select title, trible, reason, and style of ghost
-		title = this.TITLE.pick();
-		tribe = this.TRIBE.pick();
-		reason = this.REASON.pick();
-		style = this.STYLE.pick();
-		
-		// generate an identity string
-		this.identity = style + " of " + reason + " " + title + " of " + tribe;
-		
 		// generate ratings and susceptibility modifiers
 		this.rating.speed = 2.5 + Math.floor(1.5 * Math.random());
 		this.rating.resolve = 10 + Math.floor(20 * Math.random());
@@ -237,6 +215,7 @@ EASY.ghost = {
 		switch(this.motion) {
 		
 		case this.WANDERING:
+		case this.BECALMED:
 
 			// accumlate random error into the velocity over time
 			dir.copy(this.velocity);
@@ -369,8 +348,7 @@ EASY.ghost = {
 			this.resolve = Math.max(0, this.resolve - damage);
 			if (this.resolve === 0) {
 				EASY.hud.comment(this.COMMENTS.rebuff.pick(), "ghosty");
-				this.motion = this.WANDERING;
-				EASY.hud.weaken(0);
+				this.motion = this.BECALMED;
 			}
 		} else {
 			EASY.hud.comment(this.COMMENTS.travel.pick(), "ghosty");

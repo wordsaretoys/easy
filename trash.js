@@ -19,11 +19,7 @@ EASY.trash = {
 			pc: 0.03
 		},
 		{
-			type: "cloth",
-			pc: 0.05
-		},
-		{
-			type: "change",
+			type: "coin",
 			pc: 0.05
 		}
 	],

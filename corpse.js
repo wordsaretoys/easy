@@ -8,9 +8,41 @@
 EASY.corpse = {
 
 	RADIUS: 0.5,
+	USE_RADIUS: 2.5,
 
+	INTACT: 0,
+	BURNING: 1,
+	CREMATED: 2,
+	
+	TRIBE: [ 
+		"Boothrede", "Clanmorgan", "Cowlberth", "Monkshockey", "Throckton", "Treblerath" 
+	],
+
+	TITLE: [
+		"a Mutilated Monk",
+		"a Butchered Bishop",
+		"a Massacred Mage",
+		"a Dismembered Dogsbody",
+		"a Pummelled Priest",
+		"a Shattered Squire",
+		"a Neutered Knight",
+		"a Crippled Conjurer",
+		"a Stabbed Scholar"
+	],
+
+	identity: "",
+	
 	texture: {},
 	position: SOAR.vector.create(),
+	state: 0,
+	
+	wood: 0,
+	oil: 0,
+	change: 0,
+	
+	scratch: {
+		pos: SOAR.vector.create()
+	},
 	
 	/**
 		create and init required objects
@@ -63,16 +95,65 @@ EASY.corpse = {
 	},
 	
 	/**
-		(re)generate corpse position
+		(re)generate corpse position and requirements for cremation
 		
 		@method generate
 	**/
 	
 	generate: function() {
+		// grab position from cave flat list
 		p = EASY.cave.flat.pop();
 		this.position.set(p.x, 0.01, p.z);
+		
+		// generate requirements for cremation
+		this.wood = Math.ceil(5 * Math.random());
+		this.oil = Math.ceil(5 * Math.random());
+		this.coin = Math.ceil(5 * Math.random());
+		
+		// generate an identity string
+		this.identity = this.TITLE.pick() + " of " + this.TRIBE.pick();
+	},
+
+	/**
+		update the corpse status
+		
+		@method update
+	**/
+	
+	update: function() {
+		var pp = EASY.player.headPosition;
+		var dp = pp.distance(this.position);
+		var t = 0;
+		
+		// if we're close enough to an unburned corpse
+		if (dp <= this.USE_RADIUS && this.state === this.INTACT) {
+			// are we looking at it?
+			this.scratch.pos.copy(this.position).sub(pp).norm();
+			t = this.USE_RADIUS * 
+				this.scratch.pos.dot(EASY.player.camera.orientation.front) / dp;
+		}
+		// let the HUD know
+		if (t > 1) {
+			this.prompted = true;
+			EASY.hud.showPrompt("E", 
+				"Cremate " + this.identity,
+				"Requires " + this.wood + " wood, " + this.oil + " oil, " + this.coin + " coin",
+				EASY.player.cremate);
+		} else {
+			this.prompted = false;
+			EASY.hud.hidePrompt();
+		}
 	},
 	
+	/**
+		activate the cremation
+		
+		@method cremate
+	**/
+	
+	cremate: function() {
+		this.state = this.BURNING;
+	},
 	
 	/**
 		draw the corpse

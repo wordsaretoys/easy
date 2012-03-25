@@ -8,11 +8,19 @@
 EASY.hud = {
 
 	COMMENT_FADE_TIME: 100,
-	COMMENT_READ_TIME: 5000,
+	COMMENT_READ_TIME: 4000,
+	
+	LABEL: {
+		wood: 0,
+		oil: 1,
+		coin: 2,
+		resolve: 3,
+		grace: 4
+	},
 
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
-
+	
 	/**
 		establish jQuery shells around UI DOM objects &
 		assign methods for simple behaviors (resize, etc)
@@ -27,9 +35,19 @@ EASY.hud = {
 			comment: jQuery("#comment"),
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message"),
+			prompts: jQuery("#prompts"),
 			
-			playerResolve: jQuery("#player-resolve"),
-			money: jQuery("#money")
+			value: jQuery(".value")
+			
+		};
+
+		this.dom.prompts.shown = false;
+		this.dom.prompts.resize = function() {
+			var p = EASY.hud.dom.prompts;
+			p.offset({
+				top: (EASY.display.height - p.height()) * 0.75,
+				left: (EASY.display.width - p.width()) * 0.5
+			});
 		};
 
 		this.dom.window.bind("resize", this.resize);			
@@ -56,6 +74,8 @@ EASY.hud = {
 			top: (EASY.display.height - dom.message.height()) * 0.5,
 			left: (EASY.display.width - dom.message.width()) * 0.5
 		});
+		
+		dom.prompts.resize();
 	},
 	
 	/**
@@ -84,6 +104,11 @@ EASY.hud = {
 		case SOAR.KEY.TAB:
 			// prevent accidental TAB keypress from changing focus
 			return false;
+			break;
+		case SOAR.KEY.E:
+			if (EASY.hud.dom.prompts.shown) {
+				EASY.hud.dom.prompts.action();
+			}
 			break;
 		default:
 			//console.log(event.keyCode);
@@ -118,7 +143,7 @@ EASY.hud = {
 	},
 	
 	/**
-		adds an entry to the HUD commentary
+		add an entry to the HUD commentary
 
 		entries are appended to the comment box,
 		growing as they fade in, then fading out
@@ -145,40 +170,74 @@ EASY.hud = {
 	},
 
 	/**
-		sets player resolve display
+		set player resolve display
 		
 		@method setPlayerResolve
 		@param pc number, resolve as fraction of total
 	**/
 	
 	setPlayerResolve: function(pc) {
-		this.dom.playerResolve.css("width", Math.floor(pc * 100) + "%");
+		//this.dom.resolve.css("width", Math.floor(pc * 100) + "%");
 	},
 	
 	/**
-		sets player money display
+		set player money display
 		
 		@method setPlayerMoney
 		@param n number, total amount of money
 	**/
 	
 	setPlayerMoney: function(n) {
-		this.dom.money.html(n);
+		//this.dom.money.html(n);
+	},
+
+	/**
+		display prompt with specified message
+		
+		@method showPrompt
+		@param key string, key to prompt for
+		@param verb string, what the key does
+		@param phrase string, what the verb acts on
+		@param action function to call if user presses key
+	**/
+	
+	showPrompt: function(key, verb, phrase, action) {
+		var pr = this.dom.prompts;
+		if (!pr.shown) {
+			pr.html("<p><span class=\"key\">" + key + "</span>&nbsp;" + verb + "</p><p>" + phrase + "</p>");
+			pr.resize();
+			pr.css("visibility", "visible");
+			pr.shown = true;
+			pr.action = action;
+		}
 	},
 	
 	/**
-		determines which indefinite article applies to a noun
+		hide prompt
 		
-		not 100%, but hopefully good enough
-		
-		@method getArticle
-		@param noun the noun or phrase to check
-		@return the proper atricle to prepend
+		@method hidePrompt
 	**/
 	
-	getArticle: function(noun) {
-		var ch = noun.charAt(0).toLowerCase();
-		return "aeiou".indexOf(ch) != -1 ? "an" : "a";
+	hidePrompt: function() {
+		var pr = this.dom.prompts;
+		if (pr.shown) {
+			pr.css("visibility", "hidden");
+			pr.shown = false;
+			delete pr.action;
+		}
+	},
+	
+	/**
+		update a particular player state readout
+		
+		@method setReadout
+		@param label string, name of state to change (see this.LABEL)
+		@param value string, state value
+	**/
+	
+	setReadout: function(label, value) {
+		var index = this.LABEL[label];
+		this.dom.value[index].innerHTML = value;
 	}
 
 };

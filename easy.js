@@ -22,17 +22,13 @@ var EASY = {
 			type: "image",
 			path: "res/oil.png"
 		},
-		change: {
+		coin: {
 			type: "image",
 			path: "res/change.png"
 		},
 		wood: {
 			type: "image",
 			path: "res/chest.png"
-		},
-		cloth: {
-			type: "image",
-			path: "res/cloth.png"
 		},
 		corpse: {
 			type: "image",
@@ -154,6 +150,7 @@ var EASY = {
 			EASY.player.update();
 			EASY.trash.update();
 			EASY.ghost.update();
+			EASY.corpse.update();
 		}
 	},
 
