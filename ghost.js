@@ -16,7 +16,6 @@ EASY.ghost = {
 	DORMANT: 0,
 	ATTACKING: 1,
 	BECALMED: 2,
-	RESTING: 3,
 	
 	COMMENTS: {
 	
@@ -27,7 +26,7 @@ EASY.ghost = {
 			]
 		},
 		
-		spotted: [
+		awaken: [
 			"I see you, flesh."
 		],
 		
@@ -59,12 +58,8 @@ EASY.ghost = {
 			]
 		],
 		
-		rebuff: [
+		calmed: [
 			"I must consider this further."
-		],
-		
-		travel: [
-			"I have my own troubles. Begone."
 		],
 		
 		fled: [
@@ -78,10 +73,7 @@ EASY.ghost = {
 		appease: 0,
 		flatter: 0,
 		blame: 0,
-		confuse: 0,
-		speed: 0,
-		resolve: 0,
-		recovery: 0
+		confuse: 0
 	},
 	
 	mode: 0,
@@ -152,18 +144,16 @@ EASY.ghost = {
 	
 	generate: function() {
 
-		// generate ratings and susceptibility modifiers
-		this.rating.speed = 2.5 + Math.floor(1.5 * Math.random());
-		this.rating.resolve = 10 + Math.floor(20 * Math.random());
-		this.rating.recovery = this.rating.resolve / (4 + Math.floor(4 * Math.random()));
-		
+		// generate attributes
 		this.rating.excuse = Math.floor(5 * Math.random());
 		this.rating.appease = Math.floor(5 * Math.random());
 		this.rating.flatter = Math.floor(5 * Math.random());
 		this.rating.blame = Math.floor(5 * Math.random());
 		this.rating.confuse = Math.floor(5 * Math.random());
+
+		this.speed = 2.5 + Math.floor(1.5 * Math.random());
+		this.resolve = 10 + Math.floor(20 * Math.random());
 		
-		this.resolve = this.rating.resolve;
 		this.velocity.set();
 
 		// start in dormat state
@@ -224,7 +214,7 @@ EASY.ghost = {
 		
 			// wait for the player to walk up
 			if (pp.distance(this.position) < this.AWAKEN_DISTANCE) {
-				EASY.hud.comment(this.COMMENTS.spotted.pick(), "ghosty");
+				EASY.hud.comment(this.COMMENTS.awaken.pick(), "ghosty");
 				this.target.copy(pp);
 				this.mode = this.ATTACKING;
 			}
@@ -249,8 +239,8 @@ EASY.ghost = {
 			
 			if (len < this.ATTACK_DISTANCE && hit) {
 			
-				// we're within earshot and can see the player
-				// don't move, attack if possible
+				// we're within earshot and can see the player,
+				// don't move, attack if we're not cooling down
 				if (this.cooldown > 0) {
 					this.cooldown = Math.max(0, this.cooldown - dt);
 				} else {
@@ -270,8 +260,8 @@ EASY.ghost = {
 
 				// fix velocity to point to target
 				dir.norm();
-				this.velocity.x = this.rating.speed * dir.x;
-				this.velocity.z = this.rating.speed * dir.z;
+				this.velocity.x = this.speed * dir.x;
+				this.velocity.z = this.speed * dir.z;
 				
 				// generate a vector that points away from the walls
 				// and adjust the ghost's velocity
@@ -291,38 +281,13 @@ EASY.ghost = {
 			
 		case this.BECALMED:
 
-			// fade the ghost out if visible
+			// fade the ghost out
 			if (this.alpha > 0) {
 				this.alpha = Math.max(0, this.alpha - 0.01);
 			}
-
-			// if resolve is maxed out
-			if (this.resolve === this.rating.resolve) {
-
-				// flip to dormant mode
-				this.suspend();
 			
-			} else {
-			
-				// otherwise, rebuild resolve
-				this.resolve = Math.min(
-					this.rating.resolve, 
-					this.resolve + dt * this.rating.recovery
-				);
-				
-			}
-		
 			break;
 
-		case this.RESTING:
-		
-			// fade the ghost out if still visible
-			if (this.alpha > 0) {
-				this.alpha = Math.max(0, this.alpha - 0.01);
-			}
-
-			break;
-			
 		}
 		
 	},
@@ -370,12 +335,12 @@ EASY.ghost = {
 			var damage = this.rating[attack];
 			EASY.hud.comment(this.COMMENTS.damage[damage].pick(), "ghosty");
 			this.resolve = Math.max(0, this.resolve - damage);
+			// if we run out of resolve
 			if (this.resolve === 0) {
-				EASY.hud.comment(this.COMMENTS.rebuff.pick(), "ghosty");
+				// ghost is calmed down
+				EASY.hud.comment(this.COMMENTS.calmed.pick(), "ghosty");
 				this.mode = this.BECALMED;
 			}
-		} else {
-			EASY.hud.comment(this.COMMENTS.travel.pick(), "ghosty");
 		}
 	}
 
