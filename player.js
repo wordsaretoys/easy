@@ -380,6 +380,9 @@ EASY.player = {
 			case SOAR.KEY.T:
 				EASY.generate();
 				break;
+			case SOAR.KEY.R:
+				EASY.corpse.cremate();
+				break;
 		}
 	},
 

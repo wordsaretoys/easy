@@ -225,3 +225,70 @@ void main(void) {
 }
 
 </script>
+
+<script id="vs-corpse" type="x-shader/x-vertex">
+
+/**
+	corpse vertex shader
+	O' = P * V * (O + c) transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param center model center vector
+	
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates of fragment
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform mat4 rotations;
+uniform vec3 center;
+
+varying vec2 uv;
+
+void main(void) {
+	gl_Position = projector * modelview * (rotations * vec4(position, 1.0) + vec4(center, 0.0));
+	uv = texturec;
+}
+
+</script>
+
+<script id="fs-corpse" type="x-shader/x-fragment">
+
+/**
+	corpse fragment shader
+	
+	@param body		body texture
+	@param ash		ash texture
+	@param burn		burn time
+
+	@param uv		texture coordinates of fragment
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D body;
+uniform sampler2D ash;
+uniform float burn;
+
+varying vec2 uv;
+
+void main(void) {
+	vec4 bodyColor = texture2D(body, uv);
+	vec4 fireColor = vec4(1.0, 0.8, 0.0, 1.0) * texture2D(ash, (burn + uv) * 0.25);
+	vec4 ashColor = texture2D(ash, uv);
+	
+	gl_FragColor = mix(bodyColor, mix(ashColor, fireColor, sin(burn * 3.1415)), burn);
+}
+
+</script>
+

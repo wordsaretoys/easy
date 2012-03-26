@@ -89,8 +89,6 @@ EASY.ghost = {
 	cooldown: 0,
 	alpha: 0,
 	
-	identity: "",
-
 	position: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 

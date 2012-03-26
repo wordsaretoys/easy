@@ -9,6 +9,7 @@ EASY.corpse = {
 
 	RADIUS: 0.5,
 	USE_RADIUS: 2.5,
+	BURN_TIME: 5,
 
 	INTACT: 0,
 	BURNING: 1,
@@ -26,7 +27,7 @@ EASY.corpse = {
 		"a Pummelled Priest",
 		"a Shattered Squire",
 		"a Neutered Knight",
-		"a Crippled Conjurer",
+		"a Carved-up Conjurer",
 		"a Stabbed Scholar"
 	],
 
@@ -34,7 +35,7 @@ EASY.corpse = {
 	
 	texture: {},
 	position: SOAR.vector.create(),
-	state: 0,
+	mode: 0,
 	
 	wood: 0,
 	oil: 0,
@@ -57,10 +58,10 @@ EASY.corpse = {
 
 		this.shader = SOAR.shader.create(
 			EASY.display,
-			SOAR.textOf("vs-trash"), SOAR.textOf("fs-trash"),
+			SOAR.textOf("vs-corpse"), SOAR.textOf("fs-corpse"),
 			["position", "texturec"], 
-			["projector", "modelview", "rotations", "center"],
-			["sign"]
+			["projector", "modelview", "rotations", "center", "burn"],
+			["body", "ash"]
 		);
 		
 		this.mesh = SOAR.mesh.create(EASY.display);
@@ -92,6 +93,8 @@ EASY.corpse = {
 	process: function() {
 		this.texture.body = 
 			SOAR.texture.create(EASY.display, EASY.resources["corpse"].data);
+		this.texture.ash = 
+			SOAR.texture.create(EASY.display, EASY.resources["noise2"].data);
 	},
 	
 	/**
@@ -112,6 +115,9 @@ EASY.corpse = {
 		
 		// generate an identity string
 		this.identity = this.TITLE.pick() + " of " + this.TRIBE.pick();
+		
+		this.burn = 0;
+		this.mode = this.INTACT;
 	},
 
 	/**
@@ -125,23 +131,43 @@ EASY.corpse = {
 		var dp = pp.distance(this.position);
 		var t = 0;
 		
-		// if we're close enough to an unburned corpse
-		if (dp <= this.USE_RADIUS && this.state === this.INTACT) {
-			// are we looking at it?
-			this.scratch.pos.copy(this.position).sub(pp).norm();
-			t = this.USE_RADIUS * 
-				this.scratch.pos.dot(EASY.player.camera.orientation.front) / dp;
-		}
-		// let the HUD know
-		if (t > 1) {
-			this.prompted = true;
-			EASY.hud.showPrompt("E", 
-				"Cremate " + this.identity,
-				"Requires " + this.wood + " wood, " + this.oil + " oil, " + this.coin + " coin",
-				EASY.player.cremate);
-		} else {
-			this.prompted = false;
-			EASY.hud.hidePrompt();
+		switch(this.mode) {
+		
+		case this.INTACT:
+		
+			// if we're close to an unburned corpse
+			if (dp <= this.USE_RADIUS) {
+				// are we looking at it?
+				this.scratch.pos.copy(this.position).sub(pp).norm();
+				t = this.USE_RADIUS * 
+					this.scratch.pos.dot(EASY.player.camera.orientation.front) / dp;
+			}
+			
+			// let the HUD know if it doesn't already
+			if (!EASY.hud.dom.prompts.shown && t > 1) {
+				EASY.hud.showPrompt("E", 
+					"Cremate " + this.identity,
+					"Requires " + this.wood + " wood, " + this.oil + " oil, " + this.coin + " coin",
+					EASY.player.cremate);
+			} else if (EASY.hud.dom.prompts.shown && t <= 1) {
+				EASY.hud.hidePrompt();
+			}
+		
+			break;
+			
+		case this.BURNING:
+		
+			this.burn = 0.001 * (SOAR.elapsedTime - this.timestamp) / this.BURN_TIME;
+			if (this.burn >= 1) {
+				this.burn = 1;
+				this.mode = this.CREMATED;
+			}
+		
+			break;
+			
+		case this.CREMATED:
+		
+			break;
 		}
 	},
 	
@@ -152,7 +178,9 @@ EASY.corpse = {
 	**/
 	
 	cremate: function() {
-		this.state = this.BURNING;
+		EASY.hud.hidePrompt();
+		this.mode = this.BURNING;
+		this.timestamp = SOAR.elapsedTime;
 		EASY.ghost.mode = EASY.ghost.RESTING;
 	},
 	
@@ -168,18 +196,15 @@ EASY.corpse = {
 		var camera = EASY.player.camera;
 		var pos = this.position;
 
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
 		gl.uniformMatrix4fv(shader.rotations, false, EASY.I);
 		gl.uniform3f(shader.center, pos.x, pos.y, pos.z);
-		this.texture.body.bind(0, shader.sign);
+		gl.uniform1f(shader.burn, this.burn);
+		this.texture.body.bind(0, shader.body);
+		this.texture.ash.bind(1, shader.ash);
 		this.mesh.draw();
-
-		gl.disable(gl.BLEND);
 	}
 
 };
