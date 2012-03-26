@@ -8,10 +8,8 @@
 EASY.ghost = {
 
 	RADIUS: 0.5,
-	ATTACK_DISTANCE: 5,
+	BUFFER_ZONE: 4,
 	ATTACK_DELAY: 2,
-	
-	AWAKEN_DISTANCE: 4,
 	
 	DORMANT: 0,
 	ATTACKING: 1,
@@ -59,11 +57,11 @@ EASY.ghost = {
 		],
 		
 		calmed: [
-			"I must consider this further."
+			"The weight is gone. Perhaps I can move on now."
 		],
 		
 		fled: [
-			"Gone. I feel oddly disappointed."
+			"Gone. How disappointing."
 		]
 			
 	},				
@@ -156,7 +154,7 @@ EASY.ghost = {
 		
 		this.velocity.set();
 
-		// start in dormat state
+		// start in dormant state
 		this.suspend();
 	},
 	
@@ -213,7 +211,7 @@ EASY.ghost = {
 		case this.DORMANT:
 		
 			// wait for the player to walk up
-			if (pp.distance(this.position) < this.AWAKEN_DISTANCE) {
+			if (pp.distance(this.position) < this.BUFFER_ZONE) {
 				EASY.hud.comment(this.COMMENTS.awaken.pick(), "ghosty");
 				this.target.copy(pp);
 				this.mode = this.ATTACKING;
@@ -228,36 +226,27 @@ EASY.ghost = {
 				this.alpha = Math.min(1, this.alpha + 0.01);
 			}
 
+			// attack if we're not cooling down
+			if (this.cooldown > 0) {
+				this.cooldown = Math.max(0, this.cooldown - dt);
+			} else {
+				EASY.hud.comment(this.COMMENTS.attack.death.pick(), "ghosty");
+				EASY.player.weaken(1);
+				this.cooldown = this.ATTACK_DELAY + Math.random();
+			}
+			
 			// look for the player
 			hit = this.lookFor(pp, this.RADIUS);
 			if (hit) {
 				// update target position if visible--remember,
 				// target is LAST KNOWN GOOD position of player
 				this.target.copy(pp);
-			}
+			} 
+			
+			// if ghost can't see player or is too far away
 			len = dir.copy(this.target).sub(this.position).length();
-			
-			if (len < this.ATTACK_DISTANCE && hit) {
-			
-				// we're within earshot and can see the player,
-				// don't move, attack if we're not cooling down
-				if (this.cooldown > 0) {
-					this.cooldown = Math.max(0, this.cooldown - dt);
-				} else {
-					EASY.hud.comment(this.COMMENTS.attack.death.pick(), "ghosty");
-					EASY.player.weaken(1);
-					this.cooldown = this.ATTACK_DELAY + Math.random();
-				}
+			if (!hit || len > this.BUFFER_ZONE) {
 				
-			} else if (len < 1.1 && !hit) {
-
-				// reached target and can't see the player?
-				// lost the bugger, so go back to dormancy
-				EASY.hud.comment(this.COMMENTS.fled.pick(), "ghosty");
-				this.suspend();
-
-			} else {
-
 				// fix velocity to point to target
 				dir.norm();
 				this.velocity.x = this.speed * dir.x;
@@ -275,6 +264,14 @@ EASY.ghost = {
 				// update the ghost's position, maintaining distance from cave floor
 				this.position.add(this.velocity.mul(dt));
 				this.position.y = EASY.cave.getFloorHeight(this.position.x, this.position.z) + 1;
+
+			} 
+			
+			// can't see the player even once you're on top of the target?
+			if (!hit && len < 1.1) {
+				// lost the bugger, so go back to dormancy
+				EASY.hud.comment(this.COMMENTS.fled.pick(), "ghosty");
+				this.suspend();
 			}
 
 			break;

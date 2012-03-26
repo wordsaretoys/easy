@@ -181,7 +181,7 @@ EASY.corpse = {
 		EASY.hud.hidePrompt();
 		this.mode = this.BURNING;
 		this.timestamp = SOAR.elapsedTime;
-		EASY.ghost.mode = EASY.ghost.RESTING;
+		EASY.ghost.mode = EASY.ghost.BECALMED;
 	},
 	
 	/**

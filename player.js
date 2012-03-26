@@ -19,7 +19,6 @@ EASY.player = {
 	RECOVERY_RATE: 0.5,
 
 	ATTACK_DELAY: 2,
-	ATTACK_DISTANCE: 6,
 	
 	COMMENTS: {
 	
@@ -79,9 +78,9 @@ EASY.player = {
 				"...uh, okay, maybe not..."
 			],
 			
-			toofar: [
+			notarget: [
 				"What, am I talking to <em>myself</em> now?",
-				"I'll bet no one can hear me over here."
+				"Why? No one can hear me."
 			]
 
 		},
@@ -489,7 +488,7 @@ EASY.player = {
 	},
 
 	/**
-		attack the ghost if it's in earshot
+		attack the ghost if it's attacking
 		and player isn't still cooling down
 		
 		@method attack
@@ -497,17 +496,16 @@ EASY.player = {
 	**/
 	
 	attack: function(type) {
-	
-		if (this.cooldown > 0) {
+		if (EASY.ghost.mode !== EASY.ghost.ATTACKING)
+		{
+			EASY.hud.comment(this.COMMENTS.attack.notarget.pick());
+		} else if (this.cooldown > 0) {
 			EASY.hud.comment(this.COMMENTS.attack.notready.pick());
-		} else if (this.footPosition.distance(EASY.ghost.position) > this.ATTACK_DISTANCE) {
-			EASY.hud.comment(this.COMMENTS.attack.toofar.pick());
 		} else {
 			EASY.hud.comment(this.COMMENTS.attack[type].pick());
 			EASY.ghost.weaken(type);
 			this.cooldown = this.ATTACK_DELAY;
 		}
-	
 	},
 	
 	/**

@@ -8,21 +8,10 @@
 EASY.trash = {
 
 	GRAB_DISTANCE: 1.5,
+	CYCLE_PERIOD: 8,
+	MAX_QUANT: 10,
 	
-	ITEM: [ 
-		{ 
-			type: "wood",
-			maxc: 3,
-		},
-		{
-			type: "oil",
-			maxc: 2,
-		},
-		{
-			type: "coin",
-			maxc: 4
-		}
-	],
+	ITEM: [ "wood", "oil", "coin" ],
 
 	list: [],
 	texture: {},
@@ -90,7 +79,7 @@ EASY.trash = {
 	process: function() {
 		var i, il, type;
 		for (i = 0, il = this.ITEM.length; i < il; i++) {
-			type = this.ITEM[i].type;
+			type = this.ITEM[i];
 			this.texture[type] = 
 				SOAR.texture.create(EASY.display, EASY.resources[type].data);
 		}
@@ -105,26 +94,41 @@ EASY.trash = {
 	generate: function() {
 		var l = EASY.cave.LENGTH;
 		var flat = EASY.cave.flat;
-		var i, il, j, fl, c, p;
-
+		var base, quant, drop, pos;
+		var i, il;
+		
 		this.list.length = 0;
-		fl = flat.length;
+
+		// quantities cycle periodically over time
+		base = Math.ceil(0.5 * this.MAX_QUANT * Math.abs(Math.cos(Math.PI * EASY.generation / this.CYCLE_PERIOD)));
 		
 		// for each item type
 		for (i = 0, il = this.ITEM.length; i < il; i++) {
-		
-			// determine count and allocate that number of items
-			c = Math.ceil(Math.random() * this.ITEM[i].maxc);
-			for (j = 0; j < c && flat.length > 0; j++) {
-				p = flat.pop();
+			// determine total quantity of item
+			quant = base + Math.floor(base * Math.random());
+			// break into random set of drops
+			do {
+				drop = Math.ceil(quant * Math.random());
+				pos = flat.pop();
 				this.list.push( {
-					center: SOAR.vector.create(p.x, EASY.cave.ZERO_HEIGHT + 0.01, p.z),
+					center: SOAR.vector.create(pos.x, EASY.cave.ZERO_HEIGHT + 0.01, pos.z),
 					active: true,
-					object: this.ITEM[i].type,
-					number: 1 + Math.floor(5 * Math.random())
+					object: this.ITEM[i],
+					number: drop
 				} );
-			}
+				quant = quant - drop;
+			} while(quant > 0 && flat.length > 0);
+
 		}
+/*
+		var item, t = {};
+		for (i = 0, il = this.list.length; i < il; i++) {
+			item = this.list[i];
+			t[item.object] = (t[item.object] || 0) + item.number;
+		}
+		console.log("wood: ", t.wood, " oil: ", t.oil, " coin: ", t.coin);
+		console.log("flats left: ", flat.length);
+*/
 	},
 	
 	/**
