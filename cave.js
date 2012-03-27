@@ -8,7 +8,7 @@
 EASY.cave = {
 
 	LENGTH: 64,
-	ZERO_HEIGHT: 0.1,
+	ZERO_HEIGHT: 0.25,
 	WALL_HEIGHT: 4,
 	SEPARATION: 1,
 	
@@ -193,8 +193,8 @@ EASY.cave = {
 		(function() {
 			var x, z;
 			that.flat.length = 0;
-			for (x = 0.5; x < l; x += 2) {
-				for (z = 0.5; z < l; z += 2) {
+			for (x = 0.5; x < l; x += 1.5) {
+				for (z = 0.5; z < l; z += 1.5) {
 					if (that.isFlat(x, z, 0.5)) {
 						that.flat.push( {
 							x: x, 
@@ -204,9 +204,7 @@ EASY.cave = {
 				}
 			}
 			// shuffle the flats array into random order
-			that.flat.sort(function(a, b) {
-				return Math.floor(3 * Math.random()) - 1;
-			});
+			that.flat.shuffle();
 		})();
 
 	},
@@ -249,6 +247,18 @@ EASY.cave = {
 			return false;
 		}
 		if (this.getFloorHeight(x, z - r) > this.ZERO_HEIGHT) {
+			return false;
+		}
+		if (this.getFloorHeight(x - r, z - r) > this.ZERO_HEIGHT) {
+			return false;
+		}
+		if (this.getFloorHeight(x - r, z + r) > this.ZERO_HEIGHT) {
+			return false;
+		}
+		if (this.getFloorHeight(x + r, z - r) > this.ZERO_HEIGHT) {
+			return false;
+		}
+		if (this.getFloorHeight(x + r, z + r) > this.ZERO_HEIGHT) {
 			return false;
 		}
 		return true;

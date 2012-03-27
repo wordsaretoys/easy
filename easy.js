@@ -62,6 +62,19 @@ var EASY = {
 		Array.prototype.pick = function() {
 			return this[Math.floor(Math.random() * this.length)];
 		};
+
+		// taken from
+		// http://sroucheray.org/blog/2009/11/array-sort-should-not-be-used-to-shuffle-an-array/
+		Array.prototype.shuffle = function (){
+			var i = this.length, j, temp;
+			if ( i == 0 ) return;
+			while ( --i ) {
+				j = Math.floor( Math.random() * ( i + 1 ) );
+				temp = this[i];
+				this[i] = this[j];
+				this[j] = temp;
+			}
+		};		
 		
 		// set initial display dimensions
 		EASY.display.setSize(

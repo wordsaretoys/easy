@@ -115,7 +115,7 @@ EASY.corpse = {
 		
 		// requirements cycle quasi-periodically over time
 		base = Math.ceil(0.5 * this.MAX_REQUIRED * ((Math.sin(this.phase) + 1) * 0.5));
-		console.log(base);
+		//console.log(base);
 		
 		// generate requirements for cremation
 		this.wood = base + Math.floor(base * Math.random());
