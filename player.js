@@ -119,6 +119,7 @@ EASY.player = {
 	
 	resolve: 0,
 	cooldown: 0,
+	grace: 0,
 	
 	motion: {
 		moveleft: false, moveright: false,
@@ -316,6 +317,7 @@ EASY.player = {
 		if (p.z <= 0) {
 			EASY.hud.darken(EASY.hud.waitMsg);
 			SOAR.schedule(function() {
+				EASY.player.exitCave();
 				EASY.generate();
 				EASY.hud.lighten();
 			}, 1, false);
@@ -515,6 +517,12 @@ EASY.player = {
 				// we have to fumble a little
 				this.cooldown = Math.random();
 			}
+			// if we've calmed the ghost down
+			if (EASY.ghost.mode === EASY.ghost.BECALMED) {
+				// take the reward
+				this.grace += EASY.ghost.grace;
+				EASY.hud.setReadout("grace", this.grace);
+			}
 		}
 	},
 	
@@ -576,6 +584,35 @@ EASY.player = {
 		hud.setReadout("coin", player.trash.coin);
 		
 		corpse.cremate();
+		
+		// add reward to grace
+		this.grace += corpse.grace;
+		EASY.hud.setReadout("grace", this.grace);
+	},
+	
+	/**
+		handle player exit from the cave
+		
+		called when player steps out of the cave exit
+		
+		@method exitCave
+	**/
+	
+	exitCave: function() {
+	
+		// have we calmed the ghost?
+		if (EASY.ghost.mode !== EASY.ghost.BECALMED) {
+			// deduct grace penalty
+			this.grace = Math.ceil(this.grace - EASY.ghost.grace / 2);
+		}
+	
+		// have we cremated the corpse?
+		if (EASY.corpse.mode === EASY.corpse.INTACT) {
+			// deduct grace penalty
+			this.grace = Math.ceil(this.grace - EASY.corpse.grace / 2);
+		}
+		
+		EASY.hud.setReadout("grace", this.grace);
 	}
 
 };

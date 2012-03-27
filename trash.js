@@ -8,7 +8,7 @@
 EASY.trash = {
 
 	GRAB_DISTANCE: 1.5,
-	MAX_QUANT: 10,
+	QUANT_MULTIPLE: 3,
 	
 	ITEM: [ "wood", "oil", "coin" ],
 
@@ -103,13 +103,13 @@ EASY.trash = {
 		this.list.length = 0;
 
 		// quantities cycle quasi-periodically over time
-		base = Math.ceil(0.5 * this.MAX_QUANT * ((Math.cos(this.phase) + 1) * 0.5));
+		base = 1.5 + 0.5 * Math.cos(this.phase);
 		//console.log("base: ", base);
 		
 		// for each item type
 		for (i = 0, il = this.ITEM.length; i < il; i++) {
 			// determine total quantity of item
-			quant = base + Math.floor(base * Math.random());
+			quant = Math.ceil(this.QUANT_MULTIPLE * base * (1 + Math.random()));
 			// break into random set of drops
 			do {
 				drop = Math.ceil(quant * Math.random());

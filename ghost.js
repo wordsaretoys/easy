@@ -9,9 +9,13 @@ EASY.ghost = {
 
 	RADIUS: 0.5,
 	BUFFER_ZONE: 4,
-	ATTACK_DELAY: 2,
 	MAX_DAMAGE: 5,
 	SYMPATHY_LOSS: 0.4,
+	
+	GRACE_MULTIPLE: 1,
+	DELAY_MULTIPLE: 2,
+	SPEED_MULTIPLE: 2.5,
+	RESOLVE_MULTIPLE: 10,
 	
 	DORMANT: 0,
 	ATTACKING: 1,
@@ -71,10 +75,13 @@ EASY.ghost = {
 			
 	},
 	
+	phase: 0,
 	mode: 0,
 	resolve: 0,
 	cooldown: 0,
 	alpha: 0,
+	grace: 0,
+	delay: 0,
 	
 	position: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
@@ -139,7 +146,9 @@ EASY.ghost = {
 	
 	generate: function() {
 
-		// generate attributes
+		var base;
+	
+		// determine initial sympathies
 		this.sympathy.excuse = Math.random();
 		this.sympathy.appease = Math.random();
 		this.sympathy.flatter = Math.random();
@@ -147,8 +156,16 @@ EASY.ghost = {
 		this.sympathy.confuse = Math.random();
 		this.sympathy.normalize();
 
-		this.speed = 2.5 + Math.floor(1.5 * Math.random());
-		this.resolve = 10 + Math.floor(20 * Math.random());
+		// requirements cycle quasi-periodically over time
+		base = 1.5 + 0.5 * Math.cos(this.phase);
+		
+		this.speed = this.SPEED_MULTIPLE * base * (1 + Math.random());
+		this.delay = this.DELAY_MULTIPLE * base * (1 + Math.random());
+		this.resolve = Math.ceil(this.RESOLVE_MULTIPLE * base * (1 + Math.random()));
+		this.grace = Math.ceil(this.GRACE_MULTIPLE * base * (1 + Math.random()));
+		
+		// next random phase
+		this.phase += Math.random();
 		
 		this.velocity.set();
 
@@ -230,7 +247,7 @@ EASY.ghost = {
 			} else {
 				EASY.hud.comment(this.COMMENTS.attack.pick(), "ghosty");
 				EASY.player.weaken(1);
-				this.cooldown = this.ATTACK_DELAY + Math.random();
+				this.cooldown = this.delay + Math.random();
 			}
 			
 			// look for the player

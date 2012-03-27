@@ -10,7 +10,8 @@ EASY.corpse = {
 	RADIUS: 0.5,
 	USE_RADIUS: 2.5,
 	BURN_TIME: 5,
-	MAX_REQUIRED: 10,
+	PYRE_MULTIPLE: 2,
+	GRACE_MULTIPLE: 1,
 
 	INTACT: 0,
 	BURNING: 1,
@@ -43,6 +44,7 @@ EASY.corpse = {
 	wood: 0,
 	oil: 0,
 	change: 0,
+	grace: 0,
 	
 	scratch: {
 		pos: SOAR.vector.create()
@@ -114,13 +116,16 @@ EASY.corpse = {
 		this.position.set(p.x, EASY.cave.ZERO_HEIGHT + 0.01, p.z);
 		
 		// requirements cycle quasi-periodically over time
-		base = Math.ceil(0.5 * this.MAX_REQUIRED * ((Math.sin(this.phase) + 1) * 0.5));
+		base = 1.5 + 0.5 * Math.cos(this.phase);
 		//console.log(base);
 		
 		// generate requirements for cremation
-		this.wood = base + Math.floor(base * Math.random());
-		this.oil = base + Math.floor(base * Math.random());
-		this.coin = base + Math.floor(base * Math.random());
+		this.wood = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
+		this.oil = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
+		this.coin = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
+		
+		// generate grace reward
+		this.grace = Math.ceil(this.GRACE_MULTIPLE * base * (1 + Math.random()));
 		
 		// next random phase
 		this.phase += Math.random();
