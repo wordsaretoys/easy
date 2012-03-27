@@ -18,8 +18,6 @@ EASY.player = {
 	MAX_RESOLVE: 50,
 	RECOVERY_RATE: 0.5,
 
-	ATTACK_DELAY: 2,
-	
 	COMMENTS: {
 	
 		cave: {
@@ -488,28 +486,29 @@ EASY.player = {
 	},
 
 	/**
-		attack the ghost if it's attacking
-		and player isn't still cooling down
-		
+		attempt an attack on the ghost
+	
 		@method attack
 		@param type string, attack type
 	**/
 	
 	attack: function(type) {
-		if (EASY.ghost.mode !== EASY.ghost.ATTACKING)
-		{
+		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			EASY.hud.comment(this.COMMENTS.attack.notarget.pick());
 		} else if (this.cooldown > 0) {
 			EASY.hud.comment(this.COMMENTS.attack.notready.pick());
 		} else {
 			EASY.hud.comment(this.COMMENTS.attack[type].pick());
-			EASY.ghost.weaken(type);
-			this.cooldown = this.ATTACK_DELAY;
+			// if the ghost defends against the attack
+			if (EASY.ghost.defend(type)) {
+				// we have to fumble a little
+				this.cooldown = Math.random();
+			}
 		}
 	},
 	
 	/**
-		handle damage caused by proximity to the ghost
+		handle an attack by the ghost
 		
 		@method weaken
 		@param damage number, subtract this from resolve

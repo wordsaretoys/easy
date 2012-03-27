@@ -10,6 +10,8 @@ EASY.ghost = {
 	RADIUS: 0.5,
 	BUFFER_ZONE: 4,
 	ATTACK_DELAY: 2,
+	MAX_DAMAGE: 5,
+	SYMPATHY_LOSS: 0.4,
 	
 	DORMANT: 0,
 	ATTACKING: 1,
@@ -17,61 +19,56 @@ EASY.ghost = {
 	
 	COMMENTS: {
 	
-		attack: {
-		
-			death: [
-				"Blood. Blood. Blood. Blood? Blood."
-			]
-		},
+		attack: [
+			"Blood. Blood. Blood. Blood? Blood."
+		],
 		
 		awaken: [
 			"I see you, flesh."
 		],
 		
-		damage: [
-			[
+		weaken: [
+			"I can see your side of it.",
+			"This line of argument may lead us somewhere.",
+			"There are possibilities in what you say.",
+			"I am forced by circumstances to agree.",
+			"I can find no substantial quarrel with that."
+		],
+		
+		ignore: [
 				"No. Not a thing. Sorry.",
 				"Were you talking to me?",
 				"I can't be bothered to care."
-			],
-			[
-				"You make a very small point.",
-				"There is something to that. <em>What</em>, I have no idea.",
-				"I will not argue semantics."
-			],
-			[
-				"I can see your side of it.",
-				"This line of argument may lead us somewhere.",
-				"There are possibilities in what you say."
-			],
-			[
-				"I am forced by circumstances to agree.",
-				"I can find no substantial quarrel with that.",
-				"There is little left to debate, then."
-			],
-			[
-				"I've never heard such a concise argument.",
-				"I have no disagreement worth uttering.",
-				"Astonishing, and I must agree."
-			]
 		],
 		
 		calmed: [
 			"The weight is gone. Perhaps I can move on now."
 		],
 		
-		fled: [
+		alone: [
 			"Gone. How disappointing."
 		]
 			
 	},				
 	
-	rating: {
+	sympathy: {
+
 		excuse: 0,
 		appease: 0,
 		flatter: 0,
 		blame: 0,
-		confuse: 0
+		confuse: 0,
+		
+		normalize: function() {
+			var mag = this.excuse + this.appease + 
+				this.flatter + this.blame + this.confuse;
+			this.excuse = this.excuse / mag;
+			this.appease = this.appease / mag;
+			this.flatter = this.flatter / mag;
+			this.blame = this.blame / mag;
+			this.confuse = this.confuse / mag;
+		}
+			
 	},
 	
 	mode: 0,
@@ -143,11 +140,12 @@ EASY.ghost = {
 	generate: function() {
 
 		// generate attributes
-		this.rating.excuse = Math.floor(5 * Math.random());
-		this.rating.appease = Math.floor(5 * Math.random());
-		this.rating.flatter = Math.floor(5 * Math.random());
-		this.rating.blame = Math.floor(5 * Math.random());
-		this.rating.confuse = Math.floor(5 * Math.random());
+		this.sympathy.excuse = Math.random();
+		this.sympathy.appease = Math.random();
+		this.sympathy.flatter = Math.random();
+		this.sympathy.blame = Math.random();
+		this.sympathy.confuse = Math.random();
+		this.sympathy.normalize();
 
 		this.speed = 2.5 + Math.floor(1.5 * Math.random());
 		this.resolve = 10 + Math.floor(20 * Math.random());
@@ -230,7 +228,7 @@ EASY.ghost = {
 			if (this.cooldown > 0) {
 				this.cooldown = Math.max(0, this.cooldown - dt);
 			} else {
-				EASY.hud.comment(this.COMMENTS.attack.death.pick(), "ghosty");
+				EASY.hud.comment(this.COMMENTS.attack.pick(), "ghosty");
 				EASY.player.weaken(1);
 				this.cooldown = this.ATTACK_DELAY + Math.random();
 			}
@@ -270,7 +268,7 @@ EASY.ghost = {
 			// can't see the player even once you're on top of the target?
 			if (!hit && len < 1.1) {
 				// lost the bugger, so go back to dormancy
-				EASY.hud.comment(this.COMMENTS.fled.pick(), "ghosty");
+				EASY.hud.comment(this.COMMENTS.alone.pick(), "ghosty");
 				this.suspend();
 			}
 
@@ -320,17 +318,28 @@ EASY.ghost = {
 	},
 	
 	/**
-		handle weakening of resolve
+		handle an attack from the player
 		
-		@method weaken
+		determine if the attack succeeded
+		and how much it weakened resolve
+		
+		@method defend
 		@param attack string, the attack type
+		@return true if ghost defended attack (i.e., attack *failed*)
 	**/
 	
-	weaken: function(attack) {
-		// can only take damge when attacking
-		if (this.mode === this.ATTACKING) {
-			var damage = this.rating[attack];
-			EASY.hud.comment(this.COMMENTS.damage[damage].pick(), "ghosty");
+	defend: function(attack) {
+		var sympathy = this.sympathy[attack];
+		var damage;
+		
+		// saving throw against attack
+		// biasing toward lower values
+		if (Math.random() * Math.random() < sympathy) {
+			EASY.hud.comment(this.COMMENTS.weaken.pick(), "ghosty");
+			// damage is based on the idea that the most convincing
+			// argument is the one not anticipated. thus, damage is
+			// greater if an unexpected argument succeeds.
+			damage = this.MAX_DAMAGE * (1 - sympathy);
 			this.resolve = Math.max(0, this.resolve - damage);
 			// if we run out of resolve
 			if (this.resolve === 0) {
@@ -338,6 +347,14 @@ EASY.ghost = {
 				EASY.hud.comment(this.COMMENTS.calmed.pick(), "ghosty");
 				this.mode = this.BECALMED;
 			}
+			// sympathy to arguments decreases with success
+			this.sympathy[attack] = sympathy * (1 - this.SYMPATHY_LOSS);
+			// other arguments become more sympathetic
+			this.sympathy.normalize();
+			return false;
+		} else {
+			EASY.hud.comment(this.COMMENTS.ignore.pick(), "ghosty");
+			return true;
 		}
 	}
 
