@@ -221,7 +221,7 @@ EASY.ghost = {
 		
 			// fade the ghost in if not visible
 			if (this.alpha < 1) {
-				this.alpha = Math.min(1, this.alpha + 0.01);
+				this.alpha = Math.min(1, this.alpha + dt);
 			}
 
 			// attack if we're not cooling down
@@ -278,7 +278,7 @@ EASY.ghost = {
 
 			// fade the ghost out
 			if (this.alpha > 0) {
-				this.alpha = Math.max(0, this.alpha - 0.01);
+				this.alpha = Math.max(0, this.alpha - dt);
 			}
 			
 			break;

@@ -89,8 +89,19 @@ EASY.player = {
 				"I have to calm the ghost down first."
 			],
 			
-			notenough: [
-				"I don't have what I need to do that."
+			nowood: [
+				"I don't have enough wood for kindling.",
+				"Not enough wood. Blood-soaked cloth doesn't burn well."
+			],
+			
+			nooil: [
+				"I don't have enough oil for the anointing.",
+				"Not enough oil. Got to grease that corpse up."
+			],
+			
+			nocoin: [
+				"I don't have enough coin for the offering.",
+				"Not enough coin. The gods want their cut, too."
 			]
 		}
 		
@@ -541,11 +552,18 @@ EASY.player = {
 			return;
 		}
 		
-		// check that player can build pyre
-		if (player.trash.wood < corpse.wood ||
-		player.trash.oil < corpse.oil ||
-		player.trash.coin <corpse.coin) {
-			hud.comment(player.COMMENTS.cremate.notenough.pick());
+		// check that player has sufficient materials
+		if (player.trash.wood < corpse.wood) {
+			hud.comment(player.COMMENTS.cremate.nowood.pick());
+			return;
+		}
+		if (player.trash.oil < corpse.oil) {
+			hud.comment(player.COMMENTS.cremate.nooil.pick());
+			return;
+		}
+		
+		if (player.trash.coin < corpse.coin) {
+			hud.comment(player.COMMENTS.cremate.nocoin.pick());
 			return;
 		}
 		
