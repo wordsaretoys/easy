@@ -8,14 +8,17 @@
 EASY.trash = {
 
 	GRAB_DISTANCE: 1.5,
-	CYCLE_PERIOD: 8,
 	MAX_QUANT: 10,
 	
 	ITEM: [ "wood", "oil", "coin" ],
 
 	list: [],
 	texture: {},
-	dummymt: new Float32Array(16),
+	phase: 0,
+	
+	scratch: {
+		matrix: new Float32Array(16)
+	},
 
 	/**
 		create and init required objects
@@ -99,8 +102,9 @@ EASY.trash = {
 		
 		this.list.length = 0;
 
-		// quantities cycle periodically over time
-		base = Math.ceil(0.5 * this.MAX_QUANT * Math.abs(Math.cos(Math.PI * EASY.generation / this.CYCLE_PERIOD)));
+		// quantities cycle quasi-periodically over time
+		base = Math.ceil(0.5 * this.MAX_QUANT * ((Math.cos(this.phase) + 1) * 0.5));
+		//console.log("base: ", base);
 		
 		// for each item type
 		for (i = 0, il = this.ITEM.length; i < il; i++) {
@@ -120,6 +124,9 @@ EASY.trash = {
 			} while(quant > 0 && flat.length > 0);
 
 		}
+		
+		// add random phase
+		this.phase += Math.random();
 /*
 		var item, t = {};
 		for (i = 0, il = this.list.length; i < il; i++) {
@@ -191,9 +198,9 @@ EASY.trash = {
 		if (camera.mapView) {
 			camera = EASY.player.eyeview;
 			camera.yaw.w = -camera.yaw.w;
-			camera.yaw.toMatrix(this.dummymt);
+			camera.yaw.toMatrix(this.scratch.matrix);
 			camera.yaw.w = -camera.yaw.w;
-			gl.uniformMatrix4fv(shader.rotations, false, this.dummymt);
+			gl.uniformMatrix4fv(shader.rotations, false, this.scratch.matrix);
 			center = EASY.player.headPosition;
 			gl.uniform3f(shader.center, center.x, center.y, center.z);
 			this.texture.player.bind(0, shader.sign);

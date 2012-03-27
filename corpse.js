@@ -10,6 +10,7 @@ EASY.corpse = {
 	RADIUS: 0.5,
 	USE_RADIUS: 2.5,
 	BURN_TIME: 5,
+	MAX_REQUIRED: 10,
 
 	INTACT: 0,
 	BURNING: 1,
@@ -36,6 +37,8 @@ EASY.corpse = {
 	texture: {},
 	position: SOAR.vector.create(),
 	mode: 0,
+	
+	phase: Math.PI,
 	
 	wood: 0,
 	oil: 0,
@@ -104,14 +107,23 @@ EASY.corpse = {
 	**/
 	
 	generate: function() {
+		var base, p;
+	
 		// grab position from cave flat list
-		var p = EASY.cave.flat.pop();
+		p = EASY.cave.flat.pop();
 		this.position.set(p.x, EASY.cave.ZERO_HEIGHT + 0.01, p.z);
 		
+		// requirements cycle quasi-periodically over time
+		base = Math.ceil(0.5 * this.MAX_REQUIRED * ((Math.sin(this.phase) + 1) * 0.5));
+		console.log(base);
+		
 		// generate requirements for cremation
-		this.wood = Math.ceil(5 * Math.random());
-		this.oil = Math.ceil(5 * Math.random());
-		this.coin = Math.ceil(5 * Math.random());
+		this.wood = base + Math.floor(base * Math.random());
+		this.oil = base + Math.floor(base * Math.random());
+		this.coin = base + Math.floor(base * Math.random());
+		
+		// next random phase
+		this.phase += Math.random();
 		
 		// generate an identity string
 		this.identity = this.TITLE.pick() + " of " + this.TRIBE.pick();

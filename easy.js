@@ -38,8 +38,6 @@ var EASY = {
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
-	generation: -1,
-	
 	updating: true,
 
 	/**
@@ -134,7 +132,6 @@ var EASY = {
 	**/
 	
 	generate: function() {
-		EASY.generation++;
 		EASY.cave.generate();
 		EASY.corpse.generate();
 		EASY.trash.generate();
