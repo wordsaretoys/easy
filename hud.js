@@ -14,8 +14,7 @@ EASY.hud = {
 		wood: 0,
 		oil: 1,
 		coin: 2,
-		resolve: 3,
-		grace: 4
+		resolve: 3
 	},
 
 	pauseMsg: "Press Esc To Resume",
@@ -171,28 +170,6 @@ EASY.hud = {
 			.hide(this.COMMENT_FADE_TIME, function() {
 				div.remove();
 			});
-	},
-
-	/**
-		set player resolve display
-		
-		@method setPlayerResolve
-		@param pc number, resolve as fraction of total
-	**/
-	
-	setPlayerResolve: function(pc) {
-		//this.dom.resolve.css("width", Math.floor(pc * 100) + "%");
-	},
-	
-	/**
-		set player money display
-		
-		@method setPlayerMoney
-		@param n number, total amount of money
-	**/
-	
-	setPlayerMoney: function(n) {
-		//this.dom.money.html(n);
 	},
 
 	/**

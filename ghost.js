@@ -12,7 +12,6 @@ EASY.ghost = {
 	MAX_DAMAGE: 5,
 	SYMPATHY_LOSS: 0.4,
 	
-	GRACE_MULTIPLE: 1,
 	DELAY_MULTIPLE: 2,
 	SPEED_MULTIPLE: 2.5,
 	RESOLVE_MULTIPLE: 10,
@@ -80,7 +79,6 @@ EASY.ghost = {
 	resolve: 0,
 	cooldown: 0,
 	alpha: 0,
-	grace: 0,
 	delay: 0,
 	
 	position: SOAR.vector.create(),
@@ -162,7 +160,6 @@ EASY.ghost = {
 		this.speed = this.SPEED_MULTIPLE * base * (1 + Math.random());
 		this.delay = this.DELAY_MULTIPLE * base * (1 + Math.random());
 		this.resolve = Math.ceil(this.RESOLVE_MULTIPLE * base * (1 + Math.random()));
-		this.grace = Math.ceil(this.GRACE_MULTIPLE * base * (1 + Math.random()));
 		
 		// next random phase
 		this.phase += Math.random();

@@ -40,7 +40,7 @@ EASY.player = {
 			],
 			
 			coin: [
-				"All right! Enough money to buy a shoe! Retirement, here I come!"
+				"All right! Enough money to buy a shoelace! Retirement, here I come!"
 			]
 		},
 		
@@ -79,13 +79,8 @@ EASY.player = {
 			notarget: [
 				"What, am I talking to <em>myself</em> now?",
 				"Why? No one can hear me."
-			],
-			
-			abandon: [
-				"I'm getting the hell out of here.",
-				"That's it, I'm out."
 			]
-
+			
 		},
 		
 		cremate: {
@@ -108,6 +103,23 @@ EASY.player = {
 				"I don't have enough coin for the offering.",
 				"Not enough coin. The gods want their cut, too."
 			]
+		},
+		
+		outcome: {
+		
+			resolve: [
+				"Strange. I feel...braver."
+			],
+			
+			abandon: [
+				"I'm getting the hell out of here.",
+				"That's it, I'm out.",
+				"Time to go clean out my breeches."
+			],
+
+			cremate: [
+				"Another one for the invoice."
+			]
 		}
 		
 	},
@@ -124,7 +136,6 @@ EASY.player = {
 	
 	resolve: 0,
 	cooldown: 0,
-	grace: 0,
 	
 	motion: {
 		moveleft: false, moveright: false,
@@ -504,7 +515,7 @@ EASY.player = {
 		@method attack
 		@param type string, attack type
 	**/
-	
+/*	
 	attack: function(type) {
 		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			EASY.hud.comment(this.COMMENTS.attack.notarget.pick());
@@ -520,8 +531,6 @@ EASY.player = {
 			// if we've calmed the ghost down
 			if (EASY.ghost.mode === EASY.ghost.BECALMED) {
 				// take the reward
-				this.grace += EASY.ghost.grace;
-				EASY.hud.setReadout("grace", this.grace);
 			}
 		}
 	},
@@ -539,6 +548,7 @@ EASY.player = {
 		EASY.hud.setReadout("resolve", Math.floor(this.resolve) + "/" + this.MAX_RESOLVE);
 		// if resolve drops to zero, flee in abject terror
 		if (this.resolve === 0) {
+			EASY.hud.comment(this.COMMENTS.outcome.abandon.pick());
 			this.exitCave();
 		}
 	},
@@ -584,10 +594,6 @@ EASY.player = {
 		hud.setReadout("coin", this.trash.coin);
 		
 		corpse.cremate();
-		
-		// add reward to grace
-		this.grace += corpse.grace;
-		hud.setReadout("grace", this.grace);
 	},
 	
 	/**
@@ -599,30 +605,6 @@ EASY.player = {
 	**/
 	
 	exitCave: function() {
-	
-		// if player chose to leave cave (rather than fleeing in terror)
-		// we deduct grace points; the gods forgive fear but not apathy
-		if (this.resolve > 0) {
-		
-			// have we calmed the ghost?
-			if (EASY.ghost.mode !== EASY.ghost.BECALMED) {
-				// deduct grace penalty
-				this.grace = Math.ceil(this.grace - EASY.ghost.grace / 2);
-			}
-		
-			// have we cremated the corpse?
-			if (EASY.corpse.mode === EASY.corpse.INTACT) {
-				// deduct grace penalty
-				this.grace = Math.ceil(this.grace - EASY.corpse.grace / 2);
-			}
-			
-			EASY.hud.setReadout("grace", this.grace);
-		} else {
-		
-			EASY.hud.comment(this.COMMENTS.attack.abandon.pick());
-			
-		}
-		
 		// throw up a wait screen and use the next animation frame
 		// to generate the next map; allows HUD changes to show up
 		EASY.hud.darken(EASY.hud.waitMsg);
