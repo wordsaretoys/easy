@@ -20,6 +20,12 @@ EASY.hud = {
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
 	
+	endingMsg: {
+		resolve: "<p>You've Gained the Confidence to Seek Your Own Path.</p><p>Leave the Cave and Send Easy the Bill.</p>",
+		money: "<p>You've Made Enough Coin to Leave the Cave</p><p>(sadly, you'll probably be back soon enough)</p>",
+		playagain: "<p>Press F5 to Play Again</p>"
+	},
+	
 	/**
 		establish jQuery shells around UI DOM objects &
 		assign methods for simple behaviors (resize, etc)
@@ -52,6 +58,11 @@ EASY.hud = {
 		this.dom.window.bind("resize", this.resize);			
 		this.dom.window.bind("keydown", this.onKeyDown);
 		this.resize();
+		
+		// prevent highlighting of message text
+		this.dom.message.bind("mousedown", function() {
+			return false;
+		});
 	},
 
 	/**
@@ -218,6 +229,20 @@ EASY.hud = {
 	setReadout: function(label, value) {
 		var index = this.LABEL[label];
 		this.dom.value[index].innerHTML = value;
-	}
+	},
+	
+	/**
+		set up an end screen and stop the game
+		
+		@method endGame
+		@param ending string, which ending to display
+	**/
 
+	endGame: function(ending) {
+		var msg = this.endingMsg[ending] + this.endingMsg["playagain"];
+		this.darken(msg);
+		SOAR.running = false;
+		this.dom.window.unbind("keydown");
+		this.dom.tracker.unbind();
+	}
 };

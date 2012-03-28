@@ -11,6 +11,7 @@ EASY.corpse = {
 	USE_RADIUS: 2.5,
 	BURN_TIME: 5,
 	PYRE_MULTIPLE: 2,
+	CASH_MULTIPLE: 3,
 
 	INTACT: 0,
 	BURNING: 1,
@@ -115,12 +116,13 @@ EASY.corpse = {
 		
 		// requirements cycle quasi-periodically over time
 		base = 1.5 + 0.5 * Math.cos(this.phase);
-		//console.log(base);
 		
 		// generate requirements for cremation
 		this.wood = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
 		this.oil = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
-		this.coin = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
+		
+		// generate reward
+		this.reward = Math.ceil(this.CASH_MULTIPLE * base * (1 + Math.random()));
 		
 		// next random phase
 		this.phase += Math.random();
@@ -159,7 +161,7 @@ EASY.corpse = {
 			if (!EASY.hud.dom.prompts.shown && t > 1) {
 				EASY.hud.showPrompt("E", 
 					"Cremate " + this.identity,
-					"Requires " + this.wood + " wood, " + this.oil + " oil, " + this.coin + " coin",
+					"Requires " + this.wood + " wood, " + this.oil + " oil ",
 					"cremate");
 			} else if (EASY.hud.dom.prompts.shown && t <= 1) {
 				EASY.hud.hidePrompt();

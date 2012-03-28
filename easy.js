@@ -38,6 +38,9 @@ var EASY = {
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
+	RESOLVE_TARGET: 50,
+	EARNING_TARGET: 1000,
+	
 	updating: true,
 
 	/**

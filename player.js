@@ -40,7 +40,8 @@ EASY.player = {
 			],
 			
 			coin: [
-				"All right! Enough money to buy a shoelace! Retirement, here I come!"
+				"All right! Enough money to buy a shoelace! Retirement, here I come!",
+				"Finding a few moldy coppers makes all the terror worthwhile."
 			]
 		},
 		
@@ -107,7 +108,7 @@ EASY.player = {
 		
 		outcome: {
 		
-			resolve: [
+			courage: [
 				"Strange. I feel...braver."
 			],
 			
@@ -117,7 +118,7 @@ EASY.player = {
 				"Time to go clean out my breeches."
 			],
 
-			cremate: [
+			invoice: [
 				"Another one for the invoice."
 			]
 		}
@@ -515,7 +516,7 @@ EASY.player = {
 		@method attack
 		@param type string, attack type
 	**/
-/*	
+
 	attack: function(type) {
 		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			EASY.hud.comment(this.COMMENTS.attack.notarget.pick());
@@ -530,7 +531,9 @@ EASY.player = {
 			}
 			// if we've calmed the ghost down
 			if (EASY.ghost.mode === EASY.ghost.BECALMED) {
-				// take the reward
+				// level up, so to speak
+				this.MAX_RESOLVE++;
+				EASY.hud.comment(this.COMMENTS.outcome.courage.pick());
 			}
 		}
 	},
@@ -580,20 +583,19 @@ EASY.player = {
 			return;
 		}
 		
-		if (this.trash.coin < corpse.coin) {
-			hud.comment(this.COMMENTS.cremate.nocoin.pick());
-			return;
-		}
-		
 		// go ahead and burn it, deducting materials for pyre
 		this.trash.wood -= corpse.wood;
 		hud.setReadout("wood", this.trash.wood);
 		this.trash.oil -= corpse.oil;
 		hud.setReadout("oil", this.trash.oil);
-		this.trash.coin -= corpse.coin;
-		hud.setReadout("coin", this.trash.coin);
 		
 		corpse.cremate();
+		
+		// invoice and reward
+		EASY.hud.comment(this.COMMENTS.outcome.invoice.pick());
+		this.trash.coin += corpse.reward;
+		hud.setReadout("coin", this.trash.coin);
+		
 	},
 	
 	/**
@@ -605,14 +607,21 @@ EASY.player = {
 	**/
 	
 	exitCave: function() {
-		// throw up a wait screen and use the next animation frame
-		// to generate the next map; allows HUD changes to show up
-		EASY.hud.darken(EASY.hud.waitMsg);
-		SOAR.schedule(function() {
-			EASY.generate();
-			EASY.hud.lighten();
-		}, 1, false);
 		
+		// have we reached either ending target?
+		if (this.MAX_RESOLVE >= EASY.RESOLVE_TARGET) {
+			EASY.hud.endGame("resolve");
+		} else if (this.MAX_RESOLVE >= EASY.EARNING_TARGET) {
+			EASY.hud.endGame("money");
+		} else {
+			// throw up a wait screen
+			EASY.hud.darken(EASY.hud.waitMsg);
+			// on the next animation frame, generate a new level
+			SOAR.schedule(function() {
+				EASY.generate();
+				EASY.hud.lighten();
+			}, 1, false);
+		}
 	}
 
 };
