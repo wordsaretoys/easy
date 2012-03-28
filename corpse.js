@@ -165,7 +165,7 @@ EASY.corpse = {
 				EASY.hud.showPrompt("E", 
 					"Cremate " + this.identity,
 					"Requires " + this.wood + " wood, " + this.oil + " oil, " + this.coin + " coin",
-					EASY.player.cremate);
+					"cremate");
 			} else if (EASY.hud.dom.prompts.shown && t <= 1) {
 				EASY.hud.hidePrompt();
 			}

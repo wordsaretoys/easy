@@ -544,50 +544,49 @@ EASY.player = {
 	
 	/**
 		attempt a cremation
-		
+
 		@method cremate
 	**/
 	
 	cremate: function() {
-		var player = EASY.player
 		var corpse = EASY.corpse;
 		var ghost = EASY.ghost;
 		var hud = EASY.hud;
 	
 		// check that the ghost is calmed down
 		if (ghost.mode !== ghost.BECALMED) {
-			hud.comment(player.COMMENTS.cremate.notcalm.pick());
+			hud.comment(this.COMMENTS.cremate.notcalm.pick());
 			return;
 		}
 		
 		// check that player has sufficient materials
-		if (player.trash.wood < corpse.wood) {
-			hud.comment(player.COMMENTS.cremate.nowood.pick());
+		if (this.trash.wood < corpse.wood) {
+			hud.comment(this.COMMENTS.cremate.nowood.pick());
 			return;
 		}
-		if (player.trash.oil < corpse.oil) {
-			hud.comment(player.COMMENTS.cremate.nooil.pick());
+		if (this.trash.oil < corpse.oil) {
+			hud.comment(this.COMMENTS.cremate.nooil.pick());
 			return;
 		}
 		
-		if (player.trash.coin < corpse.coin) {
-			hud.comment(player.COMMENTS.cremate.nocoin.pick());
+		if (this.trash.coin < corpse.coin) {
+			hud.comment(this.COMMENTS.cremate.nocoin.pick());
 			return;
 		}
 		
 		// go ahead and burn it, deducting materials for pyre
-		player.trash.wood -= corpse.wood;
-		hud.setReadout("wood", player.trash.wood);
-		player.trash.oil -= corpse.oil;
-		hud.setReadout("oil", player.trash.oil);
-		player.trash.coin -= corpse.coin;
-		hud.setReadout("coin", player.trash.coin);
+		this.trash.wood -= corpse.wood;
+		hud.setReadout("wood", this.trash.wood);
+		this.trash.oil -= corpse.oil;
+		hud.setReadout("oil", this.trash.oil);
+		this.trash.coin -= corpse.coin;
+		hud.setReadout("coin", this.trash.coin);
 		
 		corpse.cremate();
 		
 		// add reward to grace
 		this.grace += corpse.grace;
-		EASY.hud.setReadout("grace", this.grace);
+		hud.setReadout("grace", this.grace);
 	},
 	
 	/**

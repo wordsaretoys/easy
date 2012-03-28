@@ -107,7 +107,11 @@ EASY.hud = {
 			break;
 		case SOAR.KEY.E:
 			if (EASY.hud.dom.prompts.shown) {
-				EASY.hud.dom.prompts.action();
+				switch(EASY.hud.dom.prompts.action) {
+				case "cremate":
+					EASY.player.cremate();
+					break;
+				}
 			}
 			break;
 		default:
@@ -198,7 +202,7 @@ EASY.hud = {
 		@param key string, key to prompt for
 		@param verb string, what the key does
 		@param phrase string, what the verb acts on
-		@param action function to call if user presses key
+		@param action string, what the action does
 	**/
 	
 	showPrompt: function(key, verb, phrase, action) {
@@ -223,7 +227,6 @@ EASY.hud = {
 		if (pr.shown) {
 			pr.css("visibility", "hidden");
 			pr.shown = false;
-			delete pr.action;
 		}
 	},
 	
