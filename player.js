@@ -15,7 +15,7 @@ EASY.player = {
 
 	HEIGHT: 1.5,
 
-	MAX_RESOLVE: 50,
+	MAX_RESOLVE: 10,
 	RECOVERY_RATE: 0.5,
 
 	COMMENTS: {
@@ -79,6 +79,11 @@ EASY.player = {
 			notarget: [
 				"What, am I talking to <em>myself</em> now?",
 				"Why? No one can hear me."
+			],
+			
+			abandon: [
+				"I'm getting the hell out of here.",
+				"That's it, I'm out."
 			]
 
 		},
@@ -315,12 +320,7 @@ EASY.player = {
 		// if we've gone past the exit, signal that it's
 		// time to go to a new cave
 		if (p.z <= 0) {
-			EASY.hud.darken(EASY.hud.waitMsg);
-			SOAR.schedule(function() {
-				EASY.player.exitCave();
-				EASY.generate();
-				EASY.hud.lighten();
-			}, 1, false);
+			this.exitCave();
 		}
 		
 		// don't allow player to go past the entrance
@@ -534,11 +534,12 @@ EASY.player = {
 	**/
 	
 	weaken: function(damage) {
+		// calculate new resolve
 		this.resolve = Math.max(0, this.resolve - damage);
 		EASY.hud.setReadout("resolve", Math.floor(this.resolve) + "/" + this.MAX_RESOLVE);
+		// if resolve drops to zero, flee in abject terror
 		if (this.resolve === 0) {
-			// TODO: add credit sequence?
-			SOAR.running = false;
+			this.exitCave();
 		}
 	},
 	
@@ -592,26 +593,44 @@ EASY.player = {
 	/**
 		handle player exit from the cave
 		
-		called when player steps out of the cave exit
+		called when player steps out of the cave exit or flees
 		
 		@method exitCave
 	**/
 	
 	exitCave: function() {
 	
-		// have we calmed the ghost?
-		if (EASY.ghost.mode !== EASY.ghost.BECALMED) {
-			// deduct grace penalty
-			this.grace = Math.ceil(this.grace - EASY.ghost.grace / 2);
-		}
-	
-		// have we cremated the corpse?
-		if (EASY.corpse.mode === EASY.corpse.INTACT) {
-			// deduct grace penalty
-			this.grace = Math.ceil(this.grace - EASY.corpse.grace / 2);
+		// if player chose to leave cave (rather than fleeing in terror)
+		// we deduct grace points; the gods forgive fear but not apathy
+		if (this.resolve > 0) {
+		
+			// have we calmed the ghost?
+			if (EASY.ghost.mode !== EASY.ghost.BECALMED) {
+				// deduct grace penalty
+				this.grace = Math.ceil(this.grace - EASY.ghost.grace / 2);
+			}
+		
+			// have we cremated the corpse?
+			if (EASY.corpse.mode === EASY.corpse.INTACT) {
+				// deduct grace penalty
+				this.grace = Math.ceil(this.grace - EASY.corpse.grace / 2);
+			}
+			
+			EASY.hud.setReadout("grace", this.grace);
+		} else {
+		
+			EASY.hud.comment(this.COMMENTS.attack.abandon.pick());
+			
 		}
 		
-		EASY.hud.setReadout("grace", this.grace);
+		// throw up a wait screen and use the next animation frame
+		// to generate the next map; allows HUD changes to show up
+		EASY.hud.darken(EASY.hud.waitMsg);
+		SOAR.schedule(function() {
+			EASY.generate();
+			EASY.hud.lighten();
+		}, 1, false);
+		
 	}
 
 };
