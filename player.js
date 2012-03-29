@@ -16,7 +16,10 @@ EASY.player = {
 	HEIGHT: 1.5,
 
 	MAX_RESOLVE: 10,
+	MAX_DAMAGE: 5,
 	RECOVERY_RATE: 0.5,
+	
+	SYMPATHY_LOSS: 0.3,
 
 	COMMENTS: {
 	
@@ -65,10 +68,6 @@ EASY.player = {
 				"Lurking in a dark cave? Might as well have been yelling <em>kill me</em>."
 			],
 			
-			confuse: [
-				"Look, a tiger. Wearing a hat. Indoors, even."
-			],
-			
 			notready: [
 				"...wait, it'll come to me...",
 				"...I had a good one, hold on...",
@@ -80,11 +79,19 @@ EASY.player = {
 			notarget: [
 				"What, am I talking to <em>myself</em> now?",
 				"Why? No one can hear me."
+			],
+			
+			outcome: [
+				"Strange. I feel...braver."
 			]
 			
 		},
 		
 		cremate: {
+		
+			success: [
+				"Another one for the invoice."
+			],
 		
 			notcalm: [
 				"I have to calm the ghost down first."
@@ -104,23 +111,6 @@ EASY.player = {
 				"I don't have enough coin for the offering.",
 				"Not enough coin. The gods want their cut, too."
 			]
-		},
-		
-		outcome: {
-		
-			courage: [
-				"Strange. I feel...braver."
-			],
-			
-			abandon: [
-				"I'm getting the hell out of here.",
-				"That's it, I'm out.",
-				"Time to go clean out my breeches."
-			],
-
-			invoice: [
-				"Another one for the invoice."
-			]
 		}
 		
 	},
@@ -136,7 +126,24 @@ EASY.player = {
 	},
 	
 	resolve: 0,
-	cooldown: 0,
+	delay: 0,
+	
+	sympathy: {
+
+		doom: 0,
+		snark: 0,
+		scare: 0,
+		doubt: 0,
+		
+		normalize: function() {
+			var mag = this.doom + this.snark + this.scare + this.doubt;
+			this.doom = this.doom / mag;
+			this.snark = this.snark / mag;
+			this.scare = this.scare / mag;
+			this.doubt = this.doubt / mag;
+		}
+			
+	},
 	
 	motion: {
 		moveleft: false, moveright: false,
@@ -203,6 +210,13 @@ EASY.player = {
 		
 		// default camera to player view
 		this.camera = this.eyeview;
+		
+		// set initial sympathies
+		this.sympathy.doom = Math.random();
+		this.sympathy.doubt = Math.random();
+		this.sympathy.scare = Math.random();
+		this.sympathy.snark = Math.random();
+		this.sympathy.normalize();
 	},
 	
 	/**
@@ -267,14 +281,15 @@ EASY.player = {
 		this.headPosition.y += this.HEIGHT;
 		camera.position.copy(this.headPosition);
 		
-		if (this.cooldown > 0) {
-			this.cooldown = Math.max(0, this.cooldown - dt);
-		}
-		
 		if (this.resolve < this.MAX_RESOLVE && EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			this.resolve = Math.min(this.resolve + this.RECOVERY_RATE * dt, this.MAX_RESOLVE);
 			EASY.hud.setReadout("resolve", Math.floor(this.resolve) +  "/" + this.MAX_RESOLVE);
 		}
+		
+		if (this.delay > 0) {
+			this.delay = Math.max(0, this.delay - dt);
+		}
+		
 	},
 	
 	/**
@@ -389,9 +404,6 @@ EASY.player = {
 				break;
 			case SOAR.KEY.FOUR:
 				that.attack("blame");
-				break;
-			case SOAR.KEY.FIVE:
-				that.attack("confuse");
 				break;
 				
 // debugging keys -- remove in production release
@@ -520,39 +532,67 @@ EASY.player = {
 	attack: function(type) {
 		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			EASY.hud.comment(this.COMMENTS.attack.notarget.pick());
-		} else if (this.cooldown > 0) {
+		} else if (this.delay > 0) {
 			EASY.hud.comment(this.COMMENTS.attack.notready.pick());
 		} else {
 			EASY.hud.comment(this.COMMENTS.attack[type].pick());
-			// if the ghost defends against the attack
-			if (EASY.ghost.defend(type)) {
-				// we have to fumble a little
-				this.cooldown = Math.random();
-			}
-			// if we've calmed the ghost down
-			if (EASY.ghost.mode === EASY.ghost.BECALMED) {
-				// level up, so to speak
-				this.MAX_RESOLVE++;
-				EASY.hud.comment(this.COMMENTS.outcome.courage.pick());
+			// if the ghost fails to defend against the attack
+			if (!EASY.ghost.defend(type)) {
+				// if we've calmed the ghost down
+				if (EASY.ghost.mode === EASY.ghost.BECALMED) {
+					// level up, so to speak
+					this.MAX_RESOLVE++;
+					EASY.hud.comment(this.COMMENTS.attack.outcome.pick());
+				}
+			} else {
+				// reset delay as we're staggered
+				this.delay = 1 + Math.random();
 			}
 		}
 	},
 	
 	/**
-		handle an attack by the ghost
+		handle an attack from the ghost
 		
-		@method weaken
-		@param damage number, subtract this from resolve
+		determine if the attack succeeded
+		and how much it weakened resolve
+		
+		@method defend
+		@param attack string, the attack type
+		@return true if player defended attack (i.e., attack *failed*)
 	**/
 	
-	weaken: function(damage) {
-		// calculate new resolve
-		this.resolve = Math.max(0, this.resolve - damage);
-		EASY.hud.setReadout("resolve", Math.floor(this.resolve) + "/" + this.MAX_RESOLVE);
-		// if resolve drops to zero, flee in abject terror
-		if (this.resolve === 0) {
-			EASY.hud.comment(this.COMMENTS.outcome.abandon.pick());
-			this.exitCave();
+	defend: function(attack) {
+		var sympathy = this.sympathy[attack];
+		var damage, pc;
+		
+		// saving throw against attack
+		// biasing toward lower values
+		if (Math.random() * Math.random() < sympathy) {
+			// defense failed
+			
+			// damage is based on the idea that the most convincing
+			// argument is the one not anticipated. thus, damage is
+			// greater if an unexpected argument succeeds.
+			damage = this.MAX_DAMAGE * (1 - sympathy);
+			pc = Math.round(100 * damage / this.resolve);
+			EASY.hud.comment("The ghost's words weakened you by " + pc + "%.", "info");
+			this.resolve = Math.max(0, this.resolve - damage);
+			EASY.hud.setReadout("resolve", Math.floor(this.resolve) + "/" + this.MAX_RESOLVE);
+			// if we run out of resolve
+			if (this.resolve === 0) {
+				// flee the cave
+				EASY.hud.comment("You fled the cave.", "info");
+				this.exitCave();
+			}
+			// sympathy to arguments decreases with success
+			this.sympathy[attack] = sympathy * (1 - this.SYMPATHY_LOSS);
+			// other arguments become more sympathetic
+			this.sympathy.normalize();
+			return false;
+		} else {
+			EASY.hud.comment("The ghost's words had no effect.", "info");
+			return true;
 		}
 	},
 	
@@ -592,7 +632,7 @@ EASY.player = {
 		corpse.cremate();
 		
 		// invoice and reward
-		EASY.hud.comment(this.COMMENTS.outcome.invoice.pick());
+		EASY.hud.comment(this.COMMENTS.cremate.success.pick());
 		this.trash.coin += corpse.reward;
 		hud.setReadout("coin", this.trash.coin);
 		
