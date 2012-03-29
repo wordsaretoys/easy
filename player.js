@@ -574,11 +574,11 @@ EASY.player = {
 			// damage is based on the idea that the most convincing
 			// argument is the one not anticipated. thus, damage is
 			// greater if an unexpected argument succeeds.
-			damage = this.MAX_DAMAGE * (1 - sympathy);
-			pc = Math.round(100 * damage / this.resolve);
+			damage = Math.round(this.MAX_DAMAGE * (1 - sympathy));
+			pc = Math.min(100, Math.round(100 * damage / this.resolve));
 			EASY.hud.comment("The ghost's words weakened you by " + pc + "%.", "info");
 			this.resolve = Math.max(0, this.resolve - damage);
-			EASY.hud.setReadout("resolve", Math.floor(this.resolve) + "/" + this.MAX_RESOLVE);
+			EASY.hud.setReadout("resolve", this.resolve + "/" + this.MAX_RESOLVE);
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// flee the cave
