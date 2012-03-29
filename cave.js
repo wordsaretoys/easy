@@ -153,7 +153,7 @@ EASY.cave = {
 		
 		// generate the triangle mesh
 		this.mesh.reset();
-		SOAR.subdivide(6, 0, 0, this.LENGTH, this.LENGTH,
+		SOAR.subdivide(8, 0, 0, this.LENGTH, this.LENGTH,
 		function(x0, z0, x1, z1, x2, z2) {
 			var y0 = that.getFloorHeight(x0, z0);
 			var y1 = that.getFloorHeight(x1, z1);

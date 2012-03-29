@@ -10,9 +10,7 @@ EASY.ghost = {
 	SPEED: 2.5,
 	RADIUS: 0.5,
 	BUFFER_ZONE: 4,
-	
 	SYMPATHY_LOSS: 0.4,
-	MAX_DAMAGE: 5,
 	
 	DORMANT: 0,
 	ATTACKING: 1,
@@ -166,7 +164,7 @@ EASY.ghost = {
 
 		// set initial state
 		this.delay = 1 + Math.random();
-		this.resolve = EASY.player.MAX_RESOLVE * 0.75;
+		this.resolve = Math.round(EASY.player.MAX_RESOLVE * 0.75);
 		this.velocity.set();
 
 		// start in dormant state
@@ -371,17 +369,13 @@ EASY.ghost = {
 	
 	defend: function(attack) {
 		var sympathy = this.sympathy[attack];
-		var damage, pc;
+		var damage;
 		// saving throw against attack
 		// biasing toward lower values
 		if (Math.random() * Math.random() < sympathy) {
 			// failed the saving throw
-			// damage is based on the idea that the most convincing
-			// argument is the one not anticipated. thus, damage is
-			// greater if an unexpected argument succeeds.
-			damage = Math.round(this.MAX_DAMAGE * (1 - sympathy));
-			pc = Math.min(100, Math.round(100 * damage / this.resolve));
-			EASY.hud.comment("Your words weakened the ghost by " + pc + "%.", "info");
+			EASY.hud.comment("Your words weakened the ghost.", "info");
+			damage = Math.round(sympathy * EASY.player.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			// if we run out of resolve
 			if (this.resolve === 0) {
@@ -395,7 +389,6 @@ EASY.ghost = {
 			this.sympathy.normalize();
 			return false;
 		} else {
-			EASY.hud.comment("Your words had no effect.", "info");
 			return true;
 		}
 	}

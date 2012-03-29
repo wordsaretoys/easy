@@ -16,7 +16,6 @@ EASY.player = {
 	HEIGHT: 1.5,
 
 	MAX_RESOLVE: 10,
-	MAX_DAMAGE: 5,
 	RECOVERY_RATE: 0.5,
 	
 	SYMPATHY_LOSS: 0.3,
@@ -564,25 +563,19 @@ EASY.player = {
 	
 	defend: function(attack) {
 		var sympathy = this.sympathy[attack];
-		var damage, pc;
+		var damage;
 		
 		// saving throw against attack
 		// biasing toward lower values
 		if (Math.random() * Math.random() < sympathy) {
-			// defense failed
-			
-			// damage is based on the idea that the most convincing
-			// argument is the one not anticipated. thus, damage is
-			// greater if an unexpected argument succeeds.
-			damage = Math.round(this.MAX_DAMAGE * (1 - sympathy));
-			pc = Math.min(100, Math.round(100 * damage / this.resolve));
-			EASY.hud.comment("The ghost's words weakened you by " + pc + "%.", "info");
+			// defense failed, calculate damage
+			damage = Math.round(sympathy * EASY.ghost.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			EASY.hud.setReadout("resolve", this.resolve + "/" + this.MAX_RESOLVE);
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// flee the cave
-				EASY.hud.comment("You fled the cave.", "info");
+				EASY.hud.comment("You flee into the next passage.", "info");
 				this.exitCave();
 			}
 			// sympathy to arguments decreases with success
@@ -591,7 +584,6 @@ EASY.player = {
 			this.sympathy.normalize();
 			return false;
 		} else {
-			EASY.hud.comment("The ghost's words had no effect.", "info");
 			return true;
 		}
 	},
