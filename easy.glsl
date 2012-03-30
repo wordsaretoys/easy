@@ -187,7 +187,8 @@ void main(void) {
 	
 	@param sign		sign texture
 	@param time		time reference for animation
-	@param alpha	master alpha 
+	@param alpha	master alpha
+	@param open		aperture radius
 	
 	@param uv		texture coordinates of fragment
 	
@@ -198,6 +199,7 @@ precision mediump float;
 uniform sampler2D noise;
 uniform float alpha;
 uniform float time;
+uniform float open;
 
 varying vec2 uv;
 
@@ -220,7 +222,7 @@ void main(void) {
 	
 	// create a "smoke ring" mask over the first effect
 	float r = 2.0 * length(uv);
-	a = a * (1.0 - r) * r;
+	a = a * (1.0 - r) * (r - open);
 	gl_FragColor = vec4(1.0, 1.0, 1.0, a * alpha);
 }
 
