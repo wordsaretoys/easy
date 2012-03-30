@@ -80,8 +80,12 @@ EASY.player = {
 				"Why? No one can hear me."
 			],
 			
-			outcome: [
+			success: [
 				"Strange. I feel...braver."
+			],
+			
+			failure: [
+				"I just had to get out of there."
 			]
 			
 		},
@@ -233,7 +237,7 @@ EASY.player = {
 
 		// reset state
 		this.resolve = this.MAX_RESOLVE;
-		EASY.hud.setReadout("resolve", this.resolve + "/" + this.MAX_RESOLVE);
+		EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 	},
 	
 	/**
@@ -282,7 +286,7 @@ EASY.player = {
 		
 		if (this.resolve < this.MAX_RESOLVE && EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			this.resolve = Math.min(this.resolve + this.RECOVERY_RATE * dt, this.MAX_RESOLVE);
-			EASY.hud.setReadout("resolve", Math.floor(this.resolve) +  "/" + this.MAX_RESOLVE);
+			EASY.hud.setResolve(Math.ceil(this.resolve), this.MAX_RESOLVE);
 		}
 		
 		if (this.delay > 0) {
@@ -516,9 +520,9 @@ EASY.player = {
 	collect: function(item) {
 		var type = item.object;
 		var num = item.number;
-		EASY.hud.comment(this.COMMENTS.trash[type].pick());
+		EASY.hud.comment(this.COMMENTS.trash[type].pick(), "player", true);
 		this.trash[type] = (this.trash[type] || 0) + num;
-		EASY.hud.setReadout(type, this.trash[type]);
+		EASY.hud.setCollection(type, this.trash[type]);
 	},
 
 	/**
@@ -529,19 +533,23 @@ EASY.player = {
 	**/
 
 	attack: function(type) {
+		var result;
 		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
-			EASY.hud.comment(this.COMMENTS.attack.notarget.pick());
+			EASY.hud.comment(this.COMMENTS.attack.notarget.pick(), "player");
 		} else if (this.delay > 0) {
-			EASY.hud.comment(this.COMMENTS.attack.notready.pick());
+			EASY.hud.comment(this.COMMENTS.attack.notready.pick(), "player");
 		} else {
-			EASY.hud.comment(this.COMMENTS.attack[type].pick());
+			result = EASY.ghost.defend(type);
+			EASY.hud.comment(this.COMMENTS.attack[type].pick(), "player", !result);
 			// if the ghost fails to defend against the attack
-			if (!EASY.ghost.defend(type)) {
+			if (!result) {
 				// if we've calmed the ghost down
 				if (EASY.ghost.mode === EASY.ghost.BECALMED) {
 					// level up, so to speak
 					this.MAX_RESOLVE++;
-					EASY.hud.comment(this.COMMENTS.attack.outcome.pick());
+					EASY.hud.comment(this.COMMENTS.attack.success.pick(), "player", true);
+					EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
+
 				}
 			} else {
 				// reset delay as we're staggered
@@ -571,12 +579,11 @@ EASY.player = {
 			// defense failed, calculate damage
 			damage = Math.round(sympathy * EASY.ghost.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
-			EASY.hud.setReadout("resolve", this.resolve + "/" + this.MAX_RESOLVE);
+			EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// flee the cave
-				EASY.hud.comment("You flee into the next passage.", "info");
-				this.exitCave();
+				this.exitCave(true);
 			}
 			// sympathy to arguments decreases with success
 			this.sympathy[attack] = sympathy * (1 - this.SYMPATHY_LOSS);
@@ -601,32 +608,32 @@ EASY.player = {
 	
 		// check that the ghost is calmed down
 		if (ghost.mode !== ghost.BECALMED) {
-			hud.comment(this.COMMENTS.cremate.notcalm.pick());
+			hud.comment(this.COMMENTS.cremate.notcalm.pick(), "player");
 			return;
 		}
 		
 		// check that player has sufficient materials
 		if (this.trash.wood < corpse.wood) {
-			hud.comment(this.COMMENTS.cremate.nowood.pick());
+			hud.comment(this.COMMENTS.cremate.nowood.pick(), "player");
 			return;
 		}
 		if (this.trash.oil < corpse.oil) {
-			hud.comment(this.COMMENTS.cremate.nooil.pick());
+			hud.comment(this.COMMENTS.cremate.nooil.pick(), "player");
 			return;
 		}
 		
 		// go ahead and burn it, deducting materials for pyre
 		this.trash.wood -= corpse.wood;
-		hud.setReadout("wood", this.trash.wood);
+		hud.setCollection("wood", this.trash.wood);
 		this.trash.oil -= corpse.oil;
-		hud.setReadout("oil", this.trash.oil);
+		hud.setCollection("oil", this.trash.oil);
 		
 		corpse.cremate();
 		
 		// invoice and reward
-		EASY.hud.comment(this.COMMENTS.cremate.success.pick());
+		EASY.hud.comment(this.COMMENTS.cremate.success.pick(), "player", true);
 		this.trash.coin += corpse.reward;
-		hud.setReadout("coin", this.trash.coin);
+		hud.setCollection("coin", this.trash.coin);
 		
 	},
 	
@@ -636,10 +643,10 @@ EASY.player = {
 		called when player steps out of the cave exit or flees
 		
 		@method exitCave
+		@param fled boolean, true if player fled cave
 	**/
 	
-	exitCave: function() {
-		
+	exitCave: function(fled) {
 		// have we reached either ending target?
 		if (this.MAX_RESOLVE >= EASY.RESOLVE_TARGET) {
 			EASY.hud.endGame("resolve");
@@ -652,6 +659,10 @@ EASY.player = {
 			SOAR.schedule(function() {
 				EASY.generate();
 				EASY.hud.lighten();
+				if (fled) {
+					EASY.hud.comment(
+						EASY.player.COMMENTS.attack.failure.pick(), "player", true);
+				}
 			}, 1, false);
 		}
 	}

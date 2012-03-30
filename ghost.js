@@ -225,7 +225,7 @@ EASY.ghost = {
 		
 			// wait for the player to walk up
 			if (pp.distance(this.position) < this.BUFFER_ZONE) {
-				EASY.hud.comment(this.COMMENTS.awaken.pick(), "ghost");
+				EASY.hud.comment(this.COMMENTS.awaken.pick(), "ghost", true);
 				this.target.copy(pp);
 				this.mode = this.ATTACKING;
 			}
@@ -281,7 +281,7 @@ EASY.ghost = {
 			// can't see the player even once you're on top of the target?
 			if (!hit && len < 1.1) {
 				// lost the bugger, so go back to dormancy
-				EASY.hud.comment(this.COMMENTS.alone.pick(), "ghost");
+				EASY.hud.comment(this.COMMENTS.alone.pick(), "ghost", true);
 				this.suspend();
 			}
 
@@ -340,8 +340,8 @@ EASY.ghost = {
 		var result, attack;
 		// repeat the last attack
 		attack = this.lastAttack.type;
-		EASY.hud.comment(this.COMMENTS.attack[attack].pick(), "ghost");
 		result = EASY.player.defend(attack);
+		EASY.hud.comment(this.COMMENTS.attack[attack].pick(), "ghost", !result);
 		// if player defended attack
 		if (result) {
 			// if this attack's failed twice in a row
@@ -374,13 +374,12 @@ EASY.ghost = {
 		// biasing toward lower values
 		if (Math.random() * Math.random() < sympathy) {
 			// failed the saving throw
-			EASY.hud.comment("Your words weakened the ghost.", "info");
 			damage = Math.round(sympathy * EASY.player.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// ghost is calmed down
-				EASY.hud.comment(this.COMMENTS.calmed.pick(), "ghost");
+				EASY.hud.comment(this.COMMENTS.calmed.pick(), "ghost", true);
 				this.mode = this.BECALMED;
 			}
 			// sympathy to arguments decreases with success

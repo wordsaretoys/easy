@@ -7,7 +7,7 @@
 
 EASY.hud = {
 
-	COMMENT_FADE_TIME: 100,
+	COMMENT_FADE_TIME: 250,
 	COMMENT_READ_TIME: 4000,
 	
 	LABEL: {
@@ -42,7 +42,13 @@ EASY.hud = {
 			message: jQuery("#message"),
 			prompts: jQuery("#prompts"),
 			
-			value: jQuery(".value")
+			collect: {
+				oil: jQuery("#oil"),
+				wood: jQuery("#wood"),
+				coin: jQuery("#coin")
+			},
+			resolve: jQuery("#resolve"),
+			maxResolve: jQuery("#max-resolve")
 			
 		};
 
@@ -167,20 +173,31 @@ EASY.hud = {
 		@method comment
 		@param msg string, message to display
 		@param who string, classname of speaker
+		@param hey boolean, true if we should flash
 	**/
 
-	comment: function(msg, who) {
+	comment: function(msg, who, hey) {
 		var div = jQuery(document.createElement("div"));
-		who = who || "player";
 		div.addClass(who);
 		div.html(msg);
 		div.css("display", "none");
 		this.dom.comment.append(div);
-		div.show(this.COMMENT_FADE_TIME)
-			.delay(this.COMMENT_READ_TIME)
-			.hide(this.COMMENT_FADE_TIME, function() {
-				div.remove();
-			});
+		if (hey) {
+			div.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(this.COMMENT_FADE_TIME, 0.5)
+				.delay(this.COMMENT_READ_TIME)
+				.hide(this.COMMENT_FADE_TIME, function() {
+					div.remove();
+				});
+		} else {
+			div.fadeTo(this.COMMENT_FADE_TIME, 0.5)
+				.delay(this.COMMENT_READ_TIME)
+				.hide(this.COMMENT_FADE_TIME, function() {
+					div.remove();
+				});
+		}
 	},
 
 	/**
@@ -219,16 +236,49 @@ EASY.hud = {
 	},
 	
 	/**
-		update a particular player state readout
+		update collection readout
 		
-		@method setReadout
-		@param label string, name of state to change (see this.LABEL)
-		@param value string, state value
+		@method setCollection
+		@param type string, "wood" || "oil" || "coin"
+		@param value number, how much of the type player holds now
 	**/
 	
-	setReadout: function(label, value) {
-		var index = this.LABEL[label];
-		this.dom.value[index].innerHTML = value;
+	setCollection: function(type, value) {
+		var collect = this.dom.collect[type];
+		var current = parseInt(collect.html(), 10);
+		if (value !== current) {
+			collect.html(value);
+			collect.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1);
+		}
+	},
+	
+	/**
+		set resolve readout
+		
+		@method setResolve
+		@param value number, current resolve
+		@param total number, maximum possible resolve
+	**/
+	
+	setResolve: function(value, total) {
+		var current = parseInt(this.dom.resolve.html(), 10);
+		if (value !== current) {
+			this.dom.resolve.html(value);
+			this.dom.resolve.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1);
+		}
+
+		current = parseInt(this.dom.maxResolve.html(), 10);
+		if (total !== current) {
+			this.dom.maxResolve.html(total);
+			this.dom.maxResolve.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1);
+		}
+		
 	},
 	
 	/**
