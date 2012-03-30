@@ -77,7 +77,7 @@ EASY.ghost = {
 	resolve: 0,
 	alpha: 0,
 	delay: 0,
-	mouth: 0,
+	blink: 0,
 	
 	lastAttack: {
 		type: "scare",
@@ -116,7 +116,7 @@ EASY.ghost = {
 			EASY.display,
 			SOAR.textOf("vs-ghost"), SOAR.textOf("fs-ghost"),
 			["position", "texturec"], 
-			["projector", "modelview", "rotations", "center", "time", "alpha", "open"],
+			["projector", "modelview", "rotations", "center", "time", "alpha"],
 			["noise"]
 		);
 		
@@ -240,9 +240,9 @@ EASY.ghost = {
 				this.alpha = Math.min(1, this.alpha + dt);
 			}
 
-			// operate the mouth if its opening/closing
-			if (this.mouth > 0) {
-				this.mouth = Math.max(0, this.mouth - dt * 4);
+			// count down the blink effect
+			if (this.blink > 0) {
+				this.blink = Math.max(0, this.blink - dt * 4);
 			}
 			
 			// attack if we're not cooling down
@@ -316,6 +316,7 @@ EASY.ghost = {
 		var gl = EASY.display.gl;
 		var shader = this.shader;
 		var camera = EASY.player.camera;
+		var bl;
 
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -324,11 +325,11 @@ EASY.ghost = {
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
 		gl.uniformMatrix4fv(shader.rotations, false, camera.transpose());
-
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 		gl.uniform1f(shader.time, SOAR.elapsedTime);
-		gl.uniform1f(shader.alpha, this.alpha);
-		gl.uniform1f(shader.open, 0.5 * Math.sin(this.mouth));
+
+		bl = 1 - Math.sin(this.blink) * Math.abs(Math.sin(8 * this.blink));
+		gl.uniform1f(shader.alpha, this.alpha * bl);
 
 		this.texture.noise.bind(0, shader.noise);
 		this.mesh.draw();
@@ -383,8 +384,8 @@ EASY.ghost = {
 			// failed the saving throw
 			damage = Math.round(sympathy * EASY.player.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
-			// open the mouth in surprise
-			this.mouth = Math.PI;
+			// make the ghost blink in surprise
+			this.blink = Math.PI;
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// ghost is calmed down
