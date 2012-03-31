@@ -284,7 +284,8 @@ varying vec2 uv;
 
 void main(void) {
 	vec4 bodyColor = texture2D(body, uv);
-	vec4 fireColor = vec4(1.0, 0.8, 0.0, 1.0) * texture2D(ash, (burn + uv) * 0.25);
+	vec2 st = 0.25 * (1.0 - burn) * vec2(uv.x - 0.5, uv.y - 0.5);
+	vec4 fireColor = vec4(1.0, 0.8, 0.0, 1.0) * texture2D(ash, st);
 	vec4 ashColor = texture2D(ash, uv);
 	
 	gl_FragColor = mix(bodyColor, mix(ashColor, fireColor, sin(burn * 3.1415)), burn);

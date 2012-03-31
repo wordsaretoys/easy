@@ -75,9 +75,9 @@ EASY.corpse = {
 		SOAR.subdivide(4, -0.5, -1, 0.5, 1, 
 			function(x0, z0, x1, z1, x2, z2) {
 
-				var y0 = (0.25 - x0 * x0) * (1 - z0 * z0) - 0.05;
-				var y1 = (0.25 - x1 * x1) * (1 - z1 * z1) - 0.05;
-				var y2 = (0.25 - x2 * x2) * (1 - z2 * z2) - 0.05;
+				var y0 = (0.25 - x0 * x0) * (1 - z0 * z0) - 0.025;
+				var y1 = (0.25 - x1 * x1) * (1 - z1 * z1) - 0.025;
+				var y2 = (0.25 - x2 * x2) * (1 - z2 * z2) - 0.025;
 
 				that.mesh.set(x0, y0, z0, 0.5 + x0, 0.5 * (z0 + 1));
 				that.mesh.set(x1, y1, z1, 0.5 + x1, 0.5 * (z1 + 1));
