@@ -191,10 +191,11 @@ EASY.cave = {
 		// find all flat 1m square areas of the map
 		// that aren't touching each other directly
 		(function() {
+			var m = l - 10;
 			var x, z;
 			that.flat.length = 0;
 			for (x = 0.5; x < l; x += 1.5) {
-				for (z = 0.5; z < l; z += 1.5) {
+				for (z = 0.5; z < m; z += 1.5) {
 					if (that.isFlat(x, z, 0.5)) {
 						that.flat.push( {
 							x: x, 
@@ -206,7 +207,6 @@ EASY.cave = {
 			// shuffle the flats array into random order
 			that.flat.shuffle();
 		})();
-
 	},
 	
 	/**
