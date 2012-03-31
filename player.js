@@ -161,7 +161,8 @@ EASY.player = {
 	
 	scratch: {
 		direction: SOAR.vector.create(),
-		velocity: SOAR.vector.create()
+		velocity: SOAR.vector.create(),
+		matrix: new Float32Array(16)
 	},
 	
 	sprint: false,
@@ -178,7 +179,7 @@ EASY.player = {
 	**/
 
 	init: function() {
-	
+		var that = this;
 		var dom = this.dom = {
 			tracker: jQuery("#tracker"),
 			window: jQuery(window)
@@ -219,6 +220,50 @@ EASY.player = {
 		this.sympathy.scare = Math.random();
 		this.sympathy.snark = Math.random();
 		this.sympathy.normalize();
+		
+		// create a shader for the map pointer
+		this.shader = SOAR.shader.create(
+			EASY.display,
+			SOAR.textOf("vs-item"), SOAR.textOf("fs-item"),
+			["position", "texturec"], 
+			["projector", "modelview", "rotations", "center"],
+			["sign"]
+		);
+		
+		// and a mesh
+		this.mesh = SOAR.mesh.create(EASY.display);
+		this.mesh.add(this.shader.position, 3);
+		this.mesh.add(this.shader.texturec, 2);
+		SOAR.subdivide(0, -0.5, -0.5, 0.5, 0.5, 
+			function(x0, y0, x1, y1, x2, y2) {
+				that.mesh.set(x0, 0, y0, x0 + 0.5, y0 + 0.5);
+				that.mesh.set(x1, 0, y1, x1 + 0.5, y1 + 0.5);
+				that.mesh.set(x2, 0, y2, x2 + 0.5, y2 + 0.5);
+			}
+		);
+		this.mesh.build();
+		
+		// and the image itself
+		(function() {
+			var cntx = EASY.texture.context;
+			var w = EASY.texture.canvas.width;
+			var h = EASY.texture.canvas.height;
+			cntx.clearRect(0, 0, w, h);
+			cntx.fillStyle = "rgb(255, 255, 255)"
+			cntx.strokeStyle = "rgb(0, 0, 0)";
+			cntx.lineWidth = 3;
+			cntx.beginPath();
+			cntx.moveTo(w / 2, h);
+			cntx.lineTo(0, 0);
+			cntx.lineTo(w / 2, h / 4);
+			cntx.lineTo(w, 0);
+			cntx.lineTo(w / 2, h);
+			cntx.fill();
+			cntx.stroke();
+			that.texture = 
+				SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h));
+		})();
+		
 	},
 	
 	/**
@@ -653,7 +698,10 @@ EASY.player = {
 			EASY.hud.endGame("money");
 		} else {
 			// switch out of training mode if we're in it
-			EASY.training = false;
+			if (EASY.training) {
+				EASY.training = false;
+				SOAR.unschedule(EASY.introId);
+			}
 			// throw up a wait screen
 			EASY.hud.darken(EASY.hud.waitMsg);
 			// on the next animation frame, generate a new level
@@ -666,7 +714,43 @@ EASY.player = {
 				}
 			}, 1, false);
 		}
+	},
+	
+	/**
+		draw the player pointer
+		
+		only call this in map mode!
+		
+		@method draw
+	**/
+	 
+	draw: function() {
+		var gl = EASY.display.gl;
+		var shader = this.shader;
+		var center, eye;
+
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+		shader.activate();
+		gl.uniformMatrix4fv(shader.projector, false, this.camera.projector());
+		gl.uniformMatrix4fv(shader.modelview, false, this.camera.modelview());
+
+		// the yaw.w negation implements a cheeky matrix transpose!
+		eye = this.eyeview;
+		eye.yaw.w = -eye.yaw.w;
+		eye.yaw.toMatrix(this.scratch.matrix);
+		eye.yaw.w = -eye.yaw.w;
+		gl.uniformMatrix4fv(shader.rotations, false, this.scratch.matrix);
+		
+		center = this.headPosition;
+		gl.uniform3f(shader.center, center.x, center.y, center.z);
+		this.texture.bind(0, shader.sign);
+		this.mesh.draw();
+		
+		gl.disable(gl.BLEND);
 	}
+	
 
 };
 

@@ -16,10 +16,6 @@ EASY.trash = {
 	texture: {},
 	phase: 0,
 	
-	scratch: {
-		matrix: new Float32Array(16)
-	},
-
 	/**
 		create and init required objects
 		
@@ -31,7 +27,7 @@ EASY.trash = {
 
 		this.shader = SOAR.shader.create(
 			EASY.display,
-			SOAR.textOf("vs-trash"), SOAR.textOf("fs-trash"),
+			SOAR.textOf("vs-item"), SOAR.textOf("fs-item"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations", "center"],
 			["sign"]
@@ -50,27 +46,6 @@ EASY.trash = {
 		);
 		
 		this.mesh.build();
-		
-		// build a pointer image for the player
-		(function() {
-			var cntx = EASY.texture.context;
-			var w = EASY.texture.canvas.width;
-			var h = EASY.texture.canvas.height;
-			cntx.clearRect(0, 0, w, h);
-			cntx.fillStyle = "rgb(255, 255, 255)"
-			cntx.strokeStyle = "rgb(0, 0, 0)";
-			cntx.lineWidth = 3;
-			cntx.beginPath();
-			cntx.moveTo(w / 2, h);
-			cntx.lineTo(0, 0);
-			cntx.lineTo(w / 2, h / 4);
-			cntx.lineTo(w, 0);
-			cntx.lineTo(w / 2, h);
-			cntx.fill();
-			cntx.stroke();
-			that.texture.player = 
-				SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h));
-		})();
 	},
 	
 	/**
@@ -190,23 +165,7 @@ EASY.trash = {
 				this.mesh.draw();
 			}
 		}
-		
-		// a bit of a hack: display the player location in mapview
-		// this would have gone in the player object but that meant
-		// adding another shader and mesh and so on; this is simpler
-		// the yaw.w negation implements a cheeky matrix transpose!
-		if (camera.mapView) {
-			camera = EASY.player.eyeview;
-			camera.yaw.w = -camera.yaw.w;
-			camera.yaw.toMatrix(this.scratch.matrix);
-			camera.yaw.w = -camera.yaw.w;
-			gl.uniformMatrix4fv(shader.rotations, false, this.scratch.matrix);
-			center = EASY.player.headPosition;
-			gl.uniform3f(shader.center, center.x, center.y, center.z);
-			this.texture.player.bind(0, shader.sign);
-			this.mesh.draw();
-		}
-		
+
 		gl.disable(gl.BLEND);
 		
 	}

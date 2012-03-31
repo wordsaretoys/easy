@@ -228,6 +228,9 @@ var EASY = {
 			EASY.corpse.draw();
 			EASY.ghost.draw();
 		}
+		if (EASY.player.camera.mapView) {
+			EASY.player.draw();
+		}
 	},
 
 	/**

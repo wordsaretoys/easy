@@ -82,10 +82,10 @@ void main(void) {
 
 </script>
 
-<script id="vs-trash" type="x-shader/x-vertex">
+<script id="vs-item" type="x-shader/x-vertex">
 
 /**
-	trash vertex shader
+	item vertex shader
 	O' = P * V * (O + c) transformation, plus texture coordinates
 	
 	@param position vertex array of positions
@@ -117,10 +117,10 @@ void main(void) {
 
 </script>
 
-<script id="fs-trash" type="x-shader/x-fragment">
+<script id="fs-item" type="x-shader/x-fragment">
 
 /**
-	trash fragment shader
+	item fragment shader
 	
 	@param sign		sign texture
 
