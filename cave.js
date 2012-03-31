@@ -122,7 +122,7 @@ EASY.cave = {
 		(function() {
 			var i, il;
 			that.area.length = 0;
-			for (i = 0; i < 7; i++) {
+			for (i = 0; i < that.MAX_AREAS; i++) {
 				that.area[i] = {
 					x: 5 + (l - 10) * Math.random(),
 					y: 5 + (l - 10) * Math.random()
@@ -130,10 +130,10 @@ EASY.cave = {
 			}
 			// areas near entrance and exit are special cases
 			that.area[0].y = l - 5;
-			that.area[6].y = 5;
+			that.area[that.MAX_AREAS - 1].y = 5;
 			
 			// generate paths between areas
-			for	(i = 1, il = that.area.length; i < il; i++) {
+			for	(i = 1; i < that.MAX_AREAS; i++) {
 				drawPath(that.area[i - 1].x, that.area[i - 1].y, 
 					that.area[i].x, that.area[i].y);
 			}
@@ -145,7 +145,7 @@ EASY.cave = {
 		map.context.arc(this.area[0].x, l - 2, 4, 0, SOAR.PIMUL2, false);
 		map.context.fill();
 		map.context.beginPath();
-		map.context.arc(this.area[6].x, 3, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[this.MAX_AREAS - 1].x, 3, 4, 0, SOAR.PIMUL2, false);
 		map.context.fill();
 		
 		// construct map
