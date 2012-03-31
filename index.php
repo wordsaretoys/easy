@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>caves are easy</title>
+		<title>easy does it</title>
 		<link rel="stylesheet" type="text/css" media="screen" href="easy.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/shared/toybox.css">
 		<script type="text/javascript" src="/shared/jquery-1.7.1.js"></script>

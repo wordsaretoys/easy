@@ -115,7 +115,6 @@ EASY.player = {
 				"Not enough coin. The gods want their cut, too."
 			]
 		}
-		
 	},
 
 	headPosition: SOAR.vector.create(),
@@ -653,6 +652,8 @@ EASY.player = {
 		} else if (this.MAX_RESOLVE >= EASY.EARNING_TARGET) {
 			EASY.hud.endGame("money");
 		} else {
+			// switch out of training mode if we're in it
+			EASY.training = false;
 			// throw up a wait screen
 			EASY.hud.darken(EASY.hud.waitMsg);
 			// on the next animation frame, generate a new level

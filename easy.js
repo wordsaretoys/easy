@@ -36,12 +36,23 @@ var EASY = {
 		}
 	},
 	
+	INTRO: [
+		"Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com",
+		"Easy, the fabled adventurer, leaves a path of devastation through the deepest caves.",
+		"He's got no time to make amends; that's <em>your</em> job.",
+		"Dispose of his victims, calm their restless ghosts&mdash;and make a little money.",
+		"<em>Very</em> little money.",
+		"Find the exit to this passage, and your journey will begin."
+	],
+	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
 	RESOLVE_TARGET: 50,
 	EARNING_TARGET: 1000,
 	
 	updating: true,
+	training: true,
+	introNum: 0,
 
 	/**
 		create GL context, set up game objects, load resources, run main loop
@@ -51,7 +62,7 @@ var EASY = {
 
 	start: function() {
 
-		var gl, tracker, resources;
+		var gl;
 
 		// create the GL display
 		try {
@@ -66,7 +77,7 @@ var EASY = {
 			return this[Math.floor(Math.random() * this.length)];
 		};
 
-		// taken from
+		// array random shuffle, taken from
 		// http://sroucheray.org/blog/2009/11/array-sort-should-not-be-used-to-shuffle-an-array/
 		Array.prototype.shuffle = function (){
 			var i = this.length, j, temp;
@@ -97,21 +108,17 @@ var EASY = {
 		EASY.texture.canvas.width = 256;
 		EASY.texture.canvas.height = 256;
 		EASY.texture.context = EASY.texture.canvas.getContext("2d");
-		
-		// while waiting for resource load, initialize game objects
-		EASY.cave.init();
-		EASY.player.init();
+
+		// init the HUD and put up a wait message
 		EASY.hud.init();
-		EASY.trash.init();
-		EASY.ghost.init();
-		EASY.corpse.init();
-		
 		EASY.hud.darken(EASY.hud.waitMsg);
 		
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.resources, function() {
 
-			EASY.generate();
+			// this function is called when resource load is complete
+			
+			EASY.hud.darken(EASY.hud.waitMsg);
 		
 			// allow game objects to process loaded resources
 			EASY.cave.process();
@@ -119,6 +126,9 @@ var EASY = {
 			EASY.ghost.process();
 			EASY.corpse.process();
 			
+			// generate a new map
+			EASY.generate();
+		
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
 			SOAR.schedule(EASY.draw, 0, true);
@@ -135,10 +145,30 @@ var EASY = {
 			SOAR.run();
 			
 			EASY.hud.lighten();
+
+			// set up a timed comment push to introduce the game concept
+			EASY.introId = SOAR.schedule(function() {
+				EASY.hud.comment(EASY.INTRO[EASY.introNum], "intro", true);
+				EASY.introNum++;
+				if (EASY.introNum === EASY.INTRO.length) {
+					SOAR.unschedule(EASY.introId);
+				}
+			}, 6000, true);
+			
+		}, function(count, total) {
+			// this function is called once for every resource received from the server
+
+			var pc = Math.round(100 * count / total);
+			EASY.hud.darken(EASY.hud.waitMsg + "<br>" + pc + "%");
+		
 		});
 		
 		// while waiting for resource load, initialize game objects
-//		EASY.player.init();
+		EASY.cave.init();
+		EASY.player.init();
+		EASY.trash.init();
+		EASY.ghost.init();
+		EASY.corpse.init();
 	},
 	
 	/**
@@ -149,9 +179,11 @@ var EASY = {
 	
 	generate: function() {
 		EASY.cave.generate();
-		EASY.corpse.generate();
-		EASY.trash.generate();
-		EASY.ghost.generate();
+		if (!this.training) {
+			EASY.corpse.generate();
+			EASY.ghost.generate();
+			EASY.trash.generate();
+		}
 		EASY.player.generate();
 	},
 	
@@ -164,9 +196,11 @@ var EASY = {
 	update: function() {
 		if (EASY.updating) {
 			EASY.player.update();
-			EASY.trash.update();
-			EASY.ghost.update();
-			EASY.corpse.update();
+			if (!EASY.training) {
+				EASY.trash.update();
+				EASY.ghost.update();
+				EASY.corpse.update();
+			}
 		}
 	},
 
@@ -189,9 +223,11 @@ var EASY = {
 		
 		if (!EASY.hideCave)
 			EASY.cave.draw();
-		EASY.trash.draw();
-		EASY.corpse.draw();
-		EASY.ghost.draw();
+		if (!EASY.training) {
+			EASY.trash.draw();
+			EASY.corpse.draw();
+			EASY.ghost.draw();
+		}
 	},
 
 	/**
