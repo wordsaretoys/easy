@@ -20,15 +20,15 @@ var EASY = {
 		},
 		oil: {
 			type: "image",
-			path: "res/oil.png"
+			path: "res/oil.gif"
 		},
 		coin: {
 			type: "image",
-			path: "res/change.png"
+			path: "res/change.gif"
 		},
 		wood: {
 			type: "image",
-			path: "res/chest.png"
+			path: "res/chest.gif"
 		},
 		corpse: {
 			type: "image",

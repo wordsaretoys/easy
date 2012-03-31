@@ -345,23 +345,25 @@ EASY.ghost = {
 	**/
 	
 	attack: function() {
-		var result, attack;
+		var result, attack, history;
 		// repeat the last attack
 		attack = this.lastAttack.type;
+		history = this.lastAttack.fail;
 		result = EASY.player.defend(attack);
 		EASY.hud.comment(this.COMMENTS.attack[attack].pick(), "ghost", !result);
+		this.lastAttack.fail = result;
 		// if player defended attack
 		if (result) {
 			// if this attack's failed twice in a row
-			if (this.lastAttack.fail) {
+			if (history) {
 				// switch to another attack
 				this.lastAttack.type = this.newAttack[attack].pick();
+				// that hasn't failed yet
+				this.lastAttack.fail = false;
 			}
 		}
 		// set random delay for next attack
 		this.delay = 2 + Math.random();
-		// store off the result
-		this.lastAttack.fail = result;
 	},
 	
 	/**
