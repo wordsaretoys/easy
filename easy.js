@@ -42,7 +42,7 @@ var EASY = {
 		"He's got no time to make amends; that's <em>your</em> job.",
 		"Dispose of his victims, calm their restless ghosts&mdash;and make a little money.",
 		"<em>Very</em> little money.",
-		"Find the exit to this passage, and your journey will begin."
+		"Find the exit at the other end of the passage to begin."
 	],
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
@@ -153,7 +153,7 @@ var EASY = {
 				if (EASY.introNum === EASY.INTRO.length) {
 					SOAR.unschedule(EASY.introId);
 				}
-			}, 6000, true);
+			}, 3000, true);
 			
 		}, function(count, total) {
 			// this function is called once for every resource received from the server

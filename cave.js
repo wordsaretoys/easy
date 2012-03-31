@@ -8,6 +8,7 @@
 EASY.cave = {
 
 	LENGTH: 64,
+	EDGE: 4,
 	ZERO_HEIGHT: 0.25,
 	WALL_HEIGHT: 4,
 	SEPARATION: 1,
@@ -71,11 +72,13 @@ EASY.cave = {
 	generate: function() {
 		var map = this.map;
 		var l = this.LENGTH;
+		var ll = this.EDGE;
+		var hl = l - ll;
 		var that = this;
 	
 		// wipe the canvas
 		map.context.fillStyle = "rgb(255, 0, 0)";
-		map.context.fillRect(0, 0, this.LENGTH, this.LENGTH);
+		map.context.fillRect(0, 0, l, l);
 		
 		// closure function for drawing a meandering path
 		function drawPath(x, y, tx, ty) {
@@ -109,8 +112,8 @@ EASY.cave = {
 				x += 0.05 * dx / d;
 				y += 0.05 * dy / d;
 				
-				x = SOAR.clamp(x, 4, l - 4);
-				y = SOAR.clamp(y, 4, l - 4);
+				x = SOAR.clamp(x, ll, hl);
+				y = SOAR.clamp(y, ll, hl);
 				
 				map.context.beginPath();
 				map.context.arc(x, y, 2, 0, SOAR.PIMUL2, false);
@@ -124,13 +127,13 @@ EASY.cave = {
 			that.area.length = 0;
 			for (i = 0; i < that.MAX_AREAS; i++) {
 				that.area[i] = {
-					x: 5 + (l - 10) * Math.random(),
-					y: 5 + (l - 10) * Math.random()
+					x: ll + (hl - ll) * Math.random(),
+					y: ll + (hl - ll) * Math.random()
 				}
 			}
 			// areas near entrance and exit are special cases
-			that.area[0].y = l - 5;
-			that.area[that.MAX_AREAS - 1].y = 5;
+			that.area[0].y = hl;
+			that.area[that.MAX_AREAS - 1].y = ll;
 			
 			// generate paths between areas
 			for	(i = 1; i < that.MAX_AREAS; i++) {
@@ -191,11 +194,11 @@ EASY.cave = {
 		// find all flat 1m square areas of the map
 		// that aren't touching each other directly
 		(function() {
-			var m = l - 10;
+			var m = hl - 10;
 			var x, z;
 			that.flat.length = 0;
-			for (x = 0.5; x < l; x += 1.5) {
-				for (z = 0.5; z < m; z += 1.5) {
+			for (x = ll; x < hl; x += 1.5) {
+				for (z = ll; z < m; z += 1.5) {
 					if (that.isFlat(x, z, 0.5)) {
 						that.flat.push( {
 							x: x, 
