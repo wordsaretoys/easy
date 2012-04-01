@@ -421,7 +421,7 @@ EASY.player = {
 				break;
 			case SOAR.KEY.SPACE:
 				if (that.footPosition.y === EASY.cave.getFloorHeight(that.footPosition.x, that.footPosition.z))
-					that.velocity.y += 6;
+					that.velocity.y += 4;
 				break;
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;

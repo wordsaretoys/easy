@@ -10,7 +10,7 @@ EASY.cave = {
 	LENGTH: 64,
 	EDGE: 4,
 	ZERO_HEIGHT: 0.25,
-	WALL_HEIGHT: 6,
+	WALL_HEIGHT: 4,
 	SEPARATION: 1,
 	
 	MAX_AREAS: 7,
@@ -109,8 +109,8 @@ EASY.cave = {
 				dx = tx - x;
 				dy = ty - y;
 				d = Math.sqrt(dx * dx + dy * dy);
-				x += 0.05 * dx / d;
-				y += 0.05 * dy / d;
+				x += 0.1 * dx / d;
+				y += 0.1 * dy / d;
 				
 				x = SOAR.clamp(x, ll, hl);
 				y = SOAR.clamp(y, ll, hl);
