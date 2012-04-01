@@ -8,6 +8,7 @@
 EASY.cave = {
 
 	LENGTH: 64,
+	STEP: 0.35,
 	EDGE: 4,
 	ZERO_HEIGHT: 0.25,
 	WALL_HEIGHT: 4,
@@ -145,39 +146,65 @@ EASY.cave = {
 		// force entrance and exit tunnels
 		map.context.fillStyle = "rgba(0, 0, 0, 0.75)";
 		map.context.beginPath();
-		map.context.arc(this.area[0].x, l - 2, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[0].x, l - 2, 2, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[0].x, l - 4, 2, 0, SOAR.PIMUL2, false);
 		map.context.fill();
 		map.context.beginPath();
-		map.context.arc(this.area[this.MAX_AREAS - 1].x, 3, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[this.MAX_AREAS - 1].x, 2, 2, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[this.MAX_AREAS - 1].x, 4, 2, 0, SOAR.PIMUL2, false);
 		map.context.fill();
 		
 		// construct map
 		map.build();
-		
+		map.interpolate = SOAR.interpolator.linear;
+
 		// generate the triangle mesh
 		this.mesh.reset();
-		SOAR.subdivide(8, 0, 0, this.LENGTH, this.LENGTH,
-		function(x0, z0, x1, z1, x2, z2) {
-			var y0 = that.getFloorHeight(x0, z0);
-			var y1 = that.getFloorHeight(x1, z1);
-			var y2 = that.getFloorHeight(x2, z2);
+		(function() {
+			var st = that.STEP;
+			var x, z;
+			var xs, zs;
+			var y0, y1, y2, y3;
+			
+			for (x = 0; x < l; x += st) {
+				for (z = 0; z < l; z += st) {
+				
+					xs = x + st;
+					zs = z + st;
+					
+					// power function eliminates "lip" at the edge
+					y0 = Math.pow(that.getFloorHeight(x, z), 1.3);
+					y1 = Math.pow(that.getFloorHeight(xs, z), 1.3);
+					y2 = Math.pow(that.getFloorHeight(x, zs), 1.3);
+					y3 = Math.pow(that.getFloorHeight(xs, zs), 1.3);
 	
-			if (!(y0 > that.MIDDLE && y1 > that.MIDDLE && y2 > that.MIDDLE)) {
+					if (!(y0 > that.MIDDLE && y1 > that.MIDDLE && y2 > that.MIDDLE && y3 > that.MIDDLE)) {
 
-				that.mesh.set(x0, y0, z0, x0, z0);
-				that.mesh.set(x1, y1, z1, x1, z1);
-				that.mesh.set(x2, y2, z2, x2, z2);
+						that.mesh.set(x, y0, z, x, z);
+						that.mesh.set(x, y2, zs, x, zs);
+						that.mesh.set(xs, y1, z, xs, z);
+						
+						that.mesh.set(x, y2, zs, x, zs);
+						that.mesh.set(xs, y3, zs, xs, zs);
+						that.mesh.set(xs, y1, z, xs, z);
 
-				y0 = that.CEILING - y0;
-				y1 = that.CEILING - y1;
-				y2 = that.CEILING - y2;
+						y0 = that.CEILING - y0;
+						y1 = that.CEILING - y1;
+						y2 = that.CEILING - y2;
+						y3 = that.CEILING - y3;
 
-				that.mesh.set(x0, y0, z0, x0, z0);
-				that.mesh.set(x2, y2, z2, x2, z2);
-				that.mesh.set(x1, y1, z1, x1, z1);
+						that.mesh.set(x, y0, z, x, z);
+						that.mesh.set(xs, y1, z, xs, z);
+						that.mesh.set(x, y2, zs, x, zs);
+						
+						that.mesh.set(x, y2, zs, x, zs);
+						that.mesh.set(xs, y1, z, xs, z);
+						that.mesh.set(xs, y3, zs, xs, zs);
+					}
+				}
 			}
-		});
-		
+		})();
+
 		// build the GL object (retain memory buffer for next generation)
 		this.mesh.build(true);
 		
