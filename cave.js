@@ -47,8 +47,8 @@ EASY.cave = {
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 
-		this.palette = [ 0, 0, 0,  0, 0, 0,  0, 0, 0 ];
-		
+		//this.palette = [ 0, 0, 0,  0, 0, 0,  0, 0, 0 ];
+		this.palette = [0.96, 1, 0.91, 0.64, 0.8, 0.86, 0.56, 0.5, 1];
 		this.MIDDLE = this.WALL_HEIGHT - this.SEPARATION;
 		this.CEILING = this.MIDDLE * 2;
 	},
@@ -119,7 +119,7 @@ EASY.cave = {
 				map.context.beginPath();
 				map.context.arc(x, y, 2, 0, SOAR.PIMUL2, false);
 				map.context.fill();
-			} while (Math.abs(dx) > 1 || Math.abs(dy) > 1);
+			} while (d > 1);
 		}
 		
 		// generate areas of interest
@@ -156,7 +156,7 @@ EASY.cave = {
 		
 		// construct map
 		map.build();
-		map.interpolate = SOAR.interpolator.linear;
+		//map.interpolate = SOAR.interpolator.linear;
 
 		// generate the triangle mesh
 		this.mesh.reset();
@@ -172,11 +172,10 @@ EASY.cave = {
 					xs = x + st;
 					zs = z + st;
 					
-					// power function eliminates "lip" at the edge
-					y0 = Math.pow(that.getFloorHeight(x, z), 1.3);
-					y1 = Math.pow(that.getFloorHeight(xs, z), 1.3);
-					y2 = Math.pow(that.getFloorHeight(x, zs), 1.3);
-					y3 = Math.pow(that.getFloorHeight(xs, zs), 1.3);
+					y0 = that.getFloorHeight(x, z);
+					y1 = that.getFloorHeight(xs, z);
+					y2 = that.getFloorHeight(x, zs);
+					y3 = that.getFloorHeight(xs, zs);
 	
 					if (!(y0 > that.MIDDLE && y1 > that.MIDDLE && y2 > that.MIDDLE && y3 > that.MIDDLE)) {
 
