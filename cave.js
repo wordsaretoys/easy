@@ -47,8 +47,8 @@ EASY.cave = {
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 
-		//this.palette = [ 0, 0, 0,  0, 0, 0,  0, 0, 0 ];
-		this.palette = [0.96, 1, 0.91, 0.64, 0.8, 0.86, 0.56, 0.5, 1];
+		this.palette = [0.5, 0.97, 0.75, 0.84, 0.64, 0.81, 0.97, 0.63, 0.56]		
+
 		this.MIDDLE = this.WALL_HEIGHT - this.SEPARATION;
 		this.CEILING = this.MIDDLE * 2;
 	},
@@ -156,7 +156,6 @@ EASY.cave = {
 		
 		// construct map
 		map.build();
-		//map.interpolate = SOAR.interpolator.linear;
 
 		// generate the triangle mesh
 		this.mesh.reset();
@@ -207,16 +206,6 @@ EASY.cave = {
 		// build the GL object (retain memory buffer for next generation)
 		this.mesh.build(true);
 		
-		// update the palette with a random walk through color space
-		(function() {
-			var i, il;
-			for (i = 0, il = that.palette.length; i < il; i++) {
-				that.palette[i] = SOAR.clamp(
-					(that.palette[i] || 0.5 + 0.5 * Math.random()) +
-					0.1 * (Math.random() - Math.random()), 0.5, 1);
-			}
-		})();
-		
 		// find all flat 1m square areas of the map
 		// that aren't touching each other directly
 		(function() {
@@ -248,7 +237,7 @@ EASY.cave = {
 	**/
 	
 	getFloorHeight: function(x, z) {
-		return Math.max(this.ZERO_HEIGHT, this.map.get(0, x, z));
+		return Math.max(this.ZERO_HEIGHT, Math.pow(this.map.get(0, x, z), 1.1));
 	},
 	
 	/**
