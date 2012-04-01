@@ -8,7 +8,7 @@
 
 EASY.player = {
 
-	SPIN_RATE: -0.007,
+	SPIN_RATE: 0.007,
 
 	NORMAL_SPEED: 4,
 	SPRINT_SPEED: 10,
@@ -533,10 +533,10 @@ EASY.player = {
 		var that = EASY.player;
 		var dx, dy;
 
-		if (that.mouse.down && !that.camera.mapView && !that.mouse.invalid) {
+		if (that.mouse.down && !that.camera.mapView && SOAR.running && !that.mouse.invalid) {
 			dx = that.SPIN_RATE * (event.pageX - that.mouse.x);
 			dy = that.SPIN_RATE * (event.pageY - that.mouse.y);
-			that.camera.turn(-dx, -dy);
+			that.camera.turn(dx, dy);
 		}
 		that.mouse.x = event.pageX;
 		that.mouse.y = event.pageY;
