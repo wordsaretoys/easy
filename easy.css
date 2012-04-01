@@ -114,7 +114,7 @@ div {
 	color: white;
 	
 	width: 450px;
-	height: 74px;
+	height: 76px;
 	
 	font-size: 12pt;
 	font-variant: small-caps;
@@ -148,7 +148,7 @@ div {
 	color: white;
 	
 	width: 64px;
-	height: 260px;
+	height: 276px;
 	
 	font-size: 12pt;
 	font-variant: small-caps;
@@ -174,6 +174,10 @@ div {
 #readout .value {
 	text-align: right;
 	font-size: 150%;
+}
+
+#readout .gapper {
+	height: 16px;
 }
 
 /* HUD prompts */

@@ -26,6 +26,8 @@ EASY.hud = {
 		playagain: "<p>Press F5 to Play Again</p>"
 	},
 	
+	starting: true,
+	
 	/**
 		establish jQuery shells around UI DOM objects &
 		assign methods for simple behaviors (resize, etc)
@@ -42,16 +44,19 @@ EASY.hud = {
 			message: jQuery("#message"),
 			prompts: jQuery("#prompts"),
 			
+			readout: jQuery("#readout"),
+			legend: jQuery("#legend"),
+			
 			collect: {
 				oil: jQuery("#oil"),
 				wood: jQuery("#wood"),
 				coin: jQuery("#coin")
 			},
+			
 			resolve: jQuery("#resolve"),
 			maxResolve: jQuery("#max-resolve"),
 			
 			luck: jQuery("#luck")
-			
 		};
 
 		this.dom.prompts.shown = false;
@@ -63,6 +68,7 @@ EASY.hud = {
 			});
 		};
 
+		this.dom.window.bind("keydown", this.onKeyDown);
 		this.dom.window.bind("resize", this.resize);			
 		this.resize();
 		
@@ -107,10 +113,26 @@ EASY.hud = {
 	**/
 
 	onKeyDown: function(event) {
+	
+		// first time run -- start up
+		if (EASY.hud.starting) {
+			// show HUD readouts/legends
+			EASY.hud.dom.legend.show();
+			EASY.hud.dom.readout.show();
+		
+			// reveal the game screen
+			EASY.hud.lighten();
+			
+			EASY.player.mouse.invalid = true;
+			EASY.hud.starting = false;
+			return false;
+		}
+	
 		switch(event.keyCode) {
 		case SOAR.KEY.ESCAPE:
 			if (SOAR.running) {
-				EASY.hud.darken(EASY.hud.pauseMsg);
+				EASY.hud.setMessage(EASY.hud.pauseMsg);
+				EASY.hud.setCurtain(0.5);
 				SOAR.running = false;
 			} else {
 				EASY.hud.lighten();
@@ -138,29 +160,51 @@ EASY.hud = {
 	},
 	
 	/**
-		darken the HUD with optional message
+		change HUD curtain opacity
 		
-		used when the UI will be temporarily unresponsive
-		
-		@method darken
-		@param msg string containing message to display
+		@method setCurtain
+		@param opacity number, transparency value (0..1)
 	**/
 	
-	darken: function(msg) {
-		this.dom.tracker.css("background-color", "rgba(0, 0, 0, 0.5)");
+	setCurtain: function(opacity) {
+		this.dom.tracker.css("background-color", "rgba(0, 0, 0, " + opacity + ")");
+	},
+	
+	/**
+		change HUD message
+		
+		@method setMessage
+		@param msg string, message to display
+	**/
+	
+	setMessage: function(msg) {
+		msg = msg || "";
 		this.dom.message.html(msg);
 		this.resize();
 	},
 	
 	/**
+		darken the HUD with wait message
+		
+		used when the UI will be temporarily unresponsive
+		
+		@method darken
+	**/
+	
+	darken: function() {
+		this.setCurtain(0.5);
+		this.setMessage(this.waitMsg);
+	},
+	
+	/**
 		make the HUD fully visible again
 		
-		@method hideCurtain
+		@method lighten
 	**/
 	
 	lighten: function() {
-		this.dom.tracker.css("background-color", "rgba(0, 0, 0, 0)");
-		this.dom.message.html("");
+		this.setCurtain(0);
+		this.setMessage();
 	},
 	
 	/**
@@ -309,7 +353,8 @@ EASY.hud = {
 
 	endGame: function(ending) {
 		var msg = this.endingMsg[ending] + this.endingMsg["playagain"];
-		this.darken(msg);
+		this.setCurtain(0.5);
+		this.setMessage(msg);
 		SOAR.running = false;
 		this.dom.window.unbind("keydown");
 		this.dom.tracker.unbind();

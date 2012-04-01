@@ -291,6 +291,19 @@ EASY.player = {
 		var scratch = this.scratch;
 		var motion = this.motion;
 		var camera = this.camera;
+
+		// nextMap triggered in exitCave
+		// we handle it here to yield to UI
+		if (this.nextMap) {
+			EASY.generate();
+			EASY.hud.lighten();
+			if (this.fledMap) {
+				EASY.hud.comment(
+					EASY.player.COMMENTS.attack.failure.pick(), "player", true);
+			}
+			delete this.nextMap;
+			delete this.fledMap;
+		}
 		
 		scratch.direction.set();
 		if (motion.movefore) {
@@ -693,16 +706,10 @@ EASY.player = {
 				EASY.hud.setLuck(this.luck);
 			}
 			// throw up a wait screen
-			EASY.hud.darken(EASY.hud.waitMsg);
+			EASY.hud.darken();
 			// on the next animation frame, generate a new level
-			SOAR.schedule(function() {
-				EASY.generate();
-				EASY.hud.lighten();
-				if (fled) {
-					EASY.hud.comment(
-						EASY.player.COMMENTS.attack.failure.pick(), "player", true);
-				}
-			}, 1, false);
+			this.nextMap = true;
+			this.fledMap = fled;
 		}
 	},
 	

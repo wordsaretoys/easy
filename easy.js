@@ -112,7 +112,8 @@ var EASY = {
 
 		// init the HUD and put up a wait message
 		EASY.hud.init();
-		EASY.hud.darken(EASY.hud.waitMsg);
+		EASY.hud.setCurtain(0.9);
+		EASY.hud.setMessage(EASY.hud.waitMsg);
 		
 		// begin async loading of resources from the server
 		SOAR.loadResources(EASY.resources, function() {
@@ -142,16 +143,16 @@ var EASY = {
 			}, false);
 			
 			// tell the player what's going on
-			EASY.hud.darken(EASY.BLURB);
+			EASY.hud.setMessage(EASY.BLURB);
 			
-			// wait for keypress
-			EASY.hud.dom.window.bind("keydown", EASY.startGame);
+			// start the message pump
+			SOAR.run();
 			
 		}, function(count, total) {
 			// this function is called once for every resource received from the server
 
 			var pc = Math.round(90 * count / total);
-			EASY.hud.darken(EASY.hud.waitMsg + "<br>" + pc + "%");
+			EASY.hud.setMessage(EASY.hud.waitMsg + "<br>" + pc + "%");
 		
 		});
 		
@@ -171,37 +172,6 @@ var EASY = {
 		for (k = 0; k < hist.length; k++)
 			console.log(k, " --> ", hist[k]);
 */
-	},
-	
-	/**
-		run this to actually run the game on user keypress
-		
-		@method startGame
-	**/
-	
-	startGame: function() {
-	
-		// unbind this handler
-		EASY.hud.dom.window.unbind("keydown", EASY.startGame);
-	
-		// bind the HUD key handler
-		EASY.hud.dom.window.bind("keydown", EASY.hud.onKeyDown);
-		
-		// show HUD readouts/legends
-		jQuery("#legend").show();
-		jQuery("#readout").show();
-	
-		// start the message pump
-		SOAR.run();
-		
-		// reveal the game screen
-		EASY.hud.lighten();
-		
-		EASY.player.mouse.invalid = true;
-		
-		// remember it's an event handler
-		// don't allow key to bubble up
-		return false;
 	},
 	
 	/**
