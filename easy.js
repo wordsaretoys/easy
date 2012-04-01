@@ -42,7 +42,7 @@ var EASY = {
 	
 	BLURB:
 		"<p>Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com</p>" +
-		"<p class=\"small\">Easy, the fabled adventurer, leaves a path of devastation through the deepest caves.</p>" +
+		"<p class=\"small\">Easy, the fabled adventurer, leaves a path of devastation through the deepest ruins.</p>" +
 		"<p class=\"small\">He's got no time to make amends; that's <em>your</em> job.</p>" +
 		"<p class=\"small\">Dispose of his victims, calm their restless spirits,<br>appease their gods, and make a little money.</p>" +
 		"<p class=\"small\"><em>Very</em> little money.</p>" +

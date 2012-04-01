@@ -11,7 +11,6 @@ EASY.corpse = {
 	USE_RADIUS: 2.5,
 	BURN_TIME: 5,
 	PYRE_MULTIPLE: 2,
-	CASH_MULTIPLE: 3,
 
 	INTACT: 0,
 	BURNING: 1,
@@ -122,9 +121,6 @@ EASY.corpse = {
 		// generate requirements for cremation
 		this.wood = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
 		this.oil = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
-		
-		// generate reward
-		this.reward = Math.ceil(this.CASH_MULTIPLE * base * (1 + Math.random()));
 		
 		// next random phase
 		this.phase += Math.random();

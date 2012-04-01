@@ -120,6 +120,7 @@ EASY.player = {
 	
 	resolve: 0,
 	delay: 0,
+	luck: 0.5,
 	
 	sympathy: {
 
@@ -272,6 +273,7 @@ EASY.player = {
 		// reset state
 		this.resolve = this.MAX_RESOLVE;
 		EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
+		EASY.hud.setLuck(this.luck);
 	},
 	
 	/**
@@ -608,8 +610,7 @@ EASY.player = {
 		var damage;
 		
 		// saving throw against attack
-		// biasing toward lower values
-		if (Math.random() * Math.random() < sympathy) {
+		if (this.luck * Math.random() < sympathy) {
 			// defense failed, calculate damage
 			damage = Math.round(sympathy * EASY.ghost.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
@@ -664,10 +665,9 @@ EASY.player = {
 		
 		corpse.cremate();
 		
-		// reward the player
-		this.trash.coin += corpse.reward;
-		hud.setCollection("coin", this.trash.coin);
-		
+		// reward the player with a little luck
+		this.luck = this.luck * 1.02;
+		hud.setLuck(this.luck);
 	},
 	
 	/**
@@ -686,6 +686,12 @@ EASY.player = {
 		} else if (this.MAX_RESOLVE >= EASY.EARNING_TARGET) {
 			EASY.hud.endGame("money");
 		} else {
+			// did the player not perform the cremation?
+			if (EASY.corpse.mode === EASY.corpse.INTACT) {
+				// worsen player's luck
+				this.luck = this.luck * 0.98;
+				EASY.hud.setLuck(this.luck);
+			}
 			// throw up a wait screen
 			EASY.hud.darken(EASY.hud.waitMsg);
 			// on the next animation frame, generate a new level

@@ -48,7 +48,9 @@ EASY.hud = {
 				coin: jQuery("#coin")
 			},
 			resolve: jQuery("#resolve"),
-			maxResolve: jQuery("#max-resolve")
+			maxResolve: jQuery("#max-resolve"),
+			
+			luck: jQuery("#luck")
 			
 		};
 
@@ -278,6 +280,24 @@ EASY.hud = {
 				.fadeTo(50, 0).fadeTo(50, 1);
 		}
 		
+	},
+	
+	/**
+		update luck readout
+		
+		@method setLuck
+		@param value number, luck as percentage
+	**/
+	
+	setLuck: function(value) {
+		var current = parseInt(this.dom.luck.html(), 10);
+		value = Math.round(value * 100);
+		if (value !== current) {
+			this.dom.luck.html(value);
+			this.dom.luck.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1);
+		}
 	},
 	
 	/**

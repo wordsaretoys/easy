@@ -383,8 +383,7 @@ EASY.ghost = {
 		var sympathy = this.sympathy[attack];
 		var damage;
 		// saving throw against attack
-		// biasing toward lower values
-		if (Math.random() * Math.random() < sympathy) {
+		if ((1 - EASY.player.luck) * Math.random() < sympathy) {
 			// failed the saving throw
 			damage = Math.round(sympathy * EASY.player.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
