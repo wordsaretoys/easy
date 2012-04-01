@@ -178,13 +178,16 @@ var EASY = {
 	**/
 	
 	generate: function() {
-		EASY.cave.generate();
-		if (!this.training) {
-			EASY.corpse.generate();
-			EASY.ghost.generate();
-			EASY.trash.generate();
-		}
-		EASY.player.generate();
+		var ok = true;
+		do {
+			EASY.cave.generate();
+			if (!this.training) {
+				ok = EASY.corpse.generate();
+				EASY.ghost.generate();
+				ok = ok && EASY.trash.generate();
+			}
+			EASY.player.generate();
+		} while (!ok);
 	},
 	
 	/**

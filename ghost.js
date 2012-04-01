@@ -45,8 +45,9 @@ EASY.ghost = {
 			"I see you, flesh."
 		],
 		
-		calmed: [
-			"The weight is gone. Perhaps I can move on now."
+		release: [
+			"Farewell, brave apologist.",
+			"I pray the gods will be as pleased to see me as I will be to see them."
 		],
 		
 		alone: [
@@ -296,9 +297,10 @@ EASY.ghost = {
 		case this.BECALMED:
 
 			// fade the ghost out
-			if (this.alpha > 0) {
-				this.alpha = Math.max(0, this.alpha - dt);
-			}
+//			if (this.alpha > 0) {
+//				this.alpha = Math.max(0, this.alpha - dt);
+//			}
+			this.alpha = 0;
 			
 			break;
 
@@ -391,7 +393,6 @@ EASY.ghost = {
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// ghost is calmed down
-				EASY.hud.comment(this.COMMENTS.calmed.pick(), "ghost", true);
 				this.mode = this.BECALMED;
 			}
 			// sympathy to arguments decreases with success
@@ -402,7 +403,16 @@ EASY.ghost = {
 		} else {
 			return true;
 		}
+	},
+	
+	/**
+		react to cremation
+		
+		@method cremate
+	**/
+	
+	cremate: function() {
+		EASY.hud.comment(this.COMMENTS.release.pick(), "ghost", true);
 	}
-
 };
 

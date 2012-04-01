@@ -89,6 +89,8 @@ EASY.trash = {
 			do {
 				drop = Math.ceil(quant * Math.random());
 				pos = flat.pop();
+				if (!pos) 
+					return false;
 				this.list.push( {
 					center: SOAR.vector.create(pos.x, EASY.cave.ZERO_HEIGHT + 0.01, pos.z),
 					active: true,
@@ -96,7 +98,7 @@ EASY.trash = {
 					number: drop
 				} );
 				quant = quant - drop;
-			} while(quant > 0 && flat.length > 0);
+			} while(quant > 0);
 
 		}
 		
@@ -111,6 +113,8 @@ EASY.trash = {
 		console.log("wood: ", t.wood, " oil: ", t.oil, " coin: ", t.coin);
 		console.log("flats left: ", flat.length);
 */
+
+		return true;
 	},
 	
 	/**

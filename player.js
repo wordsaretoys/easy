@@ -92,10 +92,6 @@ EASY.player = {
 		
 		cremate: {
 		
-			success: [
-				"Another one for the invoice."
-			],
-		
 			notcalm: [
 				"I have to calm the ghost down first."
 			],
@@ -108,12 +104,7 @@ EASY.player = {
 			nooil: [
 				"I don't have enough oil for the anointing.",
 				"Not enough oil. Got to grease that corpse up."
-			],
-			
-			nocoin: [
-				"I don't have enough coin for the offering.",
-				"Not enough coin. The gods want their cut, too."
-			]
+			]			
 		}
 	},
 
@@ -263,7 +254,6 @@ EASY.player = {
 			that.texture = 
 				SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h));
 		})();
-		
 	},
 	
 	/**
@@ -674,8 +664,7 @@ EASY.player = {
 		
 		corpse.cremate();
 		
-		// invoice and reward
-		EASY.hud.comment(this.COMMENTS.cremate.success.pick(), "player", true);
+		// reward the player
 		this.trash.coin += corpse.reward;
 		hud.setCollection("coin", this.trash.coin);
 		
@@ -715,6 +704,9 @@ EASY.player = {
 			}, 1, false);
 		}
 	},
+	
+	/**
+		
 	
 	/**
 		draw the player pointer

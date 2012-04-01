@@ -112,6 +112,8 @@ EASY.corpse = {
 	
 		// grab position from cave flat list
 		p = EASY.cave.flat.pop();
+		if (!p) 
+			return false;
 		this.position.set(p.x, EASY.cave.ZERO_HEIGHT + 0.01, p.z);
 		
 		// requirements cycle quasi-periodically over time
@@ -132,6 +134,8 @@ EASY.corpse = {
 		
 		this.burn = 0;
 		this.mode = this.INTACT;
+		
+		return true;
 	},
 
 	/**
@@ -196,6 +200,7 @@ EASY.corpse = {
 		this.mode = this.BURNING;
 		this.timestamp = SOAR.elapsedTime;
 		EASY.ghost.mode = EASY.ghost.BECALMED;
+		EASY.ghost.cremate();
 	},
 	
 	/**
