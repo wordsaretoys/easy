@@ -47,6 +47,10 @@ div {
 	text-align: center;
 }
 
+.small {
+	font-size: 75%;
+}
+
 /* debug information */
 
 #debug {
@@ -116,6 +120,8 @@ div {
 	font-variant: small-caps;
 
 	z-index: 5;
+	
+	display: none;
 }
 
 #legend .space5 {
@@ -150,6 +156,8 @@ div {
 	padding: 2px;
 
 	z-index: 5;
+	
+	display: none;
 }
 
 #readout .section {

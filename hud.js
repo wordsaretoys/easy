@@ -62,7 +62,6 @@ EASY.hud = {
 		};
 
 		this.dom.window.bind("resize", this.resize);			
-		this.dom.window.bind("keydown", this.onKeyDown);
 		this.resize();
 		
 		// prevent highlighting of message text

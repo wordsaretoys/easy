@@ -686,11 +686,6 @@ EASY.player = {
 		} else if (this.MAX_RESOLVE >= EASY.EARNING_TARGET) {
 			EASY.hud.endGame("money");
 		} else {
-			// switch out of training mode if we're in it
-			if (EASY.training) {
-				EASY.training = false;
-				SOAR.unschedule(EASY.introId);
-			}
 			// throw up a wait screen
 			EASY.hud.darken(EASY.hud.waitMsg);
 			// on the next animation frame, generate a new level

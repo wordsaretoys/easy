@@ -40,14 +40,13 @@ var EASY = {
 		}
 	},
 	
-	INTRO: [
-		"Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com",
-		"Easy, the fabled adventurer, leaves a path of devastation through the deepest caves.",
-		"He's got no time to make amends; that's <em>your</em> job.",
-		"Dispose of his victims, calm their restless ghosts, and make a little money.",
-		"<em>Very</em> little money.",
-		"Find the exit at the top of the map."
-	],
+	BLURB:
+		"<p>Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com</p>" +
+		"<p class=\"small\">Easy, the fabled adventurer, leaves a path of devastation through the deepest caves.</p>" +
+		"<p class=\"small\">He's got no time to make amends; that's <em>your</em> job.</p>" +
+		"<p class=\"small\">Dispose of his victims, calm their restless spirits,<br>appease their gods, and make a little money.</p>" +
+		"<p class=\"small\"><em>Very</em> little money.</p>" +
+		"<p>Press a Key to Play</p></div>",
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
@@ -55,11 +54,9 @@ var EASY = {
 	EARNING_TARGET: 1000,
 	
 	updating: true,
-	training: true,
-	introNum: 0,
 
 	/**
-		create GL context, set up game objects, load resources, run main loop
+		create GL context, set up game objects, load resources
 
 		@method start
 	**/
@@ -122,8 +119,6 @@ var EASY = {
 
 			// this function is called when resource load is complete
 			
-			EASY.hud.darken(EASY.hud.waitMsg);
-		
 			// allow game objects to process loaded resources
 			EASY.cave.process();
 			EASY.trash.process();
@@ -132,37 +127,30 @@ var EASY = {
 			
 			// generate a new map
 			EASY.generate();
-		
+
 			// schedule animation frame functions
 			SOAR.schedule(EASY.update, 0, true);
 			SOAR.schedule(EASY.draw, 0, true);
 
+			// resize display & redraw if window size changes
 			window.addEventListener("resize", function() {
 				EASY.display.setSize(
 					document.body.clientWidth, 
 					document.body.clientHeight
 				);
-				// always draw if the canvas dimensions are changed
 				EASY.draw();
 			}, false);
-
-			SOAR.run();
 			
-			EASY.hud.lighten();
-
-			// set up a timed comment push to introduce the game concept
-			EASY.introId = SOAR.schedule(function() {
-				EASY.hud.comment(EASY.INTRO[EASY.introNum], "intro", true);
-				EASY.introNum++;
-				if (EASY.introNum === EASY.INTRO.length) {
-					SOAR.unschedule(EASY.introId);
-				}
-			}, 3000, true);
+			// tell the player what's going on
+			EASY.hud.darken(EASY.BLURB);
+			
+			// wait for keypress
+			EASY.hud.dom.window.bind("keydown", EASY.startGame);
 			
 		}, function(count, total) {
 			// this function is called once for every resource received from the server
 
-			var pc = Math.round(100 * count / total);
+			var pc = Math.round(90 * count / total);
 			EASY.hud.darken(EASY.hud.waitMsg + "<br>" + pc + "%");
 		
 		});
@@ -186,6 +174,37 @@ var EASY = {
 	},
 	
 	/**
+		run this to actually run the game on user keypress
+		
+		@method startGame
+	**/
+	
+	startGame: function() {
+	
+		// unbind this handler
+		EASY.hud.dom.window.unbind("keydown", EASY.startGame);
+	
+		// bind the HUD key handler
+		EASY.hud.dom.window.bind("keydown", EASY.hud.onKeyDown);
+		
+		// show HUD readouts/legends
+		jQuery("#legend").show();
+		jQuery("#readout").show();
+	
+		// start the message pump
+		SOAR.run();
+		
+		// reveal the game screen
+		EASY.hud.lighten();
+		
+		EASY.player.mouse.invalid = true;
+		
+		// remember it's an event handler
+		// don't allow key to bubble up
+		return false;
+	},
+	
+	/**
 		(re)generate all necessary game state for a new map
 		
 		@method generate
@@ -195,11 +214,9 @@ var EASY = {
 		var ok = true;
 		do {
 			EASY.cave.generate();
-			if (!this.training) {
-				ok = EASY.corpse.generate();
-				EASY.ghost.generate();
-				ok = ok && EASY.trash.generate();
-			}
+			ok = EASY.corpse.generate();
+			EASY.ghost.generate();
+			ok = ok && EASY.trash.generate();
 			EASY.player.generate();
 		} while (!ok);
 	},
@@ -213,11 +230,9 @@ var EASY = {
 	update: function() {
 		if (EASY.updating) {
 			EASY.player.update();
-			if (!EASY.training) {
-				EASY.trash.update();
-				EASY.ghost.update();
-				EASY.corpse.update();
-			}
+			EASY.trash.update();
+			EASY.ghost.update();
+			EASY.corpse.update();
 		}
 	},
 
@@ -240,11 +255,9 @@ var EASY = {
 		
 		if (!EASY.hideCave)
 			EASY.cave.draw();
-		if (!EASY.training) {
-			EASY.trash.draw();
-			EASY.corpse.draw();
-			EASY.ghost.draw();
-		}
+		EASY.trash.draw();
+		EASY.corpse.draw();
+		EASY.ghost.draw();
 		if (EASY.player.camera.mapView) {
 			EASY.player.draw();
 		}

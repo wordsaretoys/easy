@@ -47,7 +47,7 @@ EASY.ghost = {
 		
 		release: [
 			"Farewell, brave apologist.",
-			"I pray the gods will be as pleased to see me as I will be to see them."
+			"I pray I will be as pleased to see the gods as they will be to see me."
 		],
 		
 		alone: [
