@@ -20,7 +20,7 @@ var EASY = {
 		},
 		oil: {
 			type: "image",
-			path: "res/oil.gif"
+			path: "res/oil.png"
 		},
 		coin: {
 			type: "image",

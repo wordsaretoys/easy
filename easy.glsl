@@ -68,7 +68,7 @@ void main(void) {
 	// makes the cave floor dark and the ceiling bright
 	float hl = (object.y + 0.5) / 7.0;
 	// makes the entrance and exit areas fade into darkness
-	float ll = 1.0 - pow(clamp( abs(32.0 - object.z) / 32.0, 0.0, 1.0), 2.0);
+	float ll = 1.0 - pow(clamp( abs(32.0 - object.z) / 32.0, 0.0, 1.0), 6.0);
 	// creates a torch effect around the player
 	// (in map display, don't want this effect)
 	float fl = 1.0;
