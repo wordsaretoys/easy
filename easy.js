@@ -173,6 +173,16 @@ var EASY = {
 		EASY.trash.init();
 		EASY.ghost.init();
 		EASY.corpse.init();
+/*		
+		var fl, hist = [];
+		for (var k = 0; k < 100; k++) {
+			EASY.cave.generate();
+			fl = EASY.cave.flat.length;
+			hist[fl] = (hist[fl] || 0) + 1;
+		}
+		for (k = 0; k < hist.length; k++)
+			console.log(k, " --> ", hist[k]);
+*/
 	},
 	
 	/**

@@ -80,12 +80,16 @@ void main(void) {
 	vec3 rocktex = 	texture2D(rock, uv * 0.005).r * color[0] +
 					texture2D(rock, uv * 0.05).r * color[1] +
 					texture2D(rock, uv * 0.5).r  * color[2];
-	// if we're on the floor, let's mix in a little brick texture
-	if (object.y < 0.3) {
-		vec3 bricktex = texture2D(brick, uv).rgb;
+	// if we're on the floor or ceiling, let's mix in a little brick texture
+	vec3 bricktex = texture2D(brick, uv).rgb;
+	if (object.y < 0.6) {
 		float mixer = pow(clamp(0.5 + texture2D(rock, 0.05 * uv).r, 0.0, 1.0), 16.0);
-		float edge = (0.3 - object.y) / 0.05;
-		rocktex = mix(rocktex, bricktex, edge * mixer);
+		float edger = (0.6 - object.y) / 0.1;
+		rocktex = mix(rocktex, bricktex, edger * mixer);
+	} else if (object.y > 5.4) {
+		float mixer = pow(clamp(0.5 + texture2D(rock, -0.05 * uv).r, 0.0, 1.0), 16.0);
+		float edger = (object.y - 5.4) / 0.1;
+		rocktex = mix(rocktex, bricktex, edger * mixer);
 	}
 	gl_FragColor = vec4(fl * ll * hl * rocktex, 1.0);
 }
