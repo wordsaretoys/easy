@@ -30,6 +30,10 @@ var EASY = {
 			type: "image",
 			path: "res/chest.gif"
 		},
+		bricks: {
+			type: "image",
+			path: "res/bricks.jpg"
+		},
 		corpse: {
 			type: "image",
 			path: "res/corpse.jpg"
@@ -40,9 +44,9 @@ var EASY = {
 		"Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com",
 		"Easy, the fabled adventurer, leaves a path of devastation through the deepest caves.",
 		"He's got no time to make amends; that's <em>your</em> job.",
-		"Dispose of his victims, calm their restless ghosts&mdash;and make a little money.",
+		"Dispose of his victims, calm their restless ghosts, and make a little money.",
 		"<em>Very</em> little money.",
-		"Find the exit at the other end of the passage to begin."
+		"Find the exit at the top of the map."
 	],
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),

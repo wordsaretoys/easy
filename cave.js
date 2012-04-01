@@ -34,7 +34,7 @@ EASY.cave = {
 			SOAR.textOf("vs-cave"), SOAR.textOf("fs-cave"),
 			["position", "texturec"],
 			["projector", "modelview", "color", "torch"],
-			["rock"]
+			["rock", "brick"]
 		);
 		
 		this.map = EASY.canvasser.create(
@@ -62,6 +62,8 @@ EASY.cave = {
 	process: function() {
 		this.texture.noise = 
 			SOAR.texture.create(EASY.display, EASY.resources["noise1"].data);
+		this.texture.brick = 
+			SOAR.texture.create(EASY.display, EASY.resources["bricks"].data);
 	},
 	
 	/**
@@ -334,6 +336,7 @@ EASY.cave = {
 		gl.uniform3fv(shader.color, palette);
 		gl.uniform1i(shader.torch, camera.mapView ? 0 : 1);
 		this.texture.noise.bind(0, shader.rock);
+		this.texture.brick.bind(1, shader.brick);
 		this.mesh.draw();
 
 		gl.disable(gl.CULL_FACE);
