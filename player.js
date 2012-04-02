@@ -22,49 +22,81 @@ EASY.player = {
 
 	COMMENTS: {
 	
-		cave: {
-
-			entry: [
-				"Nice decor, for a cave.",
-				"These colors just don't go."
-			]
-		},
-	
 		trash: {
 		
 			wood: [
-				"Another smashed treasure chest. Easy's not the most patient man, is he?",
-				"Looks like <em>someone</em> forgot to bring his lockpicks again."
+				"Easy's not the most patient man when it comes to treasure.",
+				"Looks like <em>someone</em> forgot to bring his lockpicks again.",
+				"Another wooden box that'll never mock Easy again.",
+				"Who needs skill and craft when you've got a short temper?",
+				"Poor treasure chest. Must have set him off somehow.",
+				"It's amazing what a precision battleaxe will do to rotten wood.",
+				"Someday, I'll find a chest Easy hasn't smashed to bits.",
+				"Easy failed Lockpicking 101, but he found a way to deal with it.",
+				"Ancient locksmiths put all their ingenuity into this pile of splinters."
 			],
 			
 			oil: [
-				"Lamp oil. He must carry a barrel of the stuff."
+				"He must carry a barrel of this stuff.",
+				"Another sample of Easy's extra virgin lamp oil.",
+				"Guess who can't master a simple light spell?",
+				"Whoops. Almost slipped in that.",
+				"Great adventurers swear by Leakey Oil Lamps."
 			],
 			
 			coin: [
-				"All right! Enough money to buy a shoelace! Retirement, here I come!",
-				"Finding a few moldy coppers makes all the terror worthwhile."
+				"A few moldy pennies make the terror worthwhile.",
+				"Nice of him to leave me a pittance.",
+				"Hey, look what rolled out of Easy's pocket.",
+				"That's almost a million gold. Very, very almost.",
+				"I've struck it rich. Time to buy a new shoelace."
 			]
 		},
 		
 		attack: {
 		
 			excuse: [
-				"Easy's had a hard life. He was a deprived child. And a depraved teenager."
+				"Poor Easy. He just doesn't know how to love.",
+				"You can't expect good behavior from a treasure-seeker.",
+				"Shadowy ruins? Poor lighting? Accidents happen.",
+				"These spooky passages would make anyone axe-happy.",
+				"Once Easy smells gold, he's no longer in control.",
+				"Easy has an expensive lifestyle to maintain."
 			],
 			
 			appease: [
-				"Look, I can see that you've got valid complaints here."
+				"I can see you have valid complaints.",
+				"You have good reason to be annoyed.",
+				"I'll give your views full consideration.",
+				"I accept that being killed wasn't in your best interest.",
+				"Naturally you weren't expecting a major life change today.",
+				"Of <em>course</em> I'd be upset in your position.",
+				"I concede that the system failed you in this instance.",
+				"I understand you're going through a difficult transition.",
+				"Your needs weren't fully anticipated by our organization.",
+				"Our policies do present challenges for the general public."
 			],
 			
 			flatter: [
-				"The whole ethereal thing looks good on you."
+				"You look good in ectoplasm.",
+				"Undead? Now there's a can-do attitude.",
+				"Ghostliness is next to godliness.",
+				"Even a gory death couldn't slow you down.",
+				"It takes a lot of courage to start over.",
+				"You make a windy, echoing moan sound good.",
+				"Poise and dignity. Poise&mdash;and <em>dignity</em>.",
+				"You're a powerful speaker for your cause.",
+				"What excellent taste in apparitions.",
+				"You've made me see death in a whole new light."
 			],
 			
 			blame: [
-				"Hoarding gold? You were just asking for a brutal murder.",
-				"I bet you were wearing something provactive. Like a shirt.",
-				"Lurking in a dark cave? Might as well have been yelling <em>kill me</em>."
+				"You shouldn't have put your head in front of Easy's axe.",
+				"Hanging around ruins is just asking for trouble.",
+				"Standing between Easy and treasure? Good luck.",
+				"Did you really have any business being here?",
+				"You know what this says to me? Insurance scam.",
+				"Frankly, I'm skeptical about your motives."				
 			],
 			
 			notready: [
@@ -72,20 +104,32 @@ EASY.player = {
 				"...I had a good one, hold on...",
 				"...my mind's a blank right now...",
 				"...oh look, rocks...",
-				"...uh, okay, maybe not..."
+				"...uh, okay, maybe not...",
+				"...hang on, hang on...",
+				"...got this song in my head...",
+				"...er, just a second..."
 			],
 			
 			notarget: [
 				"What, am I talking to <em>myself</em> now?",
-				"Why? No one can hear me."
+				"Why? No one can hear me.",
+				"Nothing to say and no one to say it to."
 			],
 			
 			success: [
-				"Strange. I feel...braver."
+				"Strange. I'm...braver. That's new.",
+				"I'm slightly less afraid all of a sudden.",
+				"I feel better. Like, <em>one</em> better.",
+				"The darkness ahead seems a little less scary now.",
+				"I've got a smidgen more courage, somehow."
 			],
 			
 			failure: [
-				"I just had to get out of there."
+				"I just had to get out of there.",
+				"I ran. What else could I do?",
+				"I couldn't take that anymore.",
+				"Running away solves so many problems.",
+				"Guess I lost <em>that</em> argument."
 			]
 			
 		},
@@ -93,18 +137,19 @@ EASY.player = {
 		cremate: {
 		
 			notcalm: [
-				"I have to calm the ghost down first."
+				"I have to deal with the ghost first.",
+				"See that angry ghost? One thing at a time."
 			],
 			
 			nowood: [
 				"I don't have enough wood for kindling.",
-				"Not enough wood. Blood-soaked cloth doesn't burn well."
+				"Blood-soaked cloth doesn't burn well. I need wood."
 			],
 			
 			nooil: [
 				"I don't have enough oil for the anointing.",
-				"Not enough oil. Got to grease that corpse up."
-			]			
+				"Got to grease that corpse up first. I need oil."
+			]
 		}
 	},
 
@@ -699,12 +744,6 @@ EASY.player = {
 		} else if (this.MAX_RESOLVE >= EASY.EARNING_TARGET) {
 			EASY.hud.endGame("money");
 		} else {
-			// did the player not perform the cremation?
-			if (EASY.corpse.mode === EASY.corpse.INTACT) {
-				// worsen player's luck
-				this.luck = this.luck * 0.98;
-				EASY.hud.setLuck(this.luck);
-			}
 			// throw up a wait screen
 			EASY.hud.darken();
 			// on the next animation frame, generate a new level

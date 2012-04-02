@@ -46,7 +46,8 @@ var EASY = {
 		"<p class=\"small\">He's got no time to make amends; that's <em>your</em> job.</p>" +
 		"<p class=\"small\">Dispose of his victims, calm their restless spirits,<br>appease their gods, and make a little money.</p>" +
 		"<p class=\"small\"><em>Very</em> little money.</p>" +
-		"<p>Press a Key to Play</p></div>",
+		"<p>Press Enter to Play</p></div>" +
+		"<p class=\"small\">(And remember, you're not the hero.)</p>",
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
