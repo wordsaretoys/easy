@@ -201,7 +201,10 @@ var EASY = {
 	update: function() {
 		if (EASY.updating) {
 			EASY.player.update();
-			EASY.trash.update();
+			// can't collect trash while you're trash talking
+			if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
+				EASY.trash.update();
+			}
 			EASY.ghost.update();
 			EASY.corpse.update();
 		}
@@ -226,11 +229,13 @@ var EASY = {
 		
 		if (!EASY.hideCave)
 			EASY.cave.draw();
-		EASY.trash.draw();
-		EASY.corpse.draw();
-		EASY.ghost.draw();
+		
 		if (EASY.player.camera.mapView) {
 			EASY.player.draw();
+		} else {
+			EASY.trash.draw();
+			EASY.corpse.draw();
+			EASY.ghost.draw();
 		}
 	},
 

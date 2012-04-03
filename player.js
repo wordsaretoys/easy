@@ -16,7 +16,6 @@ EASY.player = {
 	HEIGHT: 1.5,
 
 	MAX_RESOLVE: 10,
-	RECOVERY_RATE: 0.5,
 	
 	SYMPATHY_LOSS: 0.3,
 
@@ -27,10 +26,10 @@ EASY.player = {
 			wood: [
 				"Easy's not the most patient man when it comes to treasure.",
 				"Looks like <em>someone</em> forgot to bring his lockpicks again.",
-				"Another wooden box that'll never mock Easy again.",
+				"Another wooden box that'll never again mock a stupid adventurer.",
 				"Who needs skill and craft when you've got a short temper?",
-				"Poor treasure chest. Must have set him off somehow.",
-				"It's amazing what a precision battleaxe will do to rotten wood.",
+				"Poor little treasure chest. Must have set him off somehow.",
+				"It's amazing what a 100lb battleaxe will do to rotten wood.",
 				"Someday, I'll find a chest Easy hasn't smashed to bits.",
 				"Easy failed Lockpicking 101, but he found a way to deal with it.",
 				"Ancient locksmiths put all their ingenuity into this pile of splinters."
@@ -38,7 +37,7 @@ EASY.player = {
 			
 			oil: [
 				"He must carry a barrel of this stuff.",
-				"Another sample of Easy's extra virgin lamp oil.",
+				"Another sample of Easy's extra smoky lamp oil.",
 				"Guess who can't master a simple light spell?",
 				"Whoops. Almost slipped in that.",
 				"Great adventurers swear by Leakey Oil Lamps."
@@ -49,7 +48,8 @@ EASY.player = {
 				"Nice of him to leave me a pittance.",
 				"Hey, look what rolled out of Easy's pocket.",
 				"That's almost a million gold. Very, very almost.",
-				"I've struck it rich. Time to buy a new shoelace."
+				"I've nearly saved enough for a new bootlace.",
+				"I see that Sir has left his usual 0.01% gratuity."
 			]
 		},
 		
@@ -79,7 +79,7 @@ EASY.player = {
 			
 			flatter: [
 				"You look good in ectoplasm.",
-				"Undead? Now there's a can-do attitude.",
+				"<em>Un</em>dead? Now there's a can-do attitude.",
 				"Ghostliness is next to godliness.",
 				"Even a gory death couldn't slow you down.",
 				"It takes a lot of courage to start over.",
@@ -96,7 +96,8 @@ EASY.player = {
 				"Standing between Easy and treasure? Good luck.",
 				"Did you really have any business being here?",
 				"You know what this says to me? Insurance scam.",
-				"Frankly, I'm skeptical about your motives."				
+				"Frankly, I'm skeptical about your motives.",
+				"You must have provoked him. Did you make eye contact?"
 			],
 			
 			notready: [
@@ -300,6 +301,16 @@ EASY.player = {
 			that.texture = 
 				SOAR.texture.create(EASY.display, cntx.getImageData(0, 0, w, h));
 		})();
+		
+		// create a scheduled function that maintains player resolve
+		// if player is not arguing, restore resolve by 1 point/sec
+		SOAR.schedule(function() {
+			if (that.resolve < that.MAX_RESOLVE && EASY.ghost.mode !== EASY.ghost.ATTACKING) {
+				that.resolve++;
+				EASY.hud.setResolve(that.resolve, that.MAX_RESOLVE);
+			}
+		}, 1000, true);
+
 	},
 	
 	/**
@@ -377,11 +388,6 @@ EASY.player = {
 		this.headPosition.copy(this.footPosition);
 		this.headPosition.y += this.HEIGHT;
 		camera.position.copy(this.headPosition);
-		
-		if (this.resolve < this.MAX_RESOLVE && EASY.ghost.mode !== EASY.ghost.ATTACKING) {
-			this.resolve = Math.min(this.resolve + this.RECOVERY_RATE * dt, this.MAX_RESOLVE);
-			EASY.hud.setResolve(Math.ceil(this.resolve), this.MAX_RESOLVE);
-		}
 		
 		if (this.delay > 0) {
 			this.delay = Math.max(0, this.delay - dt);
@@ -641,6 +647,7 @@ EASY.player = {
 				if (EASY.ghost.mode === EASY.ghost.BECALMED) {
 					// level up, so to speak
 					this.MAX_RESOLVE++;
+					this.resolve = this.MAX_RESOLVE;
 					EASY.hud.comment(this.COMMENTS.attack.success.pick(), "player", true);
 					EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 

@@ -46,9 +46,9 @@ EASY.ghost = {
 		],
 		
 		release: [
-			"Farewell, brave apologist.",
+			"Farewell, o brave apologist.",
 			"I pray I will be as pleased to see the gods as they will be to see me.",
-			"I hope you also find the release you seek, my friend."
+			"I hope you also find the release you seek."
 		],
 		
 		alone: [
@@ -297,11 +297,12 @@ EASY.ghost = {
 			
 		case this.BECALMED:
 
-			// fade the ghost out
-//			if (this.alpha > 0) {
-//				this.alpha = Math.max(0, this.alpha - dt);
-//			}
-			this.alpha = 0;
+			// count down the blink effect
+			if (this.blink > -SOAR.PIDIV2) {
+				this.blink = Math.max(-SOAR.PIDIV2, this.blink - dt * 4);
+			} else {
+				this.alpha = 0;
+			}
 			
 			break;
 
@@ -393,6 +394,8 @@ EASY.ghost = {
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// ghost is calmed down
+				// suspend it but lock it into last mode
+				this.suspend();
 				this.mode = this.BECALMED;
 			}
 			// sympathy to arguments decreases with success
@@ -412,6 +415,9 @@ EASY.ghost = {
 	**/
 	
 	cremate: function() {
+		// one last blink and whisper
+		this.alpha = 1;
+		this.blink = SOAR.PIDIV2;
 		EASY.hud.comment(this.COMMENTS.release.pick(), "ghost", true);
 	}
 };
