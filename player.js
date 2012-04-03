@@ -344,12 +344,7 @@ EASY.player = {
 		if (this.nextMap) {
 			EASY.generate();
 			EASY.hud.lighten();
-			if (this.fledMap) {
-				EASY.hud.comment(
-					EASY.player.COMMENTS.attack.failure.pick(), "player", true);
-			}
 			delete this.nextMap;
-			delete this.fledMap;
 		}
 		
 		scratch.direction.set();
@@ -631,7 +626,7 @@ EASY.player = {
 	collect: function(item) {
 		var type = item.object;
 		var num = item.number;
-		EASY.hud.comment(this.COMMENTS.trash[type].pick(), "player", true);
+		EASY.hud.comment(this.COMMENTS.trash[type].pick(), "player");
 		this.trash[type] = (this.trash[type] || 0) + num;
 		EASY.hud.setCollection(type, this.trash[type]);
 	},
@@ -650,8 +645,8 @@ EASY.player = {
 		} else if (this.delay > 0) {
 			EASY.hud.comment(this.COMMENTS.attack.notready.pick(), "player");
 		} else {
+			EASY.hud.comment(this.COMMENTS.attack[type].pick(), "player");
 			result = EASY.ghost.defend(type);
-			EASY.hud.comment(this.COMMENTS.attack[type].pick(), "player", !result);
 			// if the ghost fails to defend against the attack
 			if (!result) {
 				// if we've calmed the ghost down
@@ -659,7 +654,7 @@ EASY.player = {
 					// level up, so to speak
 					this.MAX_RESOLVE++;
 					this.resolve = this.MAX_RESOLVE;
-					EASY.hud.comment(this.COMMENTS.attack.success.pick(), "player", true);
+					EASY.hud.comment(this.COMMENTS.attack.success.pick(), "player");
 					EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 
 				}
@@ -691,10 +686,9 @@ EASY.player = {
 			damage = Math.ceil(sympathy * EASY.ghost.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
-			// if we run out of resolve
+			// if we're out of resolve, must concede to ghost
 			if (this.resolve === 0) {
-				// flee the cave
-				this.exitCave(true);
+				EASY.ghost.concede();
 			}
 			// sympathy to arguments decreases with success
 			this.sympathy[attack] = sympathy * (1 - this.SYMPATHY_LOSS);
@@ -717,8 +711,8 @@ EASY.player = {
 		var ghost = EASY.ghost;
 		var hud = EASY.hud;
 	
-		// check that the ghost is calmed down
-		if (ghost.mode !== ghost.BECALMED) {
+		// check that the ghost is not attacking
+		if (ghost.mode === ghost.ATTACKING) {
 			hud.comment(this.COMMENTS.cremate.notcalm.pick(), "player");
 			return;
 		}
@@ -749,13 +743,12 @@ EASY.player = {
 	/**
 		handle player exit from the cave
 		
-		called when player steps out of the cave exit or flees
+		called when player steps out of the cave exit
 		
 		@method exitCave
-		@param fled boolean, true if player fled cave
 	**/
 	
-	exitCave: function(fled) {
+	exitCave: function() {
 		// have we reached either ending target?
 		if (this.MAX_RESOLVE >= EASY.RESOLVE_TARGET) {
 			EASY.hud.endGame("resolve");
@@ -766,7 +759,6 @@ EASY.player = {
 			EASY.hud.darken();
 			// on the next animation frame, generate a new level
 			this.nextMap = true;
-			this.fledMap = fled;
 		}
 	},
 	

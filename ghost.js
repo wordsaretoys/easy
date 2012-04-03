@@ -15,6 +15,7 @@ EASY.ghost = {
 	DORMANT: 0,
 	ATTACKING: 1,
 	BECALMED: 2,
+	DISGUSTED: 3,
 	
 	COMMENTS: {
 	
@@ -199,6 +200,7 @@ EASY.ghost = {
 
 		// start in dormant state
 		this.suspend();
+		this.mode = this.DORMANT;
 	},
 	
 	/**
@@ -225,7 +227,7 @@ EASY.ghost = {
 	},
 	
 	/**
-		make the ghost dormant and transparent
+		make the ghost transparent
 		and send it back to its body
 		
 		@method suspend
@@ -234,7 +236,6 @@ EASY.ghost = {
 	suspend: function() {
 		this.position.copy(EASY.corpse.position).y = 1;
 		this.alpha = 0;
-		this.mode = this.DORMANT;
 	},
 	
 	/**
@@ -255,7 +256,7 @@ EASY.ghost = {
 		
 			// wait for the player to walk up
 			if (pp.distance(this.position) < this.BUFFER_ZONE) {
-				EASY.hud.comment(this.COMMENTS.awaken.pick(), "ghost", true);
+				EASY.hud.comment(this.COMMENTS.awaken.pick(), "ghost");
 				this.target.copy(pp);
 				this.mode = this.ATTACKING;
 			}
@@ -316,7 +317,8 @@ EASY.ghost = {
 			// can't see the player even once you're on top of the target?
 			if (!hit && len < 1.1) {
 				// lost the bugger, so go back to dormancy
-				EASY.hud.comment(this.COMMENTS.alone.pick(), "ghost", true);
+				EASY.hud.comment(this.COMMENTS.alone.pick(), "ghost");
+				this.mode = this.DORMANT;
 				this.suspend();
 			}
 
@@ -329,6 +331,15 @@ EASY.ghost = {
 				this.blink = Math.max(-SOAR.PIDIV2, this.blink - dt * 4);
 			} else {
 				this.alpha = 0;
+			}
+			
+			break;
+			
+		case this.DISGUSTED:
+		
+			// slow snooty fade
+			if (this.alpha > 0) {
+				this.alpha = Math.max(0, this.alpha - dt);
 			}
 			
 			break;
@@ -380,8 +391,8 @@ EASY.ghost = {
 		// repeat the last attack
 		attack = this.lastAttack.type;
 		history = this.lastAttack.fail;
+		EASY.hud.comment(this.COMMENTS.attack[attack].pick(), "ghost");
 		result = EASY.player.defend(attack);
-		EASY.hud.comment(this.COMMENTS.attack[attack].pick(), "ghost", !result);
 		this.lastAttack.fail = result;
 		// if player defended attack
 		if (result) {
@@ -421,9 +432,9 @@ EASY.ghost = {
 			// if we run out of resolve
 			if (this.resolve === 0) {
 				// ghost is calmed down
-				// suspend it but lock it into last mode
-				this.suspend();
 				this.mode = this.BECALMED;
+				this.suspend();
+				EASY.hud.comment(this.COMMENTS.attack.calmed.pick(), "ghost");
 			}
 			// sympathy to arguments decreases with success
 			this.sympathy[attack] = sympathy * (1 - this.SYMPATHY_LOSS);
@@ -436,16 +447,30 @@ EASY.ghost = {
 	},
 	
 	/**
-		react to cremation
+		react to player's concession
+		
+		@method concede
+	**/
+	
+	concede: function() {
+		this.mode = this.DISGUSTED;
+		this.suspend();
+		EASY.hud.comment(this.COMMENTS.attack.disgust.pick(), "ghost");
+	},
+	
+	/**
+		react to cremation if calmed
 		
 		@method cremate
 	**/
 	
 	cremate: function() {
-		// one last blink and whisper
-		this.alpha = 1;
-		this.blink = SOAR.PIDIV2;
-		EASY.hud.comment(this.COMMENTS.release.pick(), "ghost", true);
+		if (this.mode === this.BECALMED) {
+			// one last blink and whisper
+			this.alpha = 1;
+			this.blink = SOAR.PIDIV2;
+			EASY.hud.comment(this.COMMENTS.release.pick(), "ghost");
+		}
 	}
 };
 

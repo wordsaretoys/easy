@@ -221,31 +221,19 @@ EASY.hud = {
 		@method comment
 		@param msg string, message to display
 		@param who string, classname of speaker
-		@param hey boolean, true if we should flash
 	**/
 
-	comment: function(msg, who, hey) {
+	comment: function(msg, who) {
 		var div = jQuery(document.createElement("div"));
 		div.addClass(who);
 		div.html(msg);
 		div.css("display", "none");
 		this.dom.comment.append(div);
-		if (hey) {
-			div.fadeTo(50, 0).fadeTo(50, 1)
-				.fadeTo(50, 0).fadeTo(50, 1)
-				.fadeTo(50, 0).fadeTo(50, 1)
-				.fadeTo(this.COMMENT_FADE_TIME, 0.5)
-				.delay(this.COMMENT_READ_TIME)
-				.hide(this.COMMENT_FADE_TIME, function() {
-					div.remove();
-				});
-		} else {
-			div.fadeTo(this.COMMENT_FADE_TIME, 0.5)
-				.delay(this.COMMENT_READ_TIME)
-				.hide(this.COMMENT_FADE_TIME, function() {
-					div.remove();
-				});
-		}
+		div.fadeTo(this.COMMENT_FADE_TIME, 0.5)
+			.delay(this.COMMENT_READ_TIME)
+			.hide(this.COMMENT_FADE_TIME, function() {
+				div.remove();
+			});
 	},
 
 	/**
