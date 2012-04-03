@@ -167,7 +167,7 @@ EASY.ghost = {
 
 		// set initial state
 		this.delay = 1 + Math.random();
-		this.resolve = Math.round(EASY.player.MAX_RESOLVE * 0.75);
+		this.resolve = Math.round(EASY.player.MAX_RESOLVE * 1.0);
 		this.velocity.set();
 
 		// start in dormant state
@@ -386,8 +386,8 @@ EASY.ghost = {
 		var damage;
 		// saving throw against attack
 		if ((1 - EASY.player.luck) * Math.random() < sympathy) {
-			// failed the saving throw
-			damage = Math.round(sympathy * EASY.player.resolve);
+			// failed the saving throw, calculate damage
+			damage = Math.ceil(Math.random() * sympathy * EASY.player.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			// make the ghost blink in surprise
 			this.blink = Math.PI;

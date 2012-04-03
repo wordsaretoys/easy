@@ -15,7 +15,7 @@ EASY.player = {
 
 	HEIGHT: 1.5,
 
-	MAX_RESOLVE: 10,
+	MAX_RESOLVE: 1,
 	
 	SYMPATHY_LOSS: 0.3,
 
@@ -677,7 +677,7 @@ EASY.player = {
 		// saving throw against attack
 		if (this.luck * Math.random() < sympathy) {
 			// defense failed, calculate damage
-			damage = Math.round(sympathy * EASY.ghost.resolve);
+			damage = Math.ceil(Math.random() * sympathy * EASY.ghost.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 			// if we run out of resolve
