@@ -22,7 +22,9 @@ EASY.ghost = {
 			
 			scare: [
 				"What's that behind you? Oh well, it's probably nothing.",
-				"Does this cave seem...<em>confining</em>...to you?"
+				"Does this cave seem...<em>confining</em>...to you?",
+				"There's no way out of this. You'll never escape.",
+				"How many miles of darkness will you crawl through before you expire?"
 			],
 			
 			snark: [
@@ -33,12 +35,8 @@ EASY.ghost = {
 			doubt: [
 				"How do you know you'll even get paid?",
 				"I wouldn't bet my future on a madman with an axe."
-			],
-			
-			doom: [
-				"There's no way out of this. You'll never escape.",
-				"How many miles of darkness will you crawl through before you expire?"
 			]
+			
 		},
 		
 		awaken: [
@@ -47,7 +45,8 @@ EASY.ghost = {
 		
 		release: [
 			"Farewell, o brave apologist.",
-			"I pray I will be as pleased to see the gods as they will be to see me.",
+			"You have the soul of a weasel, but there is goodness in you.",
+			"I pray I am as pleased to see the gods as they are to see me.",
 			"I hope you also find the release you seek."
 		],
 		
@@ -62,14 +61,12 @@ EASY.ghost = {
 		excuse: 0,
 		appease: 0,
 		flatter: 0,
-		blame: 0,
 		
 		normalize: function() {
-			var mag = this.excuse + this.appease + this.flatter + this.blame;
+			var mag = this.excuse + this.appease + this.flatter;
 			this.excuse = this.excuse / mag;
 			this.appease = this.appease / mag;
 			this.flatter = this.flatter / mag;
-			this.blame = this.blame / mag;
 		}
 			
 	},
@@ -87,10 +84,9 @@ EASY.ghost = {
 	},
 	
 	newAttack: {
-		"scare": [ "doom", "snark", "doubt" ],
-		"snark": [ "doom", "scare", "doubt" ],
-		"doom": [ "scare", "snark", "doubt" ],
-		"doubt": [ "scare", "doom", "snark" ]
+		"scare": [ "snark", "doubt" ],
+		"snark": [ "scare", "doubt" ],
+		"doubt": [ "scare", "snark" ]
 	},
 	
 	position: SOAR.vector.create(),
@@ -162,7 +158,6 @@ EASY.ghost = {
 		this.sympathy.excuse = Math.random();
 		this.sympathy.appease = Math.random();
 		this.sympathy.flatter = Math.random();
-		this.sympathy.blame = Math.random();
 		this.sympathy.normalize();
 
 		// set initial state
@@ -367,7 +362,7 @@ EASY.ghost = {
 			}
 		}
 		// set random delay for next attack
-		this.delay = 2 + Math.random();
+		this.delay = 1 + Math.random();
 	},
 	
 	/**

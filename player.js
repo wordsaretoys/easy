@@ -90,16 +90,6 @@ EASY.player = {
 				"You've made me see death in a whole new light."
 			],
 			
-			blame: [
-				"You shouldn't have put your head in front of Easy's axe.",
-				"Hanging around ruins is just asking for trouble.",
-				"Standing between Easy and treasure? Good luck.",
-				"Did you really have any business being here?",
-				"You know what this says to me? Insurance scam.",
-				"Frankly, I'm skeptical about your motives.",
-				"You must have provoked him. Did you make eye contact?"
-			],
-			
 			notready: [
 				"...wait, it'll come to me...",
 				"...I had a good one, hold on...",
@@ -505,9 +495,6 @@ EASY.player = {
 			case SOAR.KEY.THREE:
 				that.attack("flatter");
 				break;
-			case SOAR.KEY.FOUR:
-				that.attack("blame");
-				break;
 				
 // debugging keys -- remove in production release
 
@@ -521,7 +508,7 @@ EASY.player = {
 				EASY.corpse.cremate();
 				break;
 			case SOAR.KEY.C:
-				switch (1 + Math.floor(Math.random() * 4)) {
+				switch (1 + Math.floor(Math.random() * 3)) {
 				case 1:
 					that.attack("excuse");
 					break;
@@ -530,9 +517,6 @@ EASY.player = {
 					break;
 				case 3:
 					that.attack("flatter");
-					break;
-				case 4:
-					that.attack("blame");
 					break;
 				}
 				break;
