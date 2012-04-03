@@ -9,7 +9,7 @@ EASY.cave = {
 
 	LENGTH: 64,
 	STEP: 0.35,
-	EDGE: 4,
+	EDGE: 8,
 	ZERO_HEIGHT: 0.5,
 	WALL_HEIGHT: 4,
 	SEPARATION: 1,
@@ -149,11 +149,15 @@ EASY.cave = {
 		map.context.fillStyle = "rgba(0, 0, 0, 0.75)";
 		map.context.beginPath();
 		map.context.arc(this.area[0].x, l - 2, 2, 0, SOAR.PIMUL2, false);
-		map.context.arc(this.area[0].x, l - 4, 2, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[0].x, l - 4, 3, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[0].x, l - 6, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[0].x, l - 8, 5, 0, SOAR.PIMUL2, false);
 		map.context.fill();
 		map.context.beginPath();
 		map.context.arc(this.area[this.MAX_AREAS - 1].x, 2, 2, 0, SOAR.PIMUL2, false);
-		map.context.arc(this.area[this.MAX_AREAS - 1].x, 4, 2, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[this.MAX_AREAS - 1].x, 4, 3, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[this.MAX_AREAS - 1].x, 6, 4, 0, SOAR.PIMUL2, false);
+		map.context.arc(this.area[this.MAX_AREAS - 1].x, 8, 5, 0, SOAR.PIMUL2, false);
 		map.context.fill();
 		
 		// construct map

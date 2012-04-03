@@ -310,8 +310,12 @@ EASY.player = {
 		var x, z;
 		// place the player at the cave entrance
 		x = EASY.cave.area[0].x;
-		z = EASY.cave.area[0].y;
+		z = EASY.cave.LENGTH - 2;
 		this.footPosition.set(x, EASY.cave.getFloorHeight(x, z), z);
+		
+		// align camera to z-axis
+		this.camera.yaw.set(0, 0, 0, 1);
+		this.camera.turn(0, 0, 0);
 
 		// reset state
 		this.resolve = this.MAX_RESOLVE;
@@ -441,7 +445,7 @@ EASY.player = {
 		}
 		
 		// don't allow player to go past the entrance
-		if (p.z >= EASY.cave.LENGTH - 2) {
+		if (p.z > EASY.cave.LENGTH - 2) {
 			p.z = EASY.cave.LENGTH - 2;
 		}
 	},
