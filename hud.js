@@ -21,8 +21,7 @@ EASY.hud = {
 	waitMsg: "Loading",
 	
 	endingMsg: {
-		resolve: "<p>You've Gained the Confidence to Seek Your Own Path.</p><p>Leave the Cave and Send Easy the Bill.</p>",
-		money: "<p>You've Made Enough Coin to Leave the Cave</p><p>(sadly, you'll probably be back soon enough)</p>",
+		start: "<p>You've decided to leave the ruins.</p>",
 		playagain: "<p>Press F5 to Play Again</p>"
 	},
 	
@@ -358,11 +357,10 @@ EASY.hud = {
 		set up an end screen and stop the game
 		
 		@method endGame
-		@param ending string, which ending to display
 	**/
 
-	endGame: function(ending) {
-		var msg = this.endingMsg[ending] + this.endingMsg["playagain"];
+	endGame: function() {
+		var msg = this.endingMsg["start"] + this.endingMsg["playagain"];
 		this.setCurtain(0.5);
 		this.setMessage(msg);
 		SOAR.running = false;

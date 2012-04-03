@@ -42,17 +42,15 @@ var EASY = {
 	
 	BLURB:
 		"<p>Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com</p>" +
-		"<p class=\"small\">Easy, the fabled adventurer, leaves a path of devastation through the deepest ruins.</p>" +
+		"<p class=\"small\">Easy, the fabled adventurer, leaves a path of devastation through an underground ruin.</p>" +
 		"<p class=\"small\">He's got no time to make amends; that's <em>your</em> job.</p>" +
-		"<p class=\"small\">Dispose of his victims, calm their restless spirits,<br>appease their gods, and make a little money.</p>" +
+		"<p class=\"small\">Dispose of his victims, calm their angry spirits,<br>appease their gods, and make a little money.</p>" +
 		"<p class=\"small\"><em>Very</em> little money.</p>" +
-		"<p>Press Enter to Play</p></div>" +
-		"<p class=\"small\">(And remember, you're not the hero.)</p>",
+		"<p>Press Enter to Play</p></div>",
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
-	RESOLVE_TARGET: 50,
-	EARNING_TARGET: 1000,
+	LEVEL_TARGET: 10,
 	
 	updating: true,
 

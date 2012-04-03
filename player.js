@@ -105,24 +105,7 @@ EASY.player = {
 				"What, am I talking to <em>myself</em> now?",
 				"Why? No one can hear me.",
 				"Nothing to say and no one to say it to."
-			],
-			
-			success: [
-				"Strange. I'm...braver. That's new.",
-				"I'm slightly less afraid all of a sudden.",
-				"I feel better. Like, <em>one</em> better.",
-				"The darkness ahead seems a little less scary now.",
-				"I've got a smidgen more courage, somehow."
-			],
-			
-			failure: [
-				"I just had to get out of there.",
-				"I ran. What else could I do?",
-				"I couldn't take that anymore.",
-				"Running away solves so many problems.",
-				"Guess I lost <em>that</em> argument."
 			]
-			
 		},
 		
 		cremate: {
@@ -141,7 +124,11 @@ EASY.player = {
 				"I don't have enough oil for the anointing.",
 				"Got to grease that corpse up first. I need oil."
 			]
-		}
+		},
+		
+		levelup: [
+			"I feel better. Like, <em>one</em> better."
+		]
 	},
 
 	headPosition: SOAR.vector.create(),
@@ -158,6 +145,7 @@ EASY.player = {
 	
 	resolve: 0,
 	luck: 0.5,
+	level: 1,
 	
 	sympathy: {
 
@@ -322,7 +310,6 @@ EASY.player = {
 		this.resolve = this.MAX_RESOLVE;
 		EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 		EASY.hud.setLuck(this.luck);
-		this.level = this.getLevel();
 		EASY.hud.setLevel(this.level);
 	},
 	
@@ -658,12 +645,10 @@ EASY.player = {
 					// gain a point of resolve
 					this.MAX_RESOLVE++;
 					this.resolve = this.MAX_RESOLVE;
-					EASY.hud.comment(this.COMMENTS.attack.success.pick(), "player");
 					EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 					
 					// determine if we've leveled up
-					this.level = this.getLevel();
-					EASY.hud.setLevel(this.level);
+					this.checkLevel();
 				}
 			} else {
 				// reset delay as we're staggered
@@ -687,7 +672,7 @@ EASY.player = {
 		var sympathy = this.sympathy[attack];
 		var damage;
 		
-		// saving throw against attack
+		// saving throw agaiattack
 		if (this.luck * Math.random() < sympathy) {
 			// defense failed, calculate damage
 			damage = Math.ceil(sympathy * EASY.ghost.resolve);
@@ -717,6 +702,7 @@ EASY.player = {
 		var corpse = EASY.corpse;
 		var ghost = EASY.ghost;
 		var hud = EASY.hud;
+		var nl;
 	
 		// check that the ghost is not attacking
 		if (ghost.mode === ghost.ATTACKING) {
@@ -747,8 +733,7 @@ EASY.player = {
 		hud.setLuck(this.luck);
 
 		// determine if we've leveled up
-		this.level = this.getLevel();
-		EASY.hud.setLevel(this.level);
+		this.checkLevel();
 	},
 	
 	/**
@@ -760,11 +745,9 @@ EASY.player = {
 	**/
 	
 	exitCave: function() {
-		// have we reached either ending target?
-		if (this.MAX_RESOLVE >= EASY.RESOLVE_TARGET) {
-			EASY.hud.endGame("resolve");
-		} else if (this.MAX_RESOLVE >= EASY.EARNING_TARGET) {
-			EASY.hud.endGame("money");
+		// have we reached the level target?
+		if (this.level >= EASY.LEVEL_TARGET) {
+			EASY.hud.endGame();
 		} else {
 			// throw up a wait screen
 			EASY.hud.darken();
@@ -774,18 +757,19 @@ EASY.player = {
 	},
 	
 	/**
-		level calculation
+		level calculation and update
 		
-		@method getLevel
-		@return number integer level
+		@method checkLevel
 	**/
 	
-	getLevel: function() {
-		return Math.ceil(this.luck * this.MAX_RESOLVE) - 4;
+	checkLevel: function() {
+		var level = Math.ceil(((this.luck * this.MAX_RESOLVE) - 4) * 0.5);
+		if (level > this.level) {
+			this.level = level;
+			EASY.hud.setLevel(this.level);
+			EASY.hud.comment(this.COMMENTS.levelup.pick(), "player");
+		}
 	},
-	
-	/**
-		
 	
 	/**
 		draw the player pointer

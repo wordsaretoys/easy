@@ -65,7 +65,7 @@ varying vec4 relobj;
 
 void main(void) {
 
-	// makes the cave floor dark and the ceiling bright
+	// make the floor and ceiling dark, brighten toward the middle
 	float hl = 0.5 - abs(3.0 - object.y) / 12.0;
 	// makes the entrance and exit areas fade into darkness
 	float ll = 1.0 - pow(clamp( abs(32.0 - object.z) / 32.0, 0.0, 1.0), 6.0);

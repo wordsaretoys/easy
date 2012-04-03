@@ -234,7 +234,8 @@ EASY.ghost = {
 	**/
 	
 	suspend: function() {
-		this.position.copy(EASY.corpse.position).y = 1;
+		this.position.copy(EASY.corpse.position).y = 
+			1 + EASY.cave.getFloorHeight(this.position.x, this.position.z);
 		this.alpha = 0;
 	},
 	
@@ -453,8 +454,8 @@ EASY.ghost = {
 	**/
 	
 	concede: function() {
+		this.alpha = 1;
 		this.mode = this.DISGUSTED;
-		this.suspend();
 		EASY.hud.comment(this.COMMENTS.attack.disgust.pick(), "ghost");
 	},
 	
