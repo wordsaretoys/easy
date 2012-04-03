@@ -520,6 +520,22 @@ EASY.player = {
 			case SOAR.KEY.R:
 				EASY.corpse.cremate();
 				break;
+			case SOAR.KEY.C:
+				switch (1 + Math.floor(Math.random() * 4)) {
+				case 1:
+					that.attack("excuse");
+					break;
+				case 2:
+					that.attack("appease");
+					break;
+				case 3:
+					that.attack("flatter");
+					break;
+				case 4:
+					that.attack("blame");
+					break;
+				}
+				break;
 		}
 	},
 
@@ -677,7 +693,7 @@ EASY.player = {
 		// saving throw against attack
 		if (this.luck * Math.random() < sympathy) {
 			// defense failed, calculate damage
-			damage = Math.ceil(Math.random() * sympathy * EASY.ghost.resolve);
+			damage = Math.ceil(sympathy * EASY.ghost.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 			// if we run out of resolve

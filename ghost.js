@@ -387,7 +387,7 @@ EASY.ghost = {
 		// saving throw against attack
 		if ((1 - EASY.player.luck) * Math.random() < sympathy) {
 			// failed the saving throw, calculate damage
-			damage = Math.ceil(Math.random() * sympathy * EASY.player.resolve);
+			damage = Math.ceil(sympathy * EASY.player.resolve);
 			this.resolve = Math.max(0, this.resolve - damage);
 			// make the ghost blink in surprise
 			this.blink = Math.PI;
