@@ -56,7 +56,9 @@ EASY.hud = {
 			resolve: jQuery("#resolve"),
 			maxResolve: jQuery("#max-resolve"),
 			
-			luck: jQuery("#luck")
+			luck: jQuery("#luck"),
+			
+			level: jQuery("#level")
 		};
 
 		this.dom.prompts.shown = false;
@@ -330,6 +332,23 @@ EASY.hud = {
 		if (value !== current) {
 			this.dom.luck.html(value);
 			this.dom.luck.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1)
+				.fadeTo(50, 0).fadeTo(50, 1);
+		}
+	},
+	
+	/**
+		update level readout
+		
+		@method setLevel
+		@param value number, current player level
+	**/
+	
+	setLevel: function(value) {
+		var current = parseInt(this.dom.level.html(), 10);
+		if (value !== current) {
+			this.dom.level.html(value);
+			this.dom.level.fadeTo(50, 0).fadeTo(50, 1)
 				.fadeTo(50, 0).fadeTo(50, 1)
 				.fadeTo(50, 0).fadeTo(50, 1);
 		}

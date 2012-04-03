@@ -76,7 +76,7 @@ EASY.ghost = {
 			"Farewell, o brave apologist.",
 			"You have the soul of a weasel, but there is goodness in you.",
 			"I pray I am as pleased to see the gods as they are to see me.",
-			"I hope you also find the release you seek."
+			"May you also find the release you seek."
 		],
 		
 		alone: [

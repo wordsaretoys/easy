@@ -15,7 +15,7 @@ EASY.player = {
 
 	HEIGHT: 1.5,
 
-	MAX_RESOLVE: 1,
+	MAX_RESOLVE: 10,
 	
 	SYMPATHY_LOSS: 0.3,
 
@@ -153,9 +153,10 @@ EASY.player = {
 		oil: 0,
 		coin: 0
 	},
+
+	delay: 0,
 	
 	resolve: 0,
-	delay: 0,
 	luck: 0.5,
 	
 	sympathy: {
@@ -321,6 +322,8 @@ EASY.player = {
 		this.resolve = this.MAX_RESOLVE;
 		EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
 		EASY.hud.setLuck(this.luck);
+		this.level = this.getLevel();
+		EASY.hud.setLevel(this.level);
 	},
 	
 	/**
@@ -651,12 +654,16 @@ EASY.player = {
 			if (!result) {
 				// if we've calmed the ghost down
 				if (EASY.ghost.mode === EASY.ghost.BECALMED) {
-					// level up, so to speak
+				
+					// gain a point of resolve
 					this.MAX_RESOLVE++;
 					this.resolve = this.MAX_RESOLVE;
 					EASY.hud.comment(this.COMMENTS.attack.success.pick(), "player");
 					EASY.hud.setResolve(this.resolve, this.MAX_RESOLVE);
-
+					
+					// determine if we've leveled up
+					this.level = this.getLevel();
+					EASY.hud.setLevel(this.level);
 				}
 			} else {
 				// reset delay as we're staggered
@@ -738,6 +745,10 @@ EASY.player = {
 		// reward the player with a little luck
 		this.luck = this.luck * 1.02;
 		hud.setLuck(this.luck);
+
+		// determine if we've leveled up
+		this.level = this.getLevel();
+		EASY.hud.setLevel(this.level);
 	},
 	
 	/**
@@ -760,6 +771,17 @@ EASY.player = {
 			// on the next animation frame, generate a new level
 			this.nextMap = true;
 		}
+	},
+	
+	/**
+		level calculation
+		
+		@method getLevel
+		@return number integer level
+	**/
+	
+	getLevel: function() {
+		return Math.ceil(this.luck * this.MAX_RESOLVE) - 4;
 	},
 	
 	/**
