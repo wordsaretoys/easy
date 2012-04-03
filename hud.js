@@ -116,16 +116,18 @@ EASY.hud = {
 	
 		// first time run -- start up
 		if (EASY.hud.starting) {
-			// show HUD readouts/legends
-			EASY.hud.dom.legend.show();
-			EASY.hud.dom.readout.show();
-		
-			// reveal the game screen
-			EASY.hud.lighten();
+			if (event.keyCode === SOAR.KEY.ENTER) {
+				// show HUD readouts/legends
+				EASY.hud.dom.legend.show();
+				EASY.hud.dom.readout.show();
 			
-			EASY.player.mouse.invalid = true;
-			EASY.hud.starting = false;
-			return false;
+				// reveal the game screen
+				EASY.hud.lighten();
+				
+				EASY.player.mouse.invalid = true;
+				EASY.hud.starting = false;
+			}
+			return true;
 		}
 	
 		switch(event.keyCode) {
@@ -157,6 +159,7 @@ EASY.hud = {
 			//console.log(event.keyCode);
 			break;
 		}
+		return true;
 	},
 	
 	/**

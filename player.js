@@ -160,17 +160,15 @@ EASY.player = {
 	
 	sympathy: {
 
-		doom: 0,
 		snark: 0,
 		scare: 0,
-		doubt: 0,
+		shame: 0,
 		
 		normalize: function() {
-			var mag = this.doom + this.snark + this.scare + this.doubt;
-			this.doom = this.doom / mag;
+			var mag = this.snark + this.scare + this.shame;
 			this.snark = this.snark / mag;
 			this.scare = this.scare / mag;
-			this.doubt = this.doubt / mag;
+			this.shame = this.shame / mag;
 		}
 			
 	},
@@ -243,8 +241,7 @@ EASY.player = {
 		this.camera = this.eyeview;
 		
 		// set initial sympathies
-		this.sympathy.doom = Math.random();
-		this.sympathy.doubt = Math.random();
+		this.sympathy.shame = Math.random();
 		this.sympathy.scare = Math.random();
 		this.sympathy.snark = Math.random();
 		this.sympathy.normalize();
@@ -462,6 +459,10 @@ EASY.player = {
 		var that = EASY.player;
 		var motion = that.motion;
 		
+		if (EASY.hud.starting) {
+			return true;
+		}
+		
 		switch(event.keyCode) {
 			case SOAR.KEY.A:
 				motion.moveleft = true;
@@ -521,6 +522,7 @@ EASY.player = {
 				}
 				break;
 		}
+		return true;
 	},
 
 	/**
@@ -536,6 +538,10 @@ EASY.player = {
 		var that = EASY.player;
 		var motion = that.motion;
 
+		if (EASY.hud.starting) {
+			return true;
+		}
+		
 		switch(event.keyCode) {
 		
 			case SOAR.KEY.A:
@@ -559,6 +565,7 @@ EASY.player = {
 				that.mouse.invalid = true;
 				break;
 		}
+		return true;
 	},
 
 	/**

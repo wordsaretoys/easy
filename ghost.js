@@ -21,26 +21,54 @@ EASY.ghost = {
 		attack: {
 			
 			scare: [
-				"What's that behind you? Oh well, it's probably nothing.",
+				"What's that behind you? Oh, it's probably nothing.",
 				"Does this cave seem...<em>confining</em>...to you?",
 				"There's no way out of this. You'll never escape.",
-				"How many miles of darkness will you crawl through before you expire?"
+				"How many oceans of darkness will you crawl through before you expire?",
+				"Are you certain that this Easy has killed <em>all</em> the monsters?",
+				"I am not the only horror that prowls these ruins."
 			],
 			
 			snark: [
-				"So, do murdering psychopaths make considerate employers?",
-				"Some jobs, even village idiots won't do. You sure showed them."
+				"Do you enjoy working for a bloody-minded loon?",
+				"Some jobs, even village fools won't do. You certainly showed them.",
+				"Whatever he's paying you, you're not worth it.",
+				"Perhaps you should have paid better attention in school."
 			],
 			
-			doubt: [
-				"How do you know you'll even get paid?",
-				"I wouldn't bet my future on a madman with an axe."
+			shame: [
+				"I did nothing to provoke your master.",
+				"I meant no one any harm.",
+				"I died for no good reason.",
+				"I was struck down before I could utter a word.",
+				"Who is this man that kills for plunder? Who is this that <em>defends</em> him?",
+				"Do you revel in butchery, or only benefit from it? Which is worse?"
+			],
+			
+			calmed: [
+				"My soul rests. Not easily, but it will do.",
+				"Against my better judgement, I concede.",
+				"Fair enough.",
+				"For the second time today, I am beaten.",
+				"I yield. May your victory bring you joy."
+			],
+			
+			disgust: [
+				"I have nothing more to say to you.",
+				"I will not listen to another word.",
+				"Enough. You have nothing of value to say.",
+				"Your words are as empty as your eyes, and I will not hear them.",
+				"No more of your sickening chatter."
 			]
 			
 		},
 		
 		awaken: [
-			"I see you, flesh."
+			"I see you, flesh.",
+			"Oh, look. After the lion, comes the mouse.",
+			"Hello, meat. I was just counting my organs.",
+			"Have you come to apologize? Too bad.",
+			"The worms already?"
 		],
 		
 		release: [
@@ -51,7 +79,9 @@ EASY.ghost = {
 		],
 		
 		alone: [
-			"Gone. How disappointing."
+			"Gone. How disappointing.",
+			"You reveal your true nature. I will pursue you no further.",
+			"Flee, then. Run forever."
 		]
 			
 	},
@@ -84,9 +114,9 @@ EASY.ghost = {
 	},
 	
 	newAttack: {
-		"scare": [ "snark", "doubt" ],
-		"snark": [ "scare", "doubt" ],
-		"doubt": [ "scare", "snark" ]
+		"scare": [ "snark", "shame" ],
+		"snark": [ "scare", "shame" ],
+		"shame": [ "scare", "snark" ]
 	},
 	
 	position: SOAR.vector.create(),
@@ -164,6 +194,8 @@ EASY.ghost = {
 		this.delay = 1 + Math.random();
 		this.resolve = Math.round(EASY.player.MAX_RESOLVE * 1.0);
 		this.velocity.set();
+		this.lastAttack.type = "scare";
+		this.lastAttack.fail = false;
 
 		// start in dormant state
 		this.suspend();
