@@ -52,7 +52,7 @@ var EASY = {
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 
-	LAST_GENERATION: 5,
+	LAST_GENERATION: 15,
 	
 	updating: true,
 	generation: 0,

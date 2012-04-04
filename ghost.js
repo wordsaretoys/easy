@@ -15,8 +15,7 @@ EASY.ghost = {
 	DORMANT: 0,
 	ATTACKING: 1,
 	BECALMED: 2,
-	DISGUSTED: 3,
-	ISEASY: 4,
+	ISEASY: 3,
 	
 	COMMENTS: {
 	
@@ -56,11 +55,8 @@ EASY.ghost = {
 			],
 			
 			disgust: [
-				"I have nothing more to say to you.",
-				"I will not listen to another word.",
-				"Enough. You have nothing of value to say.",
-				"Your words are as empty as your eyes, and I will not hear them.",
-				"No more of your sickening chatter."
+				"I want nothing more to do with you.",
+				"Enough. You mean nothing to me."
 			]
 			
 		},
@@ -77,7 +73,8 @@ EASY.ghost = {
 			"Farewell, o brave apologist.",
 			"You have the soul of a weasel, but there is goodness in you.",
 			"I pray I am as pleased to see the gods as they are to see me.",
-			"May you also find the release you seek."
+			"May you also find the release you seek.",
+			"I go to my reward. You must go to yours."
 		],
 		
 		alone: [
@@ -345,15 +342,6 @@ EASY.ghost = {
 			
 			break;
 			
-		case this.DISGUSTED:
-		
-			// slow snooty fade
-			if (this.alpha > 0) {
-				this.alpha = Math.max(0, this.alpha - dt);
-			}
-			
-			break;
-			
 		case this.ISEASY:
 		
 			break;
@@ -468,7 +456,7 @@ EASY.ghost = {
 	
 	concede: function() {
 		this.alpha = 1;
-		this.mode = this.DISGUSTED;
+		this.mode = this.BECALMED;
 		EASY.hud.comment(this.COMMENTS.attack.disgust.pick(), "ghost");
 	},
 	

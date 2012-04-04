@@ -306,6 +306,10 @@ EASY.player = {
 		this.will = this.maxWill;
 		EASY.hud.setWill(this.will, this.maxWill);
 		EASY.hud.setLuck(this.luck);
+
+		
+		// DEBUG CODE -- REMOVE
+		this.startMapTime = SOAR.elapsedTime;
 	},
 	
 	/**
@@ -752,6 +756,11 @@ EASY.player = {
 			// on the next animation frame, generate a new map
 			this.nextMap = true;
 		}
+		
+		
+		// DEBUG CODE -- REMOVE
+		 console.log(Math.ceil(0.001 * (SOAR.elapsedTime - this.startMapTime)));
+		
 	},
 	
 	/**
