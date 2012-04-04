@@ -188,10 +188,12 @@ div {
 
 	background: transparent;
 	color: white;
+
+	text-shadow: black 0.1em 0.1em 0.2em;
 	
 	font-size: 20pt;
 	font-variant: small-caps;
-
+	
 	z-index: 5;
 }
 

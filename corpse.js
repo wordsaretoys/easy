@@ -33,6 +33,7 @@ EASY.corpse = {
 	],
 
 	identity: "",
+	requires: "",
 	
 	texture: {},
 	position: SOAR.vector.create(),
@@ -121,6 +122,7 @@ EASY.corpse = {
 		// generate requirements for cremation
 		this.wood = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
 		this.oil = Math.ceil(this.PYRE_MULTIPLE * base * (1 + Math.random()));
+		this.requires = "Requires " + this.wood + " wood, " + this.oil + " oil ";
 		
 		// next random phase
 		this.phase += Math.random();
@@ -130,6 +132,15 @@ EASY.corpse = {
 		
 		this.burn = 0;
 		this.mode = this.INTACT;
+		
+		// if this is the end
+		// override selection
+		if (EASY.isTheEnd()) {
+			this.identity = "Easy";
+			this.requires = "";
+			this.wood = 0;
+			this.oil = 0;
+		}
 		
 		return true;
 	},
@@ -161,7 +172,7 @@ EASY.corpse = {
 			if (!EASY.hud.dom.prompts.shown && t > 1) {
 				EASY.hud.showPrompt("E", 
 					"Cremate " + this.identity,
-					"Requires " + this.wood + " wood, " + this.oil + " oil ",
+					this.requires,
 					"cremate");
 			} else if (EASY.hud.dom.prompts.shown && t <= 1) {
 				EASY.hud.hidePrompt();

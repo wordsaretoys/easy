@@ -16,6 +16,7 @@ EASY.ghost = {
 	ATTACKING: 1,
 	BECALMED: 2,
 	DISGUSTED: 3,
+	ISEASY: 4,
 	
 	COMMENTS: {
 	
@@ -201,6 +202,14 @@ EASY.ghost = {
 		// start in dormant state
 		this.suspend();
 		this.mode = this.DORMANT;
+		
+		// if this is the end
+		// set up for player's choice
+		if (EASY.isTheEnd()) {
+			this.mode = this.ISEASY;
+			this.alpha = 1;
+			this.blink = Math.PI;
+		}
 	},
 	
 	/**
@@ -344,6 +353,10 @@ EASY.ghost = {
 			}
 			
 			break;
+			
+		case this.ISEASY:
+		
+			break;
 
 		}
 		
@@ -471,6 +484,9 @@ EASY.ghost = {
 			this.alpha = 1;
 			this.blink = SOAR.PIDIV2;
 			EASY.hud.comment(this.COMMENTS.release.pick(), "ghost");
+		}
+		if (this.mode === this.ISEASY) {
+			this.mode = this.BECALMED;
 		}
 	}
 };

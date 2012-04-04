@@ -43,25 +43,19 @@ var EASY = {
 	START_BLURB:
 		"<p>Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com</p>" +
 		"<p class=\"small\">Easy, the fabled adventurer, leaves a path of devastation through an underground ruin.</p>" +
-		"<p class=\"small\">He's got no time to make amends; that's <em>your</em> job.</p>" +
+		"<p class=\"small\">He's got no time to make amends&mdash;that's <em>your</em> job.</p>" +
 		"<p class=\"small\">Dispose of his victims, calm their angry spirits,<br>appease their gods, and make a little money.</p>" +
 		"<p class=\"small\"><em>Very</em> little money.</p>" +
 		"<p>Press Enter to Play</p></div>",
 		
-	END_BLURB: {
-		luck: "<p>You stumbled upon something cool.</p>",
-		will: "<p>You found the will to leave Easy.</p>",
-		coin: "<p>You've collected all the money you'll need to do your own thing.<br>But be careful, or you'll be back.</p>",
-		play: "<p>Press F5 to Play Again</p>"
-	},
+	END_BLURB: "<p>Press F5 to Play Again</p>",
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
-	
-	WILL_TARGET: 11,
-	LUCK_TARGET: 0.52,
-	COIN_TARGET: 10,
+
+	LAST_GENERATION: 5,
 	
 	updating: true,
+	generation: 0,
 
 	/**
 		create GL context, set up game objects, load resources
@@ -180,6 +174,7 @@ var EASY = {
 	
 	generate: function() {
 		var ok = true;
+		this.generation++;
 		do {
 			EASY.cave.generate();
 			ok = EASY.corpse.generate();
@@ -240,18 +235,26 @@ var EASY = {
 	debug: function(s) {
 		document.getElementById("debug").innerHTML = s;
 	},
+
+	/**
+		are we at the end?
+		
+		@method isTheEnd
+	**/
+	
+	isTheEnd: function() {
+		return this.generation === this.LAST_GENERATION;
+	},
 	
 	/**
 		set up an end screen and stop the game
 		
 		@method end
-		@param type string, which ending to display
 	**/
 
-	end: function(type) {
-		var msg = this.END_BLURB[type] + this.END_BLURB["play"];
+	end: function() {
 		EASY.hud.setCurtain(0.5);
-		EASY.hud.setMessage(msg);
+		EASY.hud.setMessage(this.END_BLURB);
 		
 		SOAR.running = false;
 		EASY.hud.dom.window.unbind("keydown");

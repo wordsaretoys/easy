@@ -611,8 +611,9 @@ EASY.player = {
 	collect: function(item) {
 		var type = item.object;
 		var num = item.number;
-		// don't display comment if we're in combat
-		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
+		var ghost = EASY.ghost;
+		// display comment if not in combat and it's not the last map
+		if (ghost.mode !== ghost.ATTACKING && !EASY.isTheEnd()) {
 			EASY.hud.comment(this.COMMENTS.trash[type].pick(), "player");
 		}
 		this.trash[type] = (this.trash[type] || 0) + num;
@@ -628,7 +629,9 @@ EASY.player = {
 
 	attack: function(type) {
 		var result;
-		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
+		if (EASY.isTheEnd()) {
+			//EASY.hud.comment("What can I say?", "player");
+		} else if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
 			EASY.hud.comment(this.COMMENTS.attack.notarget.pick(), "player");
 		} else if (this.delay > 0) {
 			EASY.hud.comment(this.COMMENTS.attack.notready.pick(), "player");
@@ -725,8 +728,10 @@ EASY.player = {
 		corpse.cremate();
 		
 		// reward the player with a little luck
-		this.luck = this.luck + 0.01;
-		hud.setLuck(this.luck);
+		if (!EASY.isTheEnd()) {
+			this.luck = this.luck + 0.01;
+			hud.setLuck(this.luck);
+		}
 	},
 	
 	/**
@@ -738,13 +743,9 @@ EASY.player = {
 	**/
 	
 	exitCave: function() {
-		// have we reached any targets?
-		if (this.will >= EASY.WILL_TARGET) {
-			EASY.end("will");
-		} else if (this.luck >= EASY.LUCK_TARGET) {
-			EASY.end("luck");
-		} else if (this.trash.coin >= EASY.COIN_TARGET) {
-			EASY.end("coin");
+		// have we reached the end?
+		if (EASY.isTheEnd()) {
+			EASY.end();
 		} else {
 			// throw up a wait screen
 			EASY.hud.darken();

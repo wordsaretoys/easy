@@ -77,6 +77,20 @@ EASY.trash = {
 		
 		this.list.length = 0;
 
+		// if we're at the end, just one drop to make
+		if (EASY.isTheEnd()) {
+			pos = flat.pop();
+			if (!pos) 
+				return false;
+			this.list.push( {
+				center: SOAR.vector.create(pos.x, EASY.cave.ZERO_HEIGHT + 0.01, pos.z),
+				active: true,
+				object: "coin",
+				number: 9000
+			} );
+			return true;
+		}
+		
 		// quantities cycle quasi-periodically over time
 		base = 1.5 + 0.5 * Math.cos(this.phase);
 		//console.log("base: ", base);
