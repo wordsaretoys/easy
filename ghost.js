@@ -455,7 +455,7 @@ EASY.ghost = {
 	**/
 	
 	concede: function() {
-		this.alpha = 1;
+		this.suspend();
 		this.mode = this.BECALMED;
 		EASY.hud.comment(this.COMMENTS.attack.disgust.pick(), "ghost");
 	},
