@@ -212,8 +212,11 @@ EASY.hud = {
 
 	comment: function(msg, who) {
 		var div = jQuery(document.createElement("div"));
+		var str = "<span>" + 
+			(who === "player" ? "Me" : "Ghost of " + EASY.corpse.identity) + 
+			"</span><br>" + msg;
 		div.addClass(who);
-		div.html(msg);
+		div.html(str);
 		div.css("display", "none");
 		this.dom.comment.append(div);
 		div.fadeTo(this.COMMENT_FADE_TIME, 0.75)
