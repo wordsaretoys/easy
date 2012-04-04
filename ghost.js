@@ -104,7 +104,7 @@ EASY.ghost = {
 	
 	phase: 0,
 	mode: 0,
-	resolve: 0,
+	will: 0,
 	alpha: 0,
 	delay: 0,
 	blink: 0,
@@ -193,7 +193,7 @@ EASY.ghost = {
 
 		// set initial state
 		this.delay = 1 + Math.random();
-		this.resolve = Math.round(EASY.player.MAX_RESOLVE * 1.0);
+		this.will = Math.round(EASY.player.maxWill * 1.0);
 		this.velocity.set();
 		this.lastAttack.type = "scare";
 		this.lastAttack.fail = false;
@@ -413,7 +413,7 @@ EASY.ghost = {
 		handle an attack from the player
 		
 		determine if the attack succeeded
-		and how much it weakened resolve
+		and how much it weakened will
 		
 		@method defend
 		@param attack string, the attack type
@@ -426,12 +426,12 @@ EASY.ghost = {
 		// saving throw against attack
 		if ((1 - EASY.player.luck) * Math.random() < sympathy) {
 			// failed the saving throw, calculate damage
-			damage = Math.ceil(sympathy * EASY.player.resolve);
-			this.resolve = Math.max(0, this.resolve - damage);
+			damage = Math.ceil(sympathy * EASY.player.will);
+			this.will = Math.max(0, this.will - damage);
 			// make the ghost blink in surprise
 			this.blink = Math.PI;
-			// if we run out of resolve
-			if (this.resolve === 0) {
+			// if we run out of will
+			if (this.will === 0) {
 				// ghost is calmed down
 				this.mode = this.BECALMED;
 				this.suspend();

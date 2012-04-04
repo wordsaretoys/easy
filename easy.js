@@ -1,6 +1,6 @@
 /**
 
-	Caves are Easy: WebGL-based Game
+	Easy Does It: WebGL-based Game
 	
 	@module easy
 	@author cpgauthier
@@ -40,17 +40,26 @@ var EASY = {
 		}
 	},
 	
-	BLURB:
+	START_BLURB:
 		"<p>Easy Does It<br>By Chris Gauthier<br>wordsaretoys.com</p>" +
 		"<p class=\"small\">Easy, the fabled adventurer, leaves a path of devastation through an underground ruin.</p>" +
 		"<p class=\"small\">He's got no time to make amends; that's <em>your</em> job.</p>" +
 		"<p class=\"small\">Dispose of his victims, calm their angry spirits,<br>appease their gods, and make a little money.</p>" +
 		"<p class=\"small\"><em>Very</em> little money.</p>" +
 		"<p>Press Enter to Play</p></div>",
+		
+	END_BLURB: {
+		luck: "<p>You stumbled upon something cool.</p>",
+		will: "<p>You found the will to leave Easy.</p>",
+		coin: "<p>You've collected all the money you'll need to do your own thing.<br>But be careful, or you'll be back.</p>",
+		play: "<p>Press F5 to Play Again</p>"
+	},
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
-	LEVEL_TARGET: 10,
+	WILL_TARGET: 11,
+	LUCK_TARGET: 0.52,
+	COIN_TARGET: 10,
 	
 	updating: true,
 
@@ -142,7 +151,7 @@ var EASY = {
 			}, false);
 			
 			// tell the player what's going on
-			EASY.hud.setMessage(EASY.BLURB);
+			EASY.hud.setMessage(EASY.START_BLURB);
 			
 			// start the message pump
 			SOAR.run();
@@ -161,16 +170,6 @@ var EASY = {
 		EASY.trash.init();
 		EASY.ghost.init();
 		EASY.corpse.init();
-/*		
-		var fl, hist = [];
-		for (var k = 0; k < 100; k++) {
-			EASY.cave.generate();
-			fl = EASY.cave.flat.length;
-			hist[fl] = (hist[fl] || 0) + 1;
-		}
-		for (k = 0; k < hist.length; k++)
-			console.log(k, " --> ", hist[k]);
-*/
 	},
 	
 	/**
@@ -243,5 +242,24 @@ var EASY = {
 	
 	debug: function(s) {
 		document.getElementById("debug").innerHTML = s;
+	},
+	
+	/**
+		set up an end screen and stop the game
+		
+		@method end
+		@param type string, which ending to display
+	**/
+
+	end: function(type) {
+		var msg = this.END_BLURB[type] + this.END_BLURB["play"];
+		EASY.hud.setCurtain(0.5);
+		EASY.hud.setMessage(msg);
+		
+		SOAR.running = false;
+		EASY.hud.dom.window.unbind("keydown");
+		EASY.hud.dom.window.unbind("keyup");
+		EASY.hud.dom.tracker.unbind();
 	}
+	
 };

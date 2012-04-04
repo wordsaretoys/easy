@@ -10,20 +10,8 @@ EASY.hud = {
 	COMMENT_FADE_TIME: 250,
 	COMMENT_READ_TIME: 4000,
 	
-	LABEL: {
-		wood: 0,
-		oil: 1,
-		coin: 2,
-		resolve: 3
-	},
-
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
-	
-	endingMsg: {
-		start: "<p>You've decided to leave the ruins.</p>",
-		playagain: "<p>Press F5 to Play Again</p>"
-	},
 	
 	starting: true,
 	
@@ -52,12 +40,10 @@ EASY.hud = {
 				coin: jQuery("#coin")
 			},
 			
-			resolve: jQuery("#resolve"),
-			maxResolve: jQuery("#max-resolve"),
+			will: jQuery("#will"),
+			maxWill: jQuery("#max-will"),
 			
-			luck: jQuery("#luck"),
-			
-			level: jQuery("#level")
+			luck: jQuery("#luck")
 		};
 
 		this.dom.prompts.shown = false;
@@ -292,26 +278,26 @@ EASY.hud = {
 	},
 	
 	/**
-		set resolve readout
+		set will readout
 		
-		@method setResolve
-		@param value number, current resolve
-		@param total number, maximum possible resolve
+		@method setWill
+		@param value number, current will
+		@param total number, maximum will
 	**/
 	
-	setResolve: function(value, total) {
-		var current = parseInt(this.dom.resolve.html(), 10);
+	setWill: function(value, total) {
+		var current = parseInt(this.dom.will.html(), 10);
 		if (value !== current) {
-			this.dom.resolve.html(value);
-			this.dom.resolve.fadeTo(50, 0).fadeTo(50, 1)
+			this.dom.will.html(value);
+			this.dom.will.fadeTo(50, 0).fadeTo(50, 1)
 				.fadeTo(50, 0).fadeTo(50, 1)
 				.fadeTo(50, 0).fadeTo(50, 1);
 		}
 
-		current = parseInt(this.dom.maxResolve.html(), 10);
+		current = parseInt(this.dom.maxWill.html(), 10);
 		if (total !== current) {
-			this.dom.maxResolve.html(total);
-			this.dom.maxResolve.fadeTo(50, 0).fadeTo(50, 1)
+			this.dom.maxWill.html(total);
+			this.dom.maxWill.fadeTo(50, 0).fadeTo(50, 1)
 				.fadeTo(50, 0).fadeTo(50, 1)
 				.fadeTo(50, 0).fadeTo(50, 1);
 		}
@@ -334,37 +320,6 @@ EASY.hud = {
 				.fadeTo(50, 0).fadeTo(50, 1)
 				.fadeTo(50, 0).fadeTo(50, 1);
 		}
-	},
+	}	
 	
-	/**
-		update level readout
-		
-		@method setLevel
-		@param value number, current player level
-	**/
-	
-	setLevel: function(value) {
-		var current = parseInt(this.dom.level.html(), 10);
-		if (value !== current) {
-			this.dom.level.html(value);
-			this.dom.level.fadeTo(50, 0).fadeTo(50, 1)
-				.fadeTo(50, 0).fadeTo(50, 1)
-				.fadeTo(50, 0).fadeTo(50, 1);
-		}
-	},
-	
-	/**
-		set up an end screen and stop the game
-		
-		@method endGame
-	**/
-
-	endGame: function() {
-		var msg = this.endingMsg["start"] + this.endingMsg["playagain"];
-		this.setCurtain(0.5);
-		this.setMessage(msg);
-		SOAR.running = false;
-		this.dom.window.unbind("keydown");
-		this.dom.tracker.unbind();
-	}
 };
