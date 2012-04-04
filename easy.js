@@ -150,6 +150,9 @@ var EASY = {
 			// start the message pump
 			SOAR.run();
 			
+			// DEBUG CODE REMOVE
+			EASY.startTime = SOAR.elapsedTime;
+			
 		}, function(count, total) {
 			// this function is called once for every resource received from the server
 
@@ -260,6 +263,9 @@ var EASY = {
 		EASY.hud.dom.window.unbind("keydown");
 		EASY.hud.dom.window.unbind("keyup");
 		EASY.hud.dom.tracker.unbind();
+		
+		// DEBUG CODE REMOVE
+		 console.log(Math.ceil(0.001 * (SOAR.elapsedTime - EASY.startTime)));
 	}
 	
 };

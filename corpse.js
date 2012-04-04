@@ -16,20 +16,11 @@ EASY.corpse = {
 	BURNING: 1,
 	CREMATED: 2,
 	
-	TRIBE: [ 
-		"Boothrede", "Clanmorgan", "Cowlberth", "Monkshockey", "Throckton", "Treblerath" 
-	],
-
 	TITLE: [
-		"a Mutilated Monk",
-		"a Butchered Bishop",
-		"a Massacred Mage",
-		"a Dismembered Dogsbody",
-		"a Pummelled Priest",
-		"a Shattered Squire",
-		"a Neutered Knight",
-		"a Carved-up Conjurer",
-		"a Stabbed Scholar"
+		"a Nameless Body",
+		"an Unknown Stiff",
+		"an Anonymous Corpse",
+		"a Forgotten Carcass"
 	],
 
 	identity: "",
@@ -128,7 +119,7 @@ EASY.corpse = {
 		this.phase += Math.random();
 		
 		// generate an identity string
-		this.identity = this.TITLE.pick() + " of " + this.TRIBE.pick();
+		this.identity = this.TITLE.pick();
 		
 		this.burn = 0;
 		this.mode = this.INTACT;

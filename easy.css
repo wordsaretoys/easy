@@ -92,15 +92,11 @@ div {
 }
 
 .player {
-	background-color: rgba(192, 255, 192, 0.5);
+	background-color: rgba(192, 255, 192, 0.75);
 }
 
 .ghost {
-	background-color: rgba(255, 192, 192, 0.5);
-}
-
-.intro {
-	background-color: rgba(192, 192, 255, 0.5);
+	background-color: rgba(255, 192, 192, 0.75);
 }
 
 /* HUD legend */
@@ -186,6 +182,8 @@ div {
 #prompts {
 	position: absolute;
 
+	width: 100%;
+	
 	background: transparent;
 	color: white;
 
@@ -193,6 +191,7 @@ div {
 	
 	font-size: 20pt;
 	font-variant: small-caps;
+	text-align: center;
 	
 	z-index: 5;
 }

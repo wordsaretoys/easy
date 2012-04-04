@@ -800,4 +800,3 @@ EASY.player = {
 	
 
 };
-

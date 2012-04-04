@@ -216,7 +216,7 @@ EASY.hud = {
 		div.html(msg);
 		div.css("display", "none");
 		this.dom.comment.append(div);
-		div.fadeTo(this.COMMENT_FADE_TIME, 0.5)
+		div.fadeTo(this.COMMENT_FADE_TIME, 0.75)
 			.delay(this.COMMENT_READ_TIME)
 			.hide(this.COMMENT_FADE_TIME, function() {
 				div.remove();
