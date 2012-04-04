@@ -198,10 +198,7 @@ var EASY = {
 	update: function() {
 		if (EASY.updating) {
 			EASY.player.update();
-			// can't collect trash while you're trash talking
-			if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
-				EASY.trash.update();
-			}
+			EASY.trash.update();
 			EASY.ghost.update();
 			EASY.corpse.update();
 		}

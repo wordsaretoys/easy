@@ -104,15 +104,6 @@ EASY.trash = {
 		
 		// add random phase
 		this.phase += Math.random();
-/*
-		var item, t = {};
-		for (i = 0, il = this.list.length; i < il; i++) {
-			item = this.list[i];
-			t[item.object] = (t[item.object] || 0) + item.number;
-		}
-		console.log("wood: ", t.wood, " oil: ", t.oil, " coin: ", t.coin);
-		console.log("flats left: ", flat.length);
-*/
 
 		return true;
 	},

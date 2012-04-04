@@ -611,7 +611,10 @@ EASY.player = {
 	collect: function(item) {
 		var type = item.object;
 		var num = item.number;
-		EASY.hud.comment(this.COMMENTS.trash[type].pick(), "player");
+		// don't display comment if we're in combat
+		if (EASY.ghost.mode !== EASY.ghost.ATTACKING) {
+			EASY.hud.comment(this.COMMENTS.trash[type].pick(), "player");
+		}
 		this.trash[type] = (this.trash[type] || 0) + num;
 		EASY.hud.setCollection(type, this.trash[type]);
 	},
