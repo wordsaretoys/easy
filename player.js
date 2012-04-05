@@ -27,18 +27,18 @@ EASY.player = {
 				"Another wooden box that'll never again mock a stupid adventurer.",
 				"Who needs skill and craft when you've got a short temper?",
 				"Poor little treasure chest. Must have set him off somehow.",
-				"It's amazing what a 100lb battleaxe will do to rotten wood.",
+				"It's amazing what a massive iron battleaxe will do to rotten wood.",
 				"Someday, I'll find a chest Easy hasn't smashed to bits.",
 				"Easy failed Lockpicking 101, but he found a way to deal with it.",
-				"Ancient locksmiths put all their ingenuity into this pile of splinters."
+				"Ancient locksmiths put all their ingenuity into this pile of splinters.",
+				"When the only tool you have is an axe, every problem ends up in pieces."
 			],
 			
 			oil: [
-				"He must carry a barrel of this stuff.",
 				"Another sample of Easy's extra smoky lamp oil.",
-				"Guess who can't master a simple light spell?",
+				"Guess who can't figure out a simple light spell?",
 				"Whoops. Almost slipped in that.",
-				"Great adventurers swear by Leakey Oil Lamps."
+				"The great adventurers swear by Leakey Oil Lamps."
 			],
 			
 			coin: [
@@ -47,32 +47,33 @@ EASY.player = {
 				"Hey, look what rolled out of Easy's pocket.",
 				"That's almost a million gold. Very, very almost.",
 				"I've nearly saved enough for a new bootlace.",
-				"I see that Sir has left his usual 0.01% gratuity."
+				"I see that Sir has left his usual 0.01% gratuity.",
+				"Coins. Why didn't the old kings hoard land deeds?"				
 			]
 		},
 		
 		attack: {
 		
 			excuse: [
-				"Poor Easy. He just doesn't know how to love.",
 				"You can't expect good behavior from a treasure-seeker.",
 				"Shadowy ruins? Poor lighting? Accidents happen.",
 				"These spooky passages would make anyone axe-happy.",
 				"Once Easy smells gold, he's no longer in control.",
-				"Easy has an expensive lifestyle to maintain."
+				"Easy has an expensive lifestyle to maintain.",
+				"Easy was in full compliance with his personal Code of Conduct.",
+				"Easy was merely upholding the standards of his profession.",
+				"You can't blame a man for not knowing how to love."
 			],
 			
 			appease: [
 				"I can see you have valid complaints.",
 				"You have good reason to be annoyed.",
-				"I'll give your views full consideration.",
 				"I accept that being killed wasn't in your best interest.",
 				"Naturally you weren't expecting a major life change today.",
 				"Of <em>course</em> I'd be upset in your position.",
 				"I concede that the system failed you in this instance.",
 				"I understand you're going through a difficult transition.",
-				"Your needs weren't fully anticipated by our organization.",
-				"Our policies do present challenges for the general public."
+				"Your needs weren't fully anticipated by our organization."
 			],
 			
 			flatter: [
@@ -83,7 +84,6 @@ EASY.player = {
 				"It takes a lot of courage to start over.",
 				"You make a windy, echoing moan sound good.",
 				"Poise and dignity. Poise&mdash;and <em>dignity</em>.",
-				"You're a powerful speaker for your cause.",
 				"What excellent taste in apparitions.",
 				"You've made me see death in a whole new light."
 			],
@@ -102,7 +102,8 @@ EASY.player = {
 			notarget: [
 				"What, am I talking to <em>myself</em> now?",
 				"Why? No one can hear me.",
-				"Nothing to say and no one to say it to."
+				"Nothing to say and no one to say it to.",
+				"Nobody's listening."
 			]
 		},
 		
@@ -115,12 +116,12 @@ EASY.player = {
 			
 			nowood: [
 				"I don't have enough wood for kindling.",
-				"Blood-soaked cloth doesn't burn well. I need wood."
+				"Blood-soaked cloth doesn't burn well. I need more wood."
 			],
 			
 			nooil: [
 				"I don't have enough oil for the anointing.",
-				"Got to grease that corpse up first. I need oil."
+				"Got to grease that corpse up first. I need more oil."
 			]
 		}
 		
@@ -306,10 +307,6 @@ EASY.player = {
 		this.will = this.maxWill;
 		EASY.hud.setWill(this.will, this.maxWill);
 		EASY.hud.setLuck(this.luck);
-
-		
-		// DEBUG CODE -- REMOVE
-		this.startMapTime = SOAR.elapsedTime;
 	},
 	
 	/**
@@ -464,10 +461,6 @@ EASY.player = {
 			case SOAR.KEY.S:
 				motion.moveback = true;
 				break;
-			case SOAR.KEY.SPACE:
-				if (that.footPosition.y === EASY.cave.getFloorHeight(that.footPosition.x, that.footPosition.z))
-					that.velocity.y += 4;
-				break;
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;
 				break;
@@ -483,31 +476,6 @@ EASY.player = {
 				break;
 			case SOAR.KEY.THREE:
 				that.attack("flatter");
-				break;
-				
-// debugging keys -- remove in production release
-
-			case SOAR.KEY.H:
-				EASY.hideCave = !EASY.hideCave;
-				break;
-			case SOAR.KEY.T:
-				that.exitCave();
-				break;
-			case SOAR.KEY.R:
-				EASY.corpse.cremate();
-				break;
-			case SOAR.KEY.C:
-				switch (1 + Math.floor(Math.random() * 3)) {
-				case 1:
-					that.attack("excuse");
-					break;
-				case 2:
-					that.attack("appease");
-					break;
-				case 3:
-					that.attack("flatter");
-					break;
-				}
 				break;
 		}
 		return true;
@@ -756,11 +724,6 @@ EASY.player = {
 			// on the next animation frame, generate a new map
 			this.nextMap = true;
 		}
-		
-		
-		// DEBUG CODE -- REMOVE
-		 console.log(Math.ceil(0.001 * (SOAR.elapsedTime - this.startMapTime)));
-		
 	},
 	
 	/**

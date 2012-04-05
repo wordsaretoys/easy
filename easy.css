@@ -51,20 +51,6 @@ div {
 	font-size: 75%;
 }
 
-/* debug information */
-
-#debug {
-	position: absolute;
-	top: 100px;
-	right: 20px;
-	
-	background: rgba(0, 0, 0, 0.1);
-	color: rgb(0, 255, 0);
-	z-index: 5;
-	
-	cursor: default;
-}
-
 /* HUD commentary area */
 
 #comment {

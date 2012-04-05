@@ -23,16 +23,15 @@ EASY.ghost = {
 			
 			scare: [
 				"What's that behind you? Oh, it's probably nothing.",
-				"Does this cave seem...<em>confining</em>...to you?",
-				"There's no way out of this. You'll never escape.",
-				"How many oceans of darkness will you crawl through before you expire?",
-				"Are you certain that this Easy has killed <em>all</em> the monsters?",
-				"I am not the only horror that prowls these ruins."
+				"Strange, how the walls seem to close in on you.",
+				"Words will not save you from what waits ahead.",
+				"I am not the only horror that prowls these ruins.",
+				"Not all shadows are merely the absence of light."
 			],
 			
 			snark: [
 				"Do you enjoy working for a bloody-minded loon?",
-				"Some jobs, even village fools won't do. You certainly showed them.",
+				"Some jobs even village idiots wouldn't do. You certainly showed them.",
 				"Whatever he's paying you, you're not worth it.",
 				"Perhaps you should have paid better attention in school."
 			],
@@ -41,22 +40,22 @@ EASY.ghost = {
 				"I did nothing to provoke your master.",
 				"I meant no one any harm.",
 				"I died for no good reason.",
-				"I was struck down before I could utter a word.",
-				"Who is this man that kills for plunder? Who is this that <em>defends</em> him?",
-				"Do you revel in butchery, or only benefit from it? Which is worse?"
+				"I was struck down before I could utter a word."
+				
 			],
 			
 			calmed: [
 				"My soul rests. Not easily, but it will do.",
 				"Against my better judgement, I concede.",
 				"Fair enough.",
-				"For the second time today, I am beaten.",
+				"I can argue no longer. Beaten again, it seems.",
 				"I yield. May your victory bring you joy."
 			],
 			
 			disgust: [
 				"I want nothing more to do with you.",
-				"Enough. You mean nothing to me."
+				"Enough. You mean nothing to me.",
+				"How insipid. Go away."
 			]
 			
 		},
@@ -71,10 +70,11 @@ EASY.ghost = {
 		
 		release: [
 			"Farewell, o brave apologist.",
-			"You have the soul of a weasel, but there is goodness in you.",
+			"You have the soul of a weasel, but there is some small good in you.",
 			"I pray I am as pleased to see the gods as they are to see me.",
 			"May you also find the release you seek.",
-			"I go to my reward. You must go to yours."
+			"I go to my reward. You must go to yours.",
+			"My spirit ascends. Yours remains. Beware."
 		],
 		
 		alone: [
