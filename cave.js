@@ -47,7 +47,7 @@ EASY.cave = {
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 
-		this.palette = [0.5, 0.97, 0.75, 0.84, 0.64, 0.81, 0.97, 0.63, 0.56]		
+		this.palette = [0.5, 0.97, 0.75, 0.84, 0.64, 0.81, 0.97, 0.63, 0.56];
 
 		this.MIDDLE = this.WALL_HEIGHT - this.SEPARATION;
 		this.CEILING = this.MIDDLE * 2;
