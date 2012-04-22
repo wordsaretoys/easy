@@ -205,17 +205,15 @@ EASY.player = {
 		dom.tracker.bind("mousemove", this.onMouseMove);
 
 		// create a yaw/pitch constrained camera for player view
-		this.eyeview = SOAR.camera.create(
-			EASY.display, 
-			SOAR.camera.BOUND_ROTATION);
+		this.eyeview = SOAR.camera.create(EASY.display);
 		this.eyeview.nearLimit = 0.01;
 		this.eyeview.farLimit = 100;
+		this.eyeview.free = false;
+		this.eyeview.bound.set(Math.sqrt(2) / 2, -1, 0);
 		this.eyeview.mapView = false;
 
 		// create an overhead free camera for map viewing
-		this.overhead = SOAR.camera.create(
-			EASY.display,
-			SOAR.camera.FREE_ROTATION);
+		this.overhead = SOAR.camera.create(EASY.display);
 		this.overhead.nearLimit = 1;
 		this.overhead.farLimit = 500;
 		this.overhead.position.set(
@@ -299,9 +297,9 @@ EASY.player = {
 		z = EASY.cave.LENGTH - 2;
 		this.footPosition.set(x, EASY.cave.getFloorHeight(x, z), z);
 		
-		// align camera to z-axis
-		this.camera.yaw.set(0, 0, 0, 1);
-		this.camera.turn(0, 0, 0);
+		// align eyeview camera to z-axis
+		this.eyeview.component.y.set(0, 0, 0, 1);
+		this.eyeview.make();
 
 		// reset state
 		this.will = this.maxWill;
@@ -565,7 +563,7 @@ EASY.player = {
 		if (that.mouse.down && !that.camera.mapView && SOAR.running && !that.mouse.invalid) {
 			dx = that.SPIN_RATE * (event.pageX - that.mouse.x);
 			dy = that.SPIN_RATE * (event.pageY - that.mouse.y);
-			that.camera.turn(dx, dy);
+			that.camera.turn(dy, dx, 0);
 		}
 		that.mouse.x = event.pageX;
 		that.mouse.y = event.pageY;
@@ -748,9 +746,9 @@ EASY.player = {
 
 		// the yaw.w negation implements a cheeky matrix transpose!
 		eye = this.eyeview;
-		eye.yaw.w = -eye.yaw.w;
-		eye.yaw.toMatrix(this.scratch.matrix);
-		eye.yaw.w = -eye.yaw.w;
+		eye.component.y.w = -eye.component.y.w;
+		eye.component.y.toMatrix(this.scratch.matrix);
+		eye.component.y.w = -eye.component.y.w;
 		gl.uniformMatrix4fv(shader.rotations, false, this.scratch.matrix);
 		
 		center = this.headPosition;
