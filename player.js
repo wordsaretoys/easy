@@ -333,16 +333,16 @@ EASY.player = {
 		
 		scratch.direction.set();
 		if (motion.movefore) {
-			scratch.direction.add(camera.orientation.front);
+			scratch.direction.add(camera.front);
 		}
 		if (motion.moveback) {
-			scratch.direction.sub(camera.orientation.front);
+			scratch.direction.sub(camera.front);
 		}
 		if (motion.moveleft) {
-			scratch.direction.sub(camera.orientation.right);
+			scratch.direction.sub(camera.right);
 		}
 		if (motion.moveright) {
-			scratch.direction.add(camera.orientation.right);
+			scratch.direction.add(camera.right);
 		}
 		scratch.direction.norm();
 		

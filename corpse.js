@@ -156,7 +156,7 @@ EASY.corpse = {
 				// are we looking at it?
 				this.scratch.pos.copy(this.position).sub(pp).norm();
 				t = this.USE_RADIUS * 
-					this.scratch.pos.dot(EASY.player.camera.orientation.front) / dp;
+					this.scratch.pos.dot(EASY.player.camera.front) / dp;
 			}
 			
 			// let the HUD know if it doesn't already
