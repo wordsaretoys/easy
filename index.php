@@ -4,28 +4,17 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>easy does it</title>
 		<link rel="stylesheet" type="text/css" media="screen" href="easy.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="/shared/toybox.css">
-		<script type="text/javascript" src="/shared/jquery-1.7.1.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
-		<script type="text/javascript" src="/debug/soar/soar.js"></script>
-		<script type="text/javascript" src="/debug/soar/vector.js"></script>
-		<script type="text/javascript" src="/debug/soar/quaternion.js"></script>
-		<script type="text/javascript" src="/debug/soar/rotator.js"></script>
-		<script type="text/javascript" src="/debug/soar/noise.js"></script>
-		<script type="text/javascript" src="/debug/soar/camera.js"></script>
-		<script type="text/javascript" src="/debug/soar/mesh.js"></script>
-		<script type="text/javascript" src="/debug/soar/shader.js"></script>
-		<script type="text/javascript" src="/debug/soar/texture.js"></script>
-		<script type="text/javascript" src="/debug/soar/display.js"></script>
-
-		<script type="text/javascript" src="/debug/easy/easy.js"></script>
-		<script type="text/javascript" src="/debug/easy/canvasser.js"></script>
-		<script type="text/javascript" src="/debug/easy/hud.js"></script>
-		<script type="text/javascript" src="/debug/easy/player.js"></script>
-		<script type="text/javascript" src="/debug/easy/cave.js"></script>
-		<script type="text/javascript" src="/debug/easy/trash.js"></script>
-		<script type="text/javascript" src="/debug/easy/ghost.js"></script>
-		<script type="text/javascript" src="/debug/easy/corpse.js"></script>
+		<script type="text/javascript" src="soar.js"></script>
+		<script type="text/javascript" src="easy.js"></script>
+		<script type="text/javascript" src="canvasser.js"></script>
+		<script type="text/javascript" src="hud.js"></script>
+		<script type="text/javascript" src="player.js"></script>
+		<script type="text/javascript" src="cave.js"></script>
+		<script type="text/javascript" src="trash.js"></script>
+		<script type="text/javascript" src="ghost.js"></script>
+		<script type="text/javascript" src="corpse.js"></script>
 		
 <?php
 include("easy.glsl");
@@ -37,7 +26,6 @@ include("easy.glsl");
 		</script>
     </head>
 	<body>
-		<?php include($_SERVER["DOCUMENT_ROOT"] . "/shared/toybox.php"); ?>
 		<canvas id="gl"></canvas>
 		<?php include("hud.html"); ?>
 	</body>
